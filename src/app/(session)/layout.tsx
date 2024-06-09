@@ -12,8 +12,11 @@ const LoginOrRegisterLayout = ({
     <Providers>
       <Flex justifyContent={'space-between'} minH={'100vh'} background={'black'}>
         <Flex justify={'center'} align={'center'}>
-          <Flex direction={'column'}>
-            <Image src={'/assets/img/whitelogo.svg'} alt={'Logo'} w={'150px'} />
+          <Flex direction={'column'} ml={'100px'}>
+            <Flex direction={'column'} gap={'15px'} mb={'30px'}>
+              <Image src={'/assets/img/whitelogo.svg'} alt={'Logo'} w={'110px'} />
+              <Text color={'white'} fontWeight={'bold'} fontSize={'3xl'}>Hola!<br /> Bienvenido de nuevo</Text>
+            </Flex>
             {children}
           </Flex>
         </Flex>
