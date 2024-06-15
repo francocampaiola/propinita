@@ -1,9 +1,9 @@
 'use client'
 
-import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
-import { Stack, Input, Button, Flex, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
-import { Link } from '@chakra-ui/next-js'
 import { useState } from 'react'
+import { Stack, Input, Button, Flex, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
+import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
+import { Link } from '@chakra-ui/next-js'
 
 const Register = () => {
 

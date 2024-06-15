@@ -1,21 +1,26 @@
 'use client'
 
+import React, { useState } from 'react'
+import { Stack, Input, Button, Flex, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { Link } from '@chakra-ui/next-js'
-import { Stack, Input, Button, Flex, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
-import { useState } from 'react'
 
-const Login = () => {
+import { login } from './actions'
+
+export const LoginPage = () => {
 
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
 
   return (
-    <>
+    <form>
       <Stack mb={'15px'}>
         <Text color={'white'}>Correo electrónico</Text>
         <Input
+          id='email'
+          name='email'
           type='email'
+          isRequired
           color={'white'}
           variant='outline'
           placeholder='Correo electrónico'
@@ -27,6 +32,8 @@ const Login = () => {
         <Text color={'white'}>Contraseña</Text>
         <InputGroup size='md'>
           <Input
+            id='password'
+            name='password'
             color={'white'}
             pr='4.5rem'
             type={show ? 'text' : 'password'}
@@ -46,6 +53,8 @@ const Login = () => {
         }}>¿Olvidaste tu contraseña?</Text>
       </Stack>
       <Button
+        type='submit'
+        formAction={login}
         variant='outline'
         color={'white'}
         _hover={{
@@ -63,8 +72,8 @@ const Login = () => {
           transition: 'all 0.3s ease-in-out'
         }} href='/register'>Registrate</Link>
       </Flex>
-    </>
+    </form>
   )
 }
 
-export default Login
+export default LoginPage
