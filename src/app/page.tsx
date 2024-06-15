@@ -1,7 +1,19 @@
 import Image from "next/image";
 import styles from "./page.module.css";
+import { createClient } from "@/utils/supabase/server";
+import { redirect } from "next/navigation";
+import SignOut from "./components/SignOut";
 
-export default function Home() {
+export default async function Home() {
+
+  const supabase = createClient()
+
+  const { data, error } = await supabase.auth.getUser()
+  if (error || !data?.user) {
+    redirect('/login')
+  }
+
+
   return (
     <main className={styles.main}>
       <div className={styles.description}>
@@ -90,6 +102,7 @@ export default function Home() {
           </p>
         </a>
       </div>
+      <SignOut />
     </main>
   );
 }
