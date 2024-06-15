@@ -4,17 +4,21 @@ import { useState } from 'react'
 import { Stack, Input, Button, Flex, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { Link } from '@chakra-ui/next-js'
+import { signup } from './actions'
 
-const Register = () => {
+export const RegisterPage = () => {
 
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
 
   return (
-    <>
+    <form>
       <Stack mb={'15px'}>
         <Text color={'white'}>Correo electrónico</Text>
         <Input
+          isRequired
+          id='email'
+          name='email'
           type='email'
           color={'white'}
           variant='outline'
@@ -27,6 +31,9 @@ const Register = () => {
         <Text color={'white'}>Contraseña</Text>
         <InputGroup size='md' mb={'50px'}>
           <Input
+            isRequired
+            id='password'
+            name='password'
             color={'white'}
             pr='4.5rem'
             type={show ? 'text' : 'password'}
@@ -42,12 +49,15 @@ const Register = () => {
 
       </Stack>
       <Button
+        type='submit'
+        formAction={signup}
         variant='outline'
         color={'white'}
         _hover={{
           background: '#B39B24',
           color: 'black'
         }}
+        w={'100%'}
       >
         Registrarse
       </Button>
@@ -59,10 +69,8 @@ const Register = () => {
           transition: 'all 0.3s ease-in-out'
         }} href='/login'>Iniciá sesión</Link>
       </Flex>
-    </>
+    </form>
   )
 }
 
-// "whiteAlpha" | "blackAlpha" | "gray" | "red" | "orange" | "yellow" | "green" | "teal" | "blue" | "cyan" | "purple" | "pink" | "linkedin" | "facebook" | "messenger" | "whatsapp" | "twitter" | "telegram"
-
-export default Register
+export default RegisterPage

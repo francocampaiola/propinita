@@ -61,6 +61,7 @@ export const LoginPage = () => {
           background: '#B39B24',
           color: 'black'
         }}
+        w={'100%'}
       >
         Iniciar sesión
       </Button>
