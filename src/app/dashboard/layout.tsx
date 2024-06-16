@@ -1,7 +1,7 @@
 import React from 'react'
-import SidebarWithHeader from '../components/Sidebar'
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
+import Sidebar from '../components/Sidebar'
 
 export default async function DashboardLayout() {
 
@@ -13,6 +13,6 @@ export default async function DashboardLayout() {
     }
 
     return (
-        <SidebarWithHeader />
+        <Sidebar />
     )
 }

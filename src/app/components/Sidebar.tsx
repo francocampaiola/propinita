@@ -194,7 +194,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
     )
 }
 
-const SidebarWithHeader = () => {
+const Sidebar = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
     return (
@@ -220,4 +220,4 @@ const SidebarWithHeader = () => {
     )
 }
 
-export default SidebarWithHeader
+export default Sidebar
