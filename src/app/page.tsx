@@ -13,7 +13,6 @@ export default async function Home() {
     redirect('/login')
   }
 
-
   return (
     <main className={styles.main}>
       <div className={styles.description}>
