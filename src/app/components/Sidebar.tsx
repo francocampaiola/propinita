@@ -35,6 +35,8 @@ import {
 import { IconType } from 'react-icons'
 import Image from 'next/image'
 import logoPropinita from '/public/assets/img/logo.svg'
+import { getUserData } from '../dashboard/actions'
+import { Database } from '../../../database.types'
 
 interface LinkItemProps {
     name: string
@@ -47,7 +49,8 @@ interface NavItemProps extends FlexProps {
 }
 
 interface MobileProps extends FlexProps {
-    onOpen: () => void
+    onOpen: () => void,
+    userData: Database['public']['Tables']['users']['Row']
 }
 
 interface SidebarProps extends BoxProps {
@@ -123,7 +126,8 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
     )
 }
 
-const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
+const MobileNav = ({ onOpen, userData, ...rest }: MobileProps) => {
+
     return (
         <Flex
             ml={{ base: 0, md: 60 }}
@@ -168,9 +172,11 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
                                     alignItems="flex-start"
                                     spacing="1px"
                                     ml="2">
-                                    <Text fontSize="sm">Justina Clark</Text>
+                                    <Text fontSize="sm">{userData?.fullname}</Text>
                                     <Text fontSize="xs" color="gray.600">
-                                        Admin
+                                        {userData.fk_role === 1 ? 'Administrador' : 
+                                        userData.fk_role === 2 ? 'Proveedor' :
+                                        userData.fk_role === 3 ? 'Usuario' : 'Invitado'}
                                     </Text>
                                 </VStack>
                                 <Box display={{ base: 'none', md: 'flex' }}>
@@ -195,9 +201,11 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
 }
 
 const Sidebar = ({
-    children
+    children,
+    userData
 }: {
     children: JSX.Element
+    userData: Database['public']['Tables']['users']['Row']
 }) => {
     const { isOpen, onOpen, onClose } = useDisclosure()
 
@@ -215,8 +223,7 @@ const Sidebar = ({
                     <SidebarContent onClose={onClose} />
                 </DrawerContent>
             </Drawer>
-            {/* mobilenav */}
-            <MobileNav onOpen={onOpen} />
+            <MobileNav userData={userData} onOpen={onOpen} />
             <Box ml={{ base: 0, md: 60 }} p="4">
                 {children}
             </Box>

@@ -3,10 +3,11 @@ import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createClient } from '@/utils/supabase/server'
 import Sidebar from '../components/Sidebar'
+import { getUserData } from './actions'
 
-export default async function DashboardLayout( {
+export default async function DashboardLayout({
     children
- } : {
+}: {
     children: JSX.Element
 
 }) {
@@ -19,8 +20,10 @@ export default async function DashboardLayout( {
         redirect('/login')
     }
 
+    const userData = await getUserData()
+
     return (
-        <Sidebar>
+        <Sidebar userData={userData}>
             {children}
         </Sidebar>
     )
