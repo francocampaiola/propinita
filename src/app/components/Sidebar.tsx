@@ -37,6 +37,7 @@ import Image from 'next/image'
 import logoPropinita from '/public/assets/img/logo.svg'
 import { getUserData } from '../dashboard/actions'
 import { Database } from '../../../database.types'
+import { signOut } from '../actions'
 
 interface LinkItemProps {
     name: string
@@ -128,6 +129,11 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
 
 const MobileNav = ({ onOpen, userData, ...rest }: MobileProps) => {
 
+    const handleSignOut = async () => {
+        await signOut()
+        document.cookie = 'supabase-auth-token=; Max-Age=0; path=/;'
+    }
+
     return (
         <Flex
             ml={{ base: 0, md: 60 }}
@@ -191,7 +197,7 @@ const MobileNav = ({ onOpen, userData, ...rest }: MobileProps) => {
                             <MenuItem>Settings</MenuItem>
                             <MenuItem>Billing</MenuItem>
                             <MenuDivider />
-                            <MenuItem>Sign out</MenuItem>
+                            <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
                         </MenuList>
                     </Menu>
                 </Flex>
