@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Box, Button, Flex, Text } from '@chakra-ui/react';
 import { IoPersonOutline, IoRestaurantOutline } from 'react-icons/io5';
 
-const UserType = () => {
+const UserType = ({ onNext }: any) => {
   const [userType, setUserType] = useState('user');
 
   const handleSelectUserType = (type: string) => {
@@ -68,7 +68,7 @@ const UserType = () => {
           </Flex>
         </Flex>
       </Flex>
-      <Button ml={12}>Siguiente</Button>
+      <Button ml={12} onClick={onNext}>Siguiente</Button>
     </Box>
   );
 };

@@ -7,19 +7,26 @@ import UserPersonalData from "./steps/UserPersonalData"
 import UserBankData from "./steps/UserBankData"
 import Details from "./steps/Details"
 import { IoCheckmark } from "react-icons/io5"
+import { useState } from "react"
+
+const steps = [
+    { title: 'Tipo de usuario', component: UserType },
+    { title: 'Datos personales', component: UserPersonalData },
+    { title: 'Cuenta bancaria', component: UserBankData },
+    { title: 'Detalles', component: Details },
+]
 
 export default function Onboarding() {
-    const steps = [
-        { title: 'Tipo de usuario', component: UserType },
-        { title: 'Datos personales', component: UserPersonalData },
-        { title: 'Cuenta bancaria', component: UserBankData },
-        { title: 'Detalles', component: Details },
-    ]
 
-    const { activeStep } = useSteps({
-        index: 0,
-        count: steps.length,
-    })
+    const [activeStep, setActiveStep] = useState(0);
+
+    const handleNext = () => {
+        setActiveStep((prevStep) => Math.min(prevStep + 1, steps.length - 1));
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevStep) => Math.max(prevStep - 1, 0));
+    };
 
     const StepComponent = steps[activeStep].component;
 
@@ -46,7 +53,7 @@ export default function Onboarding() {
             </Flex>
             <Flex w={'70%'} h={'90vh'} bg={'#1E1E1E'}>
                 <Flex >
-                    <StepComponent />
+                    <StepComponent onNext={handleNext} />
                 </Flex>
             </Flex>
         </Flex>
