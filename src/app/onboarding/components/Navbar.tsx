@@ -3,15 +3,8 @@
 import {
     Box,
     Flex,
-    Avatar,
     Button,
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuDivider,
     Stack,
-    Center,
     Text,
     Divider,
 } from '@chakra-ui/react'

@@ -10,4 +10,6 @@ export default function OnboardingPage() {
             <Onboarding />
         </Box>
     )
+
+    // TODO: Credenciales para ver el onboarding de megapix: franco3@franco.com, franco3
 }
