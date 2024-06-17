@@ -10,7 +10,7 @@ const UserType = ({ onNext }: any) => {
   };
 
   return (
-    <Box h={'90vh'} w={'100%'} borderRadius={'xl'}>
+    <Box height={'100vh'} w={'100%'} borderRadius={'xl'}>
       <Flex p={12} direction={'column'} gap={6}>
         <Text textTransform={'uppercase'} fontWeight={'bold'} fontSize={'xl'} color={'gray'}>
           Paso 1

@@ -51,8 +51,8 @@ export default function Onboarding() {
                     ))}
                 </Stepper>
             </Flex>
-            <Flex w={'70%'} h={'90vh'} bg={'#1E1E1E'}>
-                <Flex >
+            <Flex w={'70%'} bg={'#1E1E1E'}>
+                <Flex>
                     <StepComponent onNext={handleNext} />
                 </Flex>
             </Flex>

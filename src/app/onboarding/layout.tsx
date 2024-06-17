@@ -1,15 +1,13 @@
 import React from 'react'
-import Onboarding from './page'
-import Navbar from './components/Navbar'
 import { Box } from '@chakra-ui/react'
+import Navbar from './components/Navbar'
+import Onboarding from './page'
 
 export default function OnboardingPage() {
     return (
-        <Box bg={'black'} height={'100vh'}>
+        <Box bg={'black'} height={'100%'}>
             <Navbar />
             <Onboarding />
         </Box>
     )
-
-    // TODO: Credenciales para ver el onboarding de megapix: franco3@franco.com, franco3
 }
