@@ -10,7 +10,8 @@ const UserType = ({ onNext }: any) => {
   };
 
   return (
-    <Box height={'100vh'} w={'100%'} borderRadius={'xl'}>
+    <Box w={'100%'} minHeight={'100vh'}
+    height={'100%'} borderRadius={'xl'}>
       <Flex p={12} direction={'column'} gap={6}>
         <Text textTransform={'uppercase'} fontWeight={'bold'} fontSize={'xl'} color={'gray'}>
           Paso 1
@@ -68,7 +69,7 @@ const UserType = ({ onNext }: any) => {
           </Flex>
         </Flex>
       </Flex>
-      <Button ml={12} onClick={onNext}>Siguiente</Button>
+      <Button ml={12} mb={12} onClick={onNext}>Siguiente</Button>
     </Box>
   );
 };

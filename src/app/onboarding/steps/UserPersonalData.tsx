@@ -1,8 +1,9 @@
 import { Box, Button, Flex, Input, Select, Text } from '@chakra-ui/react';
 
-const UserPersonalData = () => {
+const UserPersonalData = ({ onNext, onBack }: any) => {
   return (
-    <Box w={'100%'} borderRadius={'xl'} fontFamily={'poppins'}>
+    <Box w={'100%'} minHeight={'100vh'}
+    height={'100%'} borderRadius={'xl'} fontFamily={'poppins'}>
       <Flex p={12} direction={'column'} gap={6}>
         <Text textTransform={'uppercase'} fontWeight={'bold'} fontSize={'xl'} color={'gray'}>
           Paso 2
@@ -37,8 +38,8 @@ const UserPersonalData = () => {
         </Flex>
       </Flex>
       <Flex gap={4} mb={12}>
-        <Button ml={12}>Volver</Button>
-        <Button>Siguiente</Button>
+        <Button ml={12} onClick={onBack}>Volver</Button>
+        <Button onClick={onNext}>Siguiente</Button>
       </Flex>
     </Box>
   )

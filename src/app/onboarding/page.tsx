@@ -1,6 +1,6 @@
 'use client'
 
-import { CircularProgress, Flex, Step, StepIndicator, Stepper, StepSeparator, StepStatus, StepTitle, useSteps } from "@chakra-ui/react"
+import { CircularProgress, Flex, Step, StepIndicator, Stepper, StepSeparator, StepStatus, StepTitle } from "@chakra-ui/react"
 
 import UserType from "./steps/UserType"
 import UserPersonalData from "./steps/UserPersonalData"
@@ -53,7 +53,7 @@ export default function Onboarding() {
             </Flex>
             <Flex w={'70%'} bg={'#1E1E1E'}>
                 <Flex>
-                    <StepComponent onNext={handleNext} />
+                    <StepComponent onNext={handleNext} onBack={handleBack} />
                 </Flex>
             </Flex>
         </Flex>
