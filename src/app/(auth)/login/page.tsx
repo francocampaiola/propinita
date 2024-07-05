@@ -4,22 +4,39 @@ import React, { useState } from 'react'
 import { Stack, Input, Button, Flex, Text, InputGroup, InputRightElement } from '@chakra-ui/react'
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { Link } from '@chakra-ui/next-js'
-
+import { useRouter } from 'next/navigation'
 import { login } from './actions'
 
 const LoginPage = () => {
-
   const [show, setShow] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const router = useRouter()
+
   const handleClick = () => setShow(!show)
 
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
+    setIsLoading(true)
+    const formData = new FormData(e.target)
+
+    try {
+      await login(formData)
+      router.push('/dashboard')
+    } catch (error) {
+      console.error('Error during login:', error)
+      setIsLoading(false)
+    }
+  }
+
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <Stack mb={'15px'}>
         <Text color={'white'}>Correo electrónico</Text>
         <Input
           id='email'
           name='email'
           type='email'
+          required
           isRequired
           color={'white'}
           variant='outline'
@@ -39,6 +56,7 @@ const LoginPage = () => {
             type={show ? 'text' : 'password'}
             placeholder='Contraseña'
             _placeholder={{ opacity: 1, color: 'gray' }}
+            isRequired
           />
           <InputRightElement>
             <Button variant='unstyled' h='1.75rem' size='sm' onClick={handleClick} color={'white'}>
@@ -54,7 +72,6 @@ const LoginPage = () => {
       </Stack>
       <Button
         type='submit'
-        formAction={login}
         variant='outline'
         color={'white'}
         _hover={{
@@ -62,6 +79,7 @@ const LoginPage = () => {
           color: 'black'
         }}
         w={'100%'}
+        isLoading={isLoading}
       >
         Iniciar sesión
       </Button>

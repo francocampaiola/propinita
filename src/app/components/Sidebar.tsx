@@ -62,9 +62,9 @@ interface SidebarProps extends BoxProps {
 
 const LinkItems: Array<LinkItemProps> = [
     { name: 'Inicio', icon: FiHome, path: '/dashboard' },
-    { name: 'Cobrar', icon: FiTrendingUp, path: '/cobrar' },
-    { name: 'Calculadora', icon: FiCompass, path: '/calculadora' },
-    { name: 'Mi perfil', icon: FiStar, path: '/perfil' },
+    { name: 'Cobrar', icon: FiTrendingUp, path: '/dashboard/cobrar' },
+    { name: 'Calculadora', icon: FiCompass, path: '/dashboard/calculadora' },
+    { name: 'Mi perfil', icon: FiStar, path: '/dashboard/perfil' },
 ]
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -209,11 +209,9 @@ const MobileNav = ({ onOpen, userData, ...rest }: MobileProps) => {
                         <MenuList
                             bg={useColorModeValue('white', 'gray.900')}
                             borderColor={useColorModeValue('gray.200', 'gray.700')}>
-                            <MenuItem>Profile</MenuItem>
-                            <MenuItem>Settings</MenuItem>
-                            <MenuItem>Billing</MenuItem>
+                            <MenuItem>Perfil</MenuItem>
                             <MenuDivider />
-                            <MenuItem onClick={handleSignOut}>Sign out</MenuItem>
+                            <MenuItem onClick={handleSignOut}>Cerrar sesión</MenuItem>
                         </MenuList>
                     </Menu>
                 </Flex>

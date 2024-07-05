@@ -9,7 +9,7 @@ const QR = () => {
       <Text fontWeight={'semibold'} color={'#494F59'} p={4}>Mi código QR</Text>
       <Divider orientation='horizontal' size={'md'} borderColor={'white'} />
       <Flex justifyContent={'center'} alignItems={'center'} mt={6}>
-      <Image src={qr} alt='QR' />
+        <Image src={qr} alt='QR' />
       </Flex>
     </Box>
   )
