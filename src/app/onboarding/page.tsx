@@ -6,6 +6,7 @@ import UserType from "./steps/UserType"
 import UserPersonalData from "./steps/UserPersonalData"
 import UserBankData from "./steps/UserBankData"
 import Details from "./steps/Details"
+import Confirm from "./steps/Confirm"
 import { IoCheckmark } from "react-icons/io5"
 import { useState } from "react"
 
@@ -14,6 +15,7 @@ const steps = [
     { title: 'Datos personales', component: UserPersonalData },
     { title: 'Cuenta bancaria', component: UserBankData },
     { title: 'Detalles', component: Details },
+    { title: 'Confirmar', component: Confirm }
 ]
 
 export default function Onboarding() {
@@ -34,7 +36,7 @@ export default function Onboarding() {
         <Flex justify={'center'} align={'center'} direction={'row'}>
             <Flex w={'30%'} direction={'column'} alignItems={'center'} justifyContent={'center'}>
                 <Stepper index={activeStep} colorScheme="yellow" orientation='vertical' height='250px' gap='0'>
-                    {steps.map((step, index) => (
+                    {steps.slice(0, -1).map((step, index) => (
                         <Step key={index}>
                             <StepIndicator style={{ borderColor: 'black' }}>
                                 <StepStatus

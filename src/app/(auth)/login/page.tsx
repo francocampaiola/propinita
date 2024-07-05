@@ -7,7 +7,7 @@ import { Link } from '@chakra-ui/next-js'
 
 import { login } from './actions'
 
-export const LoginPage = () => {
+const LoginPage = () => {
 
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)

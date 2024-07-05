@@ -63,7 +63,7 @@ const LinkItems: Array<LinkItemProps> = [
     { name: 'Cobrar', icon: FiTrendingUp },
     { name: 'Calculadora', icon: FiCompass },
     { name: 'Mi perfil', icon: FiStar },
-    { name: 'Settings', icon: FiSettings },
+    { name: 'Configuraciones', icon: FiSettings },
 ]
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {

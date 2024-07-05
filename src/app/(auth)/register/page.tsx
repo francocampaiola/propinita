@@ -6,7 +6,7 @@ import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons'
 import { Link } from '@chakra-ui/next-js'
 import { signup } from './actions'
 
-export const RegisterPage = () => {
+const RegisterPage = () => {
 
   const [show, setShow] = useState(false)
   const handleClick = () => setShow(!show)
