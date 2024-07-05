@@ -34,23 +34,25 @@ import {
 } from 'react-icons/fi'
 import { IconType } from 'react-icons'
 import Image from 'next/image'
+import { useRouter, usePathname } from 'next/navigation'
 import logoPropinita from '/public/assets/img/logo.svg'
-import { getUserData } from '../dashboard/actions'
 import { Database } from '../../../database.types'
 import { signOut } from '../actions'
 
 interface LinkItemProps {
     name: string
     icon: IconType
+    path: string
 }
 
 interface NavItemProps extends FlexProps {
     icon: IconType
     children: React.ReactNode
+    path: string
 }
 
 interface MobileProps extends FlexProps {
-    onOpen: () => void,
+    onOpen: () => void
     userData: Database['public']['Tables']['users']['Row']
 }
 
@@ -59,11 +61,10 @@ interface SidebarProps extends BoxProps {
 }
 
 const LinkItems: Array<LinkItemProps> = [
-    { name: 'Inicio', icon: FiHome },
-    { name: 'Cobrar', icon: FiTrendingUp },
-    { name: 'Calculadora', icon: FiCompass },
-    { name: 'Mi perfil', icon: FiStar },
-    { name: 'Configuraciones', icon: FiSettings },
+    { name: 'Inicio', icon: FiHome, path: '/dashboard' },
+    { name: 'Cobrar', icon: FiTrendingUp, path: '/cobrar' },
+    { name: 'Calculadora', icon: FiCompass, path: '/calculadora' },
+    { name: 'Mi perfil', icon: FiStar, path: '/perfil' },
 ]
 
 const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
@@ -84,7 +85,7 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
                 <CloseButton display={{ base: 'flex', md: 'none' }} onClick={onClose} />
             </Flex>
             {LinkItems.map((link) => (
-                <NavItem key={link.name} icon={link.icon}>
+                <NavItem key={link.name} icon={link.icon} path={link.path} mb={2}>
                     {link.name}
                 </NavItem>
             ))}
@@ -92,11 +93,21 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
     )
 }
 
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, path, ...rest }: NavItemProps) => {
+    const router = useRouter()
+    const pathname = usePathname()
+    const isActive = pathname === path
+
+    const handleClick = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+        e.preventDefault()
+        router.push(path)
+    }
+
     return (
         <Box
             as="a"
-            href="#"
+            href={path}
+            onClick={handleClick}
             style={{ textDecoration: 'none' }}
             _focus={{ boxShadow: 'none' }}>
             <Flex
@@ -106,8 +117,12 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
                 borderRadius="lg"
                 role="group"
                 cursor="pointer"
+                bg={isActive ? '#B09C3E' : 'transparent'}
+                color={isActive ? 'white' : 'inherit'}
+                fontWeight={isActive ? 'semibold' : 'medium'}
                 _hover={{
                     bg: '#B09C3E',
+                    opacity: 0.8,
                     color: 'white',
                 }}
                 {...rest}>
@@ -126,6 +141,7 @@ const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
         </Box>
     )
 }
+
 
 const MobileNav = ({ onOpen, userData, ...rest }: MobileProps) => {
 

@@ -9,7 +9,6 @@ export default async function DashboardLayout({
     children
 }: {
     children: JSX.Element
-
 }) {
 
     const cookieStore = cookies()
