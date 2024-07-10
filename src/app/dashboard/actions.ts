@@ -15,6 +15,6 @@ export const getUserData = async (): Promise<
   const { data } = await supabase
     .from('users')
     .select('*')
-    .eq('fk_user', user.id)
-  return data[0]
+    .eq('fk_user', user?.id)
+  return data![0]
 }

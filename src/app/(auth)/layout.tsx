@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Button, Flex, Image, Input, InputGroup, InputLeftAddon, Stack, Text } from '@chakra-ui/react'
+import { Flex, Image, Text } from '@chakra-ui/react'
 import { Providers } from '../providers'
 
 const LoginOrRegisterLayout = ({
