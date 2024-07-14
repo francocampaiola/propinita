@@ -86,7 +86,7 @@ const UserPersonalData = ({ onNext, onBack }: any) => {
         <Flex direction={'column'} gap={2}>
           <Text color={'white'}>Teléfono</Text>
           <Input
-            placeholder='+54 9 11 2233 4455'
+            placeholder='1122334455'
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
             required
