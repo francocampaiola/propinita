@@ -34,7 +34,7 @@ const UserBankData = ({ onNext, onBack }: any) => {
                 Vincular con MercadoPago
               </Text>
               <Text fontSize={'xs'} color={'white'}>
-                Como trabajador independiente, recibo ventajas en el régimen monotributista. <br /> Me clasifico en categorías según mis ingresos y no tengo la opción de contratar empleados.
+                Debe ser una cuenta de MercadoPago habilitada sin ninguna sujeción a personas políticamente expuestas o sin comprobantes de ingresos.
               </Text>
             </Flex>
           </Flex>

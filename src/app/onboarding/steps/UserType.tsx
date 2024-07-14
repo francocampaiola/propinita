@@ -11,7 +11,7 @@ const UserType = ({ onNext }: any) => {
 
   return (
     <Box w={'100%'} minHeight={'100vh'}
-    height={'100%'} borderRadius={'xl'}>
+      height={'100%'} borderRadius={'xl'}>
       <Flex p={12} direction={'column'} gap={6}>
         <Text textTransform={'uppercase'} fontWeight={'bold'} fontSize={'xl'} color={'gray'}>
           Paso 1
@@ -42,7 +42,7 @@ const UserType = ({ onNext }: any) => {
               Usuario
             </Text>
             <Text fontSize={'xs'} color={'white'}>
-              Como trabajador independiente, recibo ventajas en el régimen monotributista. <br /> Me clasifico en categorías según mis ingresos y no tengo la opción de contratar empleados.
+              Soy una persona que regularmente brinda propinas en efectivo y me gustaría realizarlo digitalmente.
             </Text>
           </Flex>
         </Flex>
@@ -64,7 +64,8 @@ const UserType = ({ onNext }: any) => {
               Proveedor
             </Text>
             <Text fontSize={'xs'} color={'white'}>
-              Como trabajador independiente, recibo ventajas en el régimen monotributista. <br /> Me clasifico en categorías según mis ingresos y no tengo la opción de contratar empleados.
+            Actualmente trabajo con propinas y suelo recibirlas en efectivo.
+            Quiero registrarme para obtenerlas digitalmente.
             </Text>
           </Flex>
         </Flex>
