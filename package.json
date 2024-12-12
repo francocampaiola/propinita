@@ -9,11 +9,14 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@chakra-ui/react": "^3.2.3",
+    "@chakra-ui/cli": "^3.2.3",
+    "@chakra-ui/react": "^2.8.2",
+    "@chakra-ui/theme-tools": "^2.2.6",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.47.3",
+    "@tanstack/react-query": "^5.62.7",
     "@types/next": "^9.0.0",
     "framer-motion": "^11.14.0",
     "next": "^15.1.0",
