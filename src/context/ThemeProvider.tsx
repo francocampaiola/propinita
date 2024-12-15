@@ -25,8 +25,8 @@ const ThemeProvider = ({
     styles: {
       global: (props: StyleFunctionProps) => ({
         body: {
-          bg: mode('#ffffff', '#000')(props),
-          color: mode('#ffffff', '#fff')(props)
+          bg: mode('#ffffff', '#000000')(props),
+          color: mode('#000000', '#ffffff')(props)
         }
       })
     }
