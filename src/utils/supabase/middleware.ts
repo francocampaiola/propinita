@@ -35,7 +35,7 @@ export async function updateSession(request: NextRequest) {
 
   /* TODO: Se comenta temporalmente el código referido al usuario autenticado */
 
-  const {
+  /* const {
     data: { user }
   } = await supabase.auth.getUser()
 
@@ -48,7 +48,7 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
-  }
+  } */
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
   // If you're creating a new response object with NextResponse.next() make sure to:

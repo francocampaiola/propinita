@@ -1,5 +1,5 @@
-import ReactQueryProvider from '@/context/ReactQueryProvider'
-import ThemeProvider from '@/context/ThemeProvider'
+import ReactQueryProvider from '../context/ReactQueryProvider'
+import ThemeProvider from '../context/ThemeProvider'
 import { cookies } from 'next/headers'
 
 export default async function RootLayout({
