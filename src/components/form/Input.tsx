@@ -92,10 +92,15 @@ const Input = ({
                         >
                             <Button
                                 isDisabled={!watch(name)}
-                                variant='transparent'
                                 size='sm'
+                                padding={0}
+                                background='transparent'
                                 fontSize='24px'
+                                color={'primary'}
                                 onClick={() => setShowInput(!showInput)}
+                                _hover={{ background: 'transparent' }} // Sin fondo al pasar el mouse
+                                _active={{ background: 'transparent' }} // Sin fondo al hacer clic
+                                _focus={{ boxShadow: 'none' }} // Sin borde al enfocarlo
                             >
                                 {showInput ? <LuEyeOff /> : <LuEye />}
                             </Button>
