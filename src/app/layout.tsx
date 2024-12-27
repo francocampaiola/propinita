@@ -2,6 +2,7 @@ import { Poppins } from 'next/font/google'
 import ReactQueryProvider from '../context/ReactQueryProvider'
 import ThemeProvider from '../context/ThemeProvider'
 import { cookies } from 'next/headers'
+import '@/src/styles/globals.css'
 
 const poppins = Poppins({
   subsets: ['latin'],

@@ -1,5 +1,5 @@
 import { useRouter } from "next/navigation"
-import { startTransition, useTransition } from "react"
+import { useTransition } from 'react';
 import { FormProvider, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -11,7 +11,7 @@ import Link from "next/link"
 
 const Login = () => {
 
-    const [isLoading, setIsLoading] = useTransition()
+    const [isLoading, startTransition] = useTransition()
     const router = useRouter()
 
     const PasswordSchema = z.object({

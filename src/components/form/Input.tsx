@@ -72,7 +72,7 @@ const Input = ({
                     pr={4 + rightAddonRef?.current?.offsetWidth}
                     {...rest}
                     {...register(name)}
-                    borderRadius='md !important'
+                    borderRadius='15px !important'
                     fontSize='sm'
                     _placeholder={{ fontSize: 'sm' }}
                     type={showInput ? 'text' : type}
@@ -98,9 +98,9 @@ const Input = ({
                                 fontSize='24px'
                                 color={'primary'}
                                 onClick={() => setShowInput(!showInput)}
-                                _hover={{ background: 'transparent' }} // Sin fondo al pasar el mouse
-                                _active={{ background: 'transparent' }} // Sin fondo al hacer clic
-                                _focus={{ boxShadow: 'none' }} // Sin borde al enfocarlo
+                                _hover={{ background: 'transparent' }}
+                                _active={{ background: 'transparent' }}
+                                _focus={{ boxShadow: 'none' }}
                             >
                                 {showInput ? <LuEyeOff /> : <LuEye />}
                             </Button>

@@ -4,8 +4,9 @@ import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import background from '@/src/assets/background.png'
 import logo from '@/src/assets/logo.svg'
+import RegisterForm from '../components/Register';
 
-const LoginForm = dynamic(() => import('./components/Login'))
+const LoginForm = dynamic(() => import('../components/Login'))
 
 const Login = () => {
   return (
@@ -28,7 +29,7 @@ const Login = () => {
             maxWidth={{ base: '100%', md: '483px' }}
             width='100%'
           >
-            <Image src={logo.src} alt='Propinita' width='6.8125rem' height='auto' mx='auto' mb={16} />
+            <Image src={logo.src} alt='Propinita Logo' width='6.8125rem' height='auto' mx='auto' mb={16} />
             <Heading
               textAlign='center'
               fontFamily='Poppins'
@@ -58,7 +59,7 @@ const Login = () => {
                   <LoginForm />
                 </TabPanel>
                 <TabPanel px={0}>
-                  <LoginForm />
+                  <RegisterForm />
                 </TabPanel>
               </TabPanels>
             </Tabs>
@@ -73,7 +74,6 @@ const Login = () => {
           backgroundSize='cover'
         />
       </Flex>
-      <LoginForm />
     </>
   )
 }

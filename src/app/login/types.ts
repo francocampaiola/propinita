@@ -7,6 +7,21 @@ export interface ILoginResponse {
   user: User
 }
 
+export interface IRegisterResponse {
+  id: string
+  aud: string
+  role: string
+  email: string
+  phone: string
+  confirmation_sent_at: string
+  app_metadata: AppMetadata
+  user_metadata: UserMetadata
+  identities: IdentitiesEntity[]
+  created_at: string
+  updated_at: string
+  is_anonymous: boolean
+}
+
 export interface User {
   id: string
   aud: string
@@ -27,6 +42,13 @@ export interface User {
 export interface AppMetadata {
   provider: string
   providers?: string[] | null
+}
+
+export interface UserMetadata {
+  email: string
+  email_verified: boolean
+  phone_verified: boolean
+  sub: string
 }
 
 export interface IdentitiesEntity {
