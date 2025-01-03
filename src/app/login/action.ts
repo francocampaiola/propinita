@@ -1,6 +1,5 @@
 'use server'
 
-import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/src/utils/supabase/server'
 import { IResponse } from '../types'
@@ -13,17 +12,12 @@ export const login = async ({
   email: string
   password: string
 }): Promise<IResponse<ILoginResponse>> => {
-  try {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) {
-      return { errorMessage: error.message }
-    }
-    revalidatePath('/', 'layout')
-    redirect('/')
-  } catch (error) {
-    return { errorMessage: 'Hubo un error inesperado' }
+  const supabase = createClient()
+  const { error } = await (await supabase).auth.signInWithPassword({ email, password })
+  if (error) {
+    return { errorMessage: error.message }
   }
+  redirect('/dashboard')
 }
 
 export const register = async ({
@@ -33,15 +27,10 @@ export const register = async ({
   email: string
   password: string
 }): Promise<IResponse<IRegisterResponse>> => {
-  try {
-    const supabase = await createClient()
-    const { error } = await supabase.auth.signUp({ email, password })
-    if (error) {
-      return { errorMessage: 'Hubo un error intentando registrarse en la plataforma' }
-    }
-    revalidatePath('/', 'layout')
-    redirect('/')
-  } catch (error) {
-    return { errorMessage: error }
+  const supabase = createClient()
+  const { error } = await (await supabase).auth.signUp({ email, password })
+  if (error) {
+    return { errorMessage: error.message }
   }
+  redirect('/dashboard')
 }
