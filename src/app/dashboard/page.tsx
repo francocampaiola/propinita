@@ -1,8 +1,11 @@
+'use client'
+
 import React from 'react'
+import { Text } from '@chakra-ui/react'
 
 const Dashboard = () => {
   return (
-    <div>Dashboard</div>
+    <Text>Dashboard</Text>
   )
 }
 
