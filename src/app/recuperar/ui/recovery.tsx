@@ -29,7 +29,7 @@ const Recovery = () => {
                         maxWidth={{ base: '100%', md: '483px' }}
                         width='100%'
                     >
-                        <Image src={logo.src} alt='Propinita Logo' width='6.8125rem' height='auto' mx='auto' mb={48} />
+                        <Image src={logo.src} alt='Propinita Logo' width='6.8125rem' height='auto' mx='auto' mb={32} />
                         <RecoveryPassword />
                     </Box>
                 </Center>

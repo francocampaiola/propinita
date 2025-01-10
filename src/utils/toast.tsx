@@ -12,7 +12,7 @@ interface Colors {
 }
 
 const colors: Colors = {
-  success: 'primary',
+  success: 'green.500',
   error: 'red.500',
   warning: 'yellow.500',
   info: 'blue.500'

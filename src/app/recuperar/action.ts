@@ -15,5 +15,4 @@ export const recoveryPassword = async ({
   if (error) {
     return { errorMessage: error.message }
   }
-  redirect('/login')
 }
