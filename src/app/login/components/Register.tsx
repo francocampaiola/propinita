@@ -9,6 +9,7 @@ import { handleRequest } from '../../utils/functions'
 import { useRouter } from 'next/navigation'
 import { register } from '../action'
 import Checkbox from '@/src/components/form/Checkbox'
+import { handleToast } from '@/src/utils/toast'
 
 const RegisterForm = () => {
 
@@ -57,7 +58,16 @@ const RegisterForm = () => {
                 })
             )
             if (request.success) {
-                router.push('/dashboard')
+                handleToast({
+                    title: 'Cuenta creada con éxito',
+                    text: 'Confirmá tu correo electrónico para continuar',
+                    status: 'success',
+                    duration: 5000,
+                    isClosable: true
+                })
+                setTimeout(() => {
+                    location.reload()
+                }, 3000)
             }
         })
     })
@@ -124,7 +134,8 @@ const RegisterForm = () => {
                             </Box>
                         </Box>
                     </Flex>
-                    <Button w='100%' type='submit' isDisabled={!methods.formState.isValid} variant='primary'>
+                    <Button w='100%' type='submit' isDisabled={!methods.formState.isValid} 
+                    isLoading={isLoading} variant='primary'>
                         Registrarse
                     </Button>
                 </Flex>

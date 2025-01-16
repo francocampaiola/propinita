@@ -16,7 +16,6 @@ export const updatePassword = async ({
     await supabase
   ).auth.verifyOtp({ token_hash: token, type: 'recovery' })
   if (verifyError) {
-    console.log(verifyError)
     return { errorMessage: translateError(verifyError.message) }
   }
   const { error } = await (
@@ -25,7 +24,7 @@ export const updatePassword = async ({
     password
   })
   if (error) {
-    console.log(error)
     return { errorMessage: translateError(error.message) }
   }
+  const { error: signOutError } = await (await supabase).auth.signOut()
 }

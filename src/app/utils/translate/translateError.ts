@@ -18,6 +18,7 @@ export const errorMessages = {
   'Invalid request': 'La solicitud es inválida o está malformada.',
   'Internal server error': 'Ocurrió un error interno en el servidor.',
   'Email link is invalid or has expired': 'El enlace de restablecimiento de contraseña es inválido o ha expirado.',
+  'New password should be different from the old password.': 'La nueva contraseña debe ser diferente a la anterior.',
 }
 
 export function translateError(errorMessage: string) {

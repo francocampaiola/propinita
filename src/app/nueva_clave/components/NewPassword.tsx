@@ -54,9 +54,12 @@ const RecoveryPassword = () => {
                     title: 'Contraseña cambiada correctamente',
                     text: 'Volvé a iniciar sesión con tu nueva contraseña',
                     status: 'success',
-                    duration: 9000,
+                    duration: 5000,
                     isClosable: true
                 })
+                setTimeout(() => {
+                    router.push('/login')
+                }, 3000)
             }
         })
     })

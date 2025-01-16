@@ -1,6 +1,5 @@
 'use server'
 
-import { redirect } from 'next/navigation'
 import { createClient } from '@/src/utils/supabase/server'
 import { IResponse } from '../types'
 import { ILoginResponse, IRegisterResponse } from './types'
@@ -26,8 +25,6 @@ export const login = async ({
   if (userError) {
     return { errorMessage: userError.message }
   }
-  console.log('Usuario autenticado:', user)
-  redirect('/dashboard')
 }
 
 export const register = async ({
@@ -38,9 +35,19 @@ export const register = async ({
   password: string
 }): Promise<IResponse<IRegisterResponse>> => {
   const supabase = createClient()
+
+  const { data, error: registerError } = await (await supabase)
+    .from('users')
+    .select('id')
+    .eq('email', email)
+    .single();
+
+  if (data) {
+    return { errorMessage: 'Este correo ya está registrado.' };
+  }
+
   const { error } = await (await supabase).auth.signUp({ email, password })
   if (error) {
     return { errorMessage: error.message }
   }
-  redirect('/dashboard')
 }

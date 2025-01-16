@@ -37,6 +37,7 @@ export interface User {
   created_at: string
   updated_at: string
   is_anonymous: boolean
+  user_signup_status: string
 }
 
 export interface AppMetadata {
