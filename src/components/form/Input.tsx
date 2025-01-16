@@ -72,7 +72,7 @@ const Input = ({
                     pr={4 + rightAddonRef?.current?.offsetWidth}
                     {...rest}
                     {...register(name)}
-                    borderRadius='md !important'
+                    borderRadius='15px !important'
                     fontSize='sm'
                     _placeholder={{ fontSize: 'sm' }}
                     type={showInput ? 'text' : type}
@@ -92,10 +92,15 @@ const Input = ({
                         >
                             <Button
                                 isDisabled={!watch(name)}
-                                variant='transparent'
                                 size='sm'
+                                padding={0}
+                                background='transparent'
                                 fontSize='24px'
+                                color={'primary'}
                                 onClick={() => setShowInput(!showInput)}
+                                _hover={{ background: 'transparent' }}
+                                _active={{ background: 'transparent' }}
+                                _focus={{ boxShadow: 'none' }}
                             >
                                 {showInput ? <LuEyeOff /> : <LuEye />}
                             </Button>

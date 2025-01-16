@@ -1,7 +1,12 @@
 import { createStandaloneToast } from '@chakra-ui/toast'
 import type { CreateStandaloneToastReturn, ToastId } from '@chakra-ui/react'
 import { Box, Text, Button, Center, Flex } from '@chakra-ui/react'
-import { IoCheckmark, IoWarningOutline, IoInformationCircleOutline, IoClose } from 'react-icons/io5'
+import {
+  IoCheckmark,
+  IoWarningOutline,
+  IoInformationCircleOutline,
+  IoClose
+} from 'react-icons/io5'
 import { MdErrorOutline } from 'react-icons/md'
 
 interface Colors {
@@ -12,7 +17,7 @@ interface Colors {
 }
 
 const colors: Colors = {
-  success: 'green.500',
+  success: 'primary',
   error: 'red.500',
   warning: 'yellow.500',
   info: 'blue.500'
@@ -37,7 +42,7 @@ interface ToastProps {
   text?: string
   status: 'success' | 'error' | 'warning' | 'info'
   duration?: number
-  isClosable?: boolean
+  isClosable?:boolean
 }
 
 class ToastInstance {
@@ -52,12 +57,23 @@ class ToastInstance {
       position: 'bottom',
       duration,
       render: () => (
-        <Box p={1} position='relative' color='white' bg='gray.700' borderRadius='8px'>
-          <Flex borderLeft='4px solid #B49B25' borderLeftRadius='3px' p={2} alignItems='center'>
+        <Box
+          p={1}
+          position='relative'
+          color='white'
+          bg='lightBlack'
+          borderRadius='8px'
+        >
+          <Flex
+            borderLeft='4px solid #62FEE2'
+            borderLeftRadius='3px'
+            p={2}
+            alignItems='center'
+          >
             <Center
               color={colors[status as keyof Colors]}
               borderRadius='lg'
-              background='gray.200'
+              background='megapixGray'
               height='50px'
               width='50px'
               mr={2}
