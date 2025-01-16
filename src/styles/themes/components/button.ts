@@ -34,7 +34,16 @@ const Button = {
     secondary: {
       outline: 'none',
       fontWeight: '400',
-      height: '10'
+      height: '10',
+      _disabled: {
+        bg: 'secondary'
+      },
+      _hover: {
+        background: 'secondary',
+        _disabled: {
+          bg: 'secondary'
+        }
+      }
     }
   }
 }

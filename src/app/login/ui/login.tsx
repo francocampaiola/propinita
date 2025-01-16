@@ -70,8 +70,9 @@ const Login = () => {
           backgroundImage={background.src}
           backgroundRepeat='no-repeat'
           backgroundPosition='center center'
-          width='100%'
           backgroundSize='cover'
+          backgroundAttachment='fixed'
+          width='100%'
         />
       </Flex>
     </>

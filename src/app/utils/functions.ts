@@ -1,3 +1,5 @@
+'use client'
+
 import { handleToast } from '@/src/utils/toast'
 import { IResponse } from '../types'
 

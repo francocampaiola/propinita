@@ -1,11 +1,11 @@
 'use client'
 
-import { Box, Center, Flex, Heading, Image, Tabs } from '@chakra-ui/react'
+import { Box, Center, Flex, Image } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import background from '@/src/assets/background.png'
 import logo from '@/src/assets/logo.svg'
-const RecoveryForm = dynamic(() => import('../components/RecoveryPassword'))
+const NewPasswordForm = dynamic(() => import('../components/NewPassword'))
 
 const Recovery = () => {
     return (
@@ -28,8 +28,8 @@ const Recovery = () => {
                         maxWidth={{ base: '100%', md: '483px' }}
                         width='100%'
                     >
-                        <Image src={logo.src} alt='Propinita Logo' width='6.8125rem' height='auto' mx='auto' mb={32} />
-                        <RecoveryForm />
+                        <Image src={logo.src} alt='Propinita Logo' width='6.8125rem' height='auto' mx='auto' mb={16} />
+                        <NewPasswordForm />
                     </Box>
                 </Center>
                 <Center
