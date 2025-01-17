@@ -1,11 +1,20 @@
 'use client'
 
-import React from 'react'
 import { Text } from '@chakra-ui/react'
+import { useGetUser } from '@/src/hooks/users/useGetUser'
 
 const Dashboard = () => {
+
+  const { user, isLoading } = useGetUser()
+
+  if (isLoading) {
+    return (
+      <Text>Cargando...</Text>
+    )
+  }
+
   return (
-    <Text>Dashboard</Text>
+    <Text>{user?.email}</Text>
   )
 }
 
