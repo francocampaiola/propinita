@@ -13,8 +13,10 @@ const Dashboard = () => {
     )
   }
 
+  console.log(user)
+
   return (
-    <Text>{user?.email}</Text>
+    <Text>{user?.created_at}</Text>
   )
 }
 

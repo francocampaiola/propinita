@@ -235,6 +235,10 @@ export type Database = {
   }
 }
 
+export type UserType = Enums<"user_type">
+
+export type SignupStatus = Enums<"signup_status">
+
 type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<

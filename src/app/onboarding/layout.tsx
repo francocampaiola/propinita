@@ -11,6 +11,7 @@ const Layout = async ({ children }: { children: React.ReactNode }) => {
       queryKey: ['user'],
       queryFn: getUser
     })
+    
     const dehydratedState = dehydrate(queryClient)
     return (
         <HydrationBoundary state={dehydratedState}>

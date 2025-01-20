@@ -1,7 +1,9 @@
 'use client'
+import { useContext } from 'react'
 import { OnboardingContext, OnboardingProvider } from '@/src/context/OnboardingProvider'
-import React, { useContext } from 'react'
 import OnboardingNavbar from './OnboardingNavbar'
+import OnboardingAside from './OnboardingAside';
+import { Flex } from '@chakra-ui/react';
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -41,6 +43,9 @@ const OnboardingContainer = ({ children }: { children: React.ReactNode }) => {
                     isApprovalSteps ? steps.slice(0, steps.length - 1) : steps
                 }
             />
+            <Flex minHeight='calc(100vh - 72px)' width='100%'>
+                <OnboardingAside steps={steps} />
+            </Flex>
         </>
     )
 }

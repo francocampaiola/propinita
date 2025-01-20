@@ -1,6 +1,6 @@
 'use client'
 
-import { Box, Center, Flex, Heading, Image, Tabs } from '@chakra-ui/react'
+import { Box, Center, Flex, Image } from '@chakra-ui/react'
 import dynamic from 'next/dynamic'
 import Head from 'next/head'
 import background from '@/src/assets/background.png'
