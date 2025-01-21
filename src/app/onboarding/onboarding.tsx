@@ -1,57 +1,78 @@
 'use client'
-import { Box, Spinner } from '@chakra-ui/react'
-import { useContext, useEffect, useState, useMemo } from 'react'
+import React, { useEffect, useContext, useTransition } from 'react'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
-import { useGetUser } from '@/src/hooks/users/useGetUser'
-import UserType from './components/UserType'
+import { Box, Spinner } from '@chakra-ui/react'
 import { SignupStatus } from '../types'
-
+// import { editCompany } from '../action'
+// import { editUser } from '../dashboard/usuarios/actions'
+import { handleRequest } from '@/src/app/utils/functions'
+/* hooks */
+import { useGetUser } from '@/src/hooks/users/useGetUser'
+/* components */
+import UserType from './components/UserType'
+import UserPersonalData from './components/UserPersonalData'
+// import UserRegulations from './components/UserRegulations'
+// import UserCompanyData from './components/UserCompanyData'
+// import UserBankData from './components/UserBankData'
+// import UserDocuments from './components/UserDocuments'
+// import UserRevisionInternal from './components/UserRevisionInternal'
+// import UserRevisionManteca from './components/UserRevisionManteca'
 const Onboarding = () => {
-    const { currentStep, setCurrentStep, setIsLoadingSteps } = useContext(OnboardingContext)
-    const { user, isLoading } = useGetUser()
 
-    // Fix #1: Move `if (isLoading)` after all hooks
-    const [stepIndex, setStepIndex] = useState(currentStep)
+    const { currentStep, setCurrentStep, isApprovalSteps, setIsApprovalSteps, setIsLoadingSteps } =
+        useContext(OnboardingContext)
 
-    // Fix #2: Wrap `steps` in `useMemo` so it doesn't recreate on each render
-    const steps = useMemo(() => [
-        {
-            component: <UserType nextStep={nextStep} />,
-            signup_status: 'user_type'
-        }
-    ], [])
+    const { user, refetch: refetchUser } = useGetUser()
+    const [loadingPrevStep, setTransition] = useTransition()
 
     useEffect(() => {
-        if (user?.user_signup_status) {
-            const idx = steps.findIndex((step) => step.signup_status === user.user_signup_status)
-            setCurrentStep(idx)
-            setIsLoadingSteps(false)
-        }
-    }, [user, setCurrentStep, setIsLoadingSteps, steps])
+        if (!user || !user.user_signup_status) return
+        const idx = steps.findIndex((step) => step.signup_status === user.user_signup_status)
+        setCurrentStep(idx)
+        setIsLoadingSteps(false)
+    }, [user?.user_signup_status])
 
-    // Fix #1: Ensure all hooks are called before an early return
-    if (isLoading) {
-        return <Spinner />
+    const nextStep = async ({
+        companyData,
+        userData
+    }: {
+        companyData?: FormData
+        userData?: FormData
+    }) => {
+        if (currentStep + 1 === steps.length) return
+        setCurrentStep((step: number) => step + 1)
     }
 
-    const nextStep = ({ userData }: { userData: any }): Promise<void> => {
-        return new Promise((resolve) => {
-            if (currentStep + 1 < steps.length) {
-                setCurrentStep((step: number) => step + 1)
+    const prevStep = async () => {
+        // if (currentStep === 0) return
+        // setTransition(async () => {
+        //   const userFormData = new FormData()
+        //   userFormData.append('signup_place_status', steps[currentStep - 1].signup_place_status)
+        //   const request = await handleRequest(() => editUser({ id: user?.id, data: userFormData }))
+        //   if (request.success) {
+        //     await refetchUser()
+        //     setCurrentStep((step: number) => step - 1)
+        //   }
+        // })
+    }
+
+    const steps: {
+        component: React.ReactElement
+        signup_status: SignupStatus
+    }[] = [
+            {
+                component: <UserType nextStep={nextStep} />,
+                signup_status: 'user_type'
             }
-            resolve()
-        })
-    }
-
-    const prevStep = () => {
-        if (stepIndex > 0) {
-            setStepIndex((prev: number) => prev - 1)
-        }
-    }
+        ]
 
     return (
-        <Box>
-            {steps[stepIndex].component}
+        <Box width='100%'>
+            {currentStep === null ? (
+                <Spinner />
+            ) : (
+                steps[currentStep].component
+            )}
         </Box>
     )
 }
