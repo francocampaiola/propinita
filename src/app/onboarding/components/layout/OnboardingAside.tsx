@@ -78,8 +78,8 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
                         <IoCheckmark color='black' />
                       ) : idx === currentStep ? (
                         <CircularProgress
-                          size='24px'
-                          color='aquamarine'
+                          size='18px'
+                          color='primary'
                           isIndeterminate
                           thickness='8px'
                         />

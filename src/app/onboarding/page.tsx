@@ -7,7 +7,7 @@ const Onboarding = dynamic(() => import('./onboarding'), {
   loading: () => <>Cargando..</>
 })
 
-const page = async () => {
+const page = () => {
   return <Onboarding />
 }
 

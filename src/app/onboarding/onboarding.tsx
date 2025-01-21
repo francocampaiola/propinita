@@ -1,55 +1,57 @@
 'use client'
+import { Box, Spinner } from '@chakra-ui/react'
+import { useContext, useEffect, useState, useMemo } from 'react'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
-import React, { useContext, useTransition } from 'react'
-import { SignupStatus } from '../types'
 import UserType from './components/UserType'
-import { Box, Spinner } from '@chakra-ui/react'
+import { SignupStatus } from '../types'
 
 const Onboarding = () => {
-    const { currentStep, setCurrentStep, isApprovalSteps, setIsApprovalSteps, setIsLoadingSteps } = useContext(OnboardingContext)
-    const { user, refetch: refetchUser } = useGetUser()
-    const [loadingPrevStep, setTransition] = useTransition()
+    const { currentStep, setCurrentStep, setIsLoadingSteps } = useContext(OnboardingContext)
+    const { user, isLoading } = useGetUser()
 
-    const nextStep = async ({
-        userData
-    }: {
-        userData: any
-    }) => {
-        if (currentStep + 1 === steps.length) return
+    // Fix #1: Move `if (isLoading)` after all hooks
+    const [stepIndex, setStepIndex] = useState(currentStep)
 
+    // Fix #2: Wrap `steps` in `useMemo` so it doesn't recreate on each render
+    const steps = useMemo(() => [
+        {
+            component: <UserType nextStep={nextStep} />,
+            signup_status: 'user_type'
+        }
+    ], [])
+
+    useEffect(() => {
+        if (user?.user_signup_status) {
+            const idx = steps.findIndex((step) => step.signup_status === user.user_signup_status)
+            setCurrentStep(idx)
+            setIsLoadingSteps(false)
+        }
+    }, [user, setCurrentStep, setIsLoadingSteps, steps])
+
+    // Fix #1: Ensure all hooks are called before an early return
+    if (isLoading) {
+        return <Spinner />
     }
 
-    const steps: {
-        component: React.ReactElement,
-        signup_status: SignupStatus
-    }[] = [
-            {
-                component: <UserType nextStep={nextStep} />,
-                signup_status: 'user_type'
+    const nextStep = ({ userData }: { userData: any }): Promise<void> => {
+        return new Promise((resolve) => {
+            if (currentStep + 1 < steps.length) {
+                setCurrentStep((step: number) => step + 1)
             }
-            // ,
-            // {
-            //     component: <UserPersonalData nextStep={nextStep} />,
-            //     signup_status: 'user_personal_data'
-            // },
-            // {
-            //     component: <UserBankData nextStep={nextStep} />,
-            //     signup_status: 'user_bank_data'
-            // },
-            // {
-            //     component: <UserSummary nextStep={nextStep} />,
-            //     signup_status: 'user_summary'
-            // }
-        ]
+            resolve()
+        })
+    }
+
+    const prevStep = () => {
+        if (stepIndex > 0) {
+            setStepIndex((prev: number) => prev - 1)
+        }
+    }
 
     return (
-        <Box width='100%'>
-            {currentStep === null ? (
-                <Spinner />
-            ) : (
-                steps[currentStep].component
-            )}
+        <Box>
+            {steps[stepIndex].component}
         </Box>
     )
 }
