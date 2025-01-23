@@ -1,7 +1,7 @@
 'use client'
 import React, { useEffect, useContext, useTransition } from 'react'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
-import { Box, Spinner } from '@chakra-ui/react'
+import { Box, Flex, Spinner } from '@chakra-ui/react'
 import { SignupStatus } from '../types'
 // import { editCompany } from '../action'
 // import { editUser } from '../dashboard/usuarios/actions'
@@ -63,13 +63,19 @@ const Onboarding = () => {
             {
                 component: <UserType nextStep={nextStep} />,
                 signup_status: 'user_type'
-            }
+            },
+            {
+                component: <UserPersonalData nextStep={nextStep} />,
+                signup_status: 'user_personal_data'
+            },
         ]
 
     return (
         <Box width='100%'>
             {currentStep === null ? (
-                <Spinner />
+                <Flex justifyContent={'center'} alignItems={'center'} mx={'auto'}>
+                    <Spinner />
+                </Flex>
             ) : (
                 steps[currentStep].component
             )}

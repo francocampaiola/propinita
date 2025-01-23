@@ -8,6 +8,7 @@ import { UserType as UserTypes } from '../../types'
 import UserLogo from '@/src/assets/onboarding/user_type/user.svg'
 import ProviderLogo from '@/src/assets/onboarding/user_type/provider.svg'
 import Image from 'next/image'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
 interface IUserTypeOption {
   title: string
@@ -34,7 +35,7 @@ const UserType = ({ nextStep }: OnboardingComponent) => {
 
   useEffect(() => {
     if (!user?.user_type) return
-    methods.setValue('company_type', user?.user_type)
+    methods.setValue('user_type', user?.user_type)
   }, [])
 
   const userTypeOptions: IUserTypeOption[] = [
@@ -63,40 +64,52 @@ const UserType = ({ nextStep }: OnboardingComponent) => {
         <form action={action}>
           <Flex direction='column' gap={4} my={4}>
             {userTypeOptions.map((option) => (
-              <BoxColorMode key={option.value} bg={['', 'megapixGray']} borderRadius='md'>
+              <BoxColorMode key={option.value} bg={['primary', 'gray.500']} borderRadius='md'>
                 <Box
                   as='button'
                   type='button'
-                  onClick={() => methods.setValue('company_type', option.value)}
+                  onClick={() => methods.setValue('user_type', option.value)}
                   display='flex'
                   alignItems='center'
                   py={4}
                   px={6}
                   width='100%'
                   cursor='pointer'
-                  border={methods.watch('company_type') === option.value ? '2px solid #B49B25' : '2px solid transparent'}
+                  border={methods.watch('user_type') === option.value ? '2px solid #B49B25' : '2px solid transparent'}
+                  borderRadius={6}
+                  textAlign={'left'}
                 >
                   <Image src={option.image} alt={option.title} width={50} height={50} />
                   <Box ml={4}>
-                    <Text fontSize='md' fontWeight='600'>{option.title}</Text>
-                    <Text color='#D2D2D2' mt={2} fontSize='xs'>{option.description}</Text>
+                    <Text fontSize='lg' fontWeight='600'>{option.title}</Text>
+                    <Text color='#D2D2D2' fontSize='xs'>{option.description}</Text>
                   </Box>
                 </Box>
               </BoxColorMode>
             ))}
           </Flex>
           <Flex justifyContent='flex-end'>
+          <Button
+              variant='secondary'
+              type='submit'
+              mt={4}
+              mr={4}
+              size='sm'
+              isDisabled
+              leftIcon={<FaArrowLeft />}
+            >
+              Volver
+            </Button>
             <Button
               variant='primary'
               type='submit'
               mt={4}
-              size='lg'
-              width={{ base: '100%', md: '3xs' }}
+              size='sm'
               isLoading={isLoading}
-              loadingText='Enviando...'
-              isDisabled={!methods.watch('company_type')}
+              isDisabled={!methods.watch('user_type')}
+              rightIcon={<FaArrowRight />}
             >
-              Continuar
+              Siguiente
             </Button>
           </Flex>
         </form>
