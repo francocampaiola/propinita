@@ -1,14 +1,9 @@
 'use client'
 import React from 'react'
-import dynamic from 'next/dynamic'
+import Onboarding from './onboarding'
 
-const Onboarding = dynamic(() => import('./onboarding'), {
-  ssr: false,
-  loading: () => <>Cargando..</>
-})
-
-const page = () => {
+const Page = () => {
   return <Onboarding />
 }
 
-export default page
+export default Page

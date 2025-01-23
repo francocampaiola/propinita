@@ -211,7 +211,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      signup_status: 'user_type' | 'user_personal_data' | 'user_bank_data' | 'user_summary'
+      signup_status:
+        | 'user_type'
+        | 'user_personal_data'
+        | 'user_bank_data'
+        | 'user_summary'
+        | 'completed'
       transaction_status: 'pending' | 'completed' | 'failed'
       user_status: 'active' | 'inactive' | 'blocked'
       user_type: 'user' | 'provider'

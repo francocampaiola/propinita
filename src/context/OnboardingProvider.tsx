@@ -12,7 +12,8 @@ const OnboardingProvider = ({ children }: { children: React.ReactNode }) => {
         setCurrentStep,
         isApprovalSteps,
         setIsApprovalSteps,
-        isLoadingSteps, setIsLoadingSteps
+        isLoadingSteps, 
+        setIsLoadingSteps
       }}
     >
       {children}

@@ -65,6 +65,7 @@ const Login = () => {
                     w='100%'
                     type='submit'
                     isDisabled={!methods?.watch('email') || !methods?.watch('password')}
+                    isLoading={isLoading}
                 >
                     Iniciar sesión
                 </Button>

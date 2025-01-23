@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { OnboardingContext, OnboardingProvider } from '@/src/context/OnboardingProvider'
 import OnboardingNavbar from './OnboardingNavbar'
 import OnboardingAside from './OnboardingAside'
-import { Box, Center, Container, Flex } from '@chakra-ui/react'
+import { Center, Container, Flex } from '@chakra-ui/react'
 import BoxColorMode from '@/src/components/BoxColorMode'
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
@@ -40,23 +40,25 @@ const OnboardingContainer = ({ children }: { children: React.ReactNode }) => {
             <OnboardingNavbar steps={isApprovalSteps ? steps.slice(0, steps.length - 1) : steps} />
             <Flex minHeight='calc(100vh - 72px)' width='100%'>
                 <OnboardingAside steps={steps} />
-                <Box
-                    bg={['white', '#111111']}
+                <BoxColorMode
+                    bg={['white', 'gray.600']}
                     color={['black', 'white']}
-                    width={'100%'
-                    }
+                    flex={1}
+                    justifyContent={'center'}
+                    px={16}
                 >
-                    <Container width='100%' height={{ base: 'auto', md: '100%' }} margin={0}>
+                    <Flex flex={1} width='100%' p={8} height={{ base: 'auto', md: '100%' }} margin={0}>
                         <Center
-                            width='100%'
                             alignItems={{ base: 'flex-start', md: 'center' }}
                             height='100%'
                             mt={{ base: '2', md: '0' }}
+                            width='100%'
+                            p={4}
                         >
                             {children}
                         </Center>
-                    </Container>
-                </Box>
+                    </Flex>
+                </BoxColorMode>
             </Flex>
         </>
     )

@@ -1,3 +1,4 @@
+import { getUserData } from '@/src/app/dashboard/action'
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
@@ -49,6 +50,36 @@ export async function updateSession(request: NextRequest) {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
     return NextResponse.redirect(url)
+  }
+
+  // Si el usuario ya está logueado e intenta ingresar al login, lo redirigimos al home
+  if (user && request.nextUrl.pathname.startsWith('/login')) {
+    const url = request.nextUrl.clone()
+    url.pathname = '/dashboard'
+    return NextResponse.redirect(url)
+  }
+
+  if (user) {
+    try {
+      const userData = await getUserData()
+      /* si el registro de userData no existe en la base de datos o no terminó el onboarding lo redirige a /onboarding */
+      if (
+        (!userData || userData?.user_signup_status !== 'completed') &&
+        request.nextUrl.pathname !== '/onboarding'
+      ) {
+        return NextResponse.redirect(new URL('/onboarding', request.url))
+      } else {
+        /* si el usuario ya pasó el onboarding e intenta ingresar a /login | /onboarding se redirige a /dashboard */
+        if (
+          userData?.user_signup_status === 'completed' &&
+          !request.nextUrl.pathname.includes('dashboard')
+        ) {
+          return NextResponse.redirect(new URL('/dashboard', request.url))
+        }
+      }
+    } catch (error) {
+      return NextResponse.redirect(new URL('/onboarding', request.url))
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
