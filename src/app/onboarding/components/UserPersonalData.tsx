@@ -1,25 +1,18 @@
+'use client'
 import React, { useEffect, useTransition } from 'react'
 import { Flex, Box, Text, Button } from '@chakra-ui/react'
-import { useForm, FormProvider, Controller } from 'react-hook-form'
 import type { OnboardingComponent } from '../onboarding.types'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
-import { UserType as UserTypes } from '../../types'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import Input from '@/src/components/form/Input'
 import Select from '@/src/components/form/Select'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
 import InputPhone from '@/src/components/form/PhoneInput'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useForm, FormProvider, Controller } from 'react-hook-form'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
 
-interface IUserTypeOption {
-  title: string
-  description: string
-  value: UserTypes
-  image: string
-}
-
-const UserType = ({ nextStep }: OnboardingComponent) => {
+const UserType = ({ nextStep, prevStep, loadingPrevStep }: OnboardingComponent) => {
   const { user } = useGetUser()
   const [isLoading, startTransition] = useTransition()
 
@@ -78,20 +71,13 @@ const UserType = ({ nextStep }: OnboardingComponent) => {
   })
 
   const action: () => void = methods.handleSubmit(async (data) => {
-    const { user_type } = data
-    if (!user_type) return
+    const { personal_data } = data
+    if (!personal_data) return
 
     startTransition(async () => {
-      const formData = new FormData()
-      formData.append('user_type', user_type)
-      await nextStep({ userData: formData })
+      // TODO: Guardar datos en el backend 
     })
   })
-
-  useEffect(() => {
-    if (!user?.user_type) return
-    methods.setValue('user_type', user?.user_type)
-  }, [])
 
   const countries = [{
     title: 'Argentina',
@@ -119,6 +105,12 @@ const UserType = ({ nextStep }: OnboardingComponent) => {
     value: 'VE'
   }]
 
+  useEffect(() => {
+    /* countiresOptions[10] = Argentina */
+    methods.setValue('nationality', user?.nationality || countries[10]?.value)
+  }, [countries])
+
+  
   const civil_state = [{
     title: 'Soltero/a',
     value: 'single'

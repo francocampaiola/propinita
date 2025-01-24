@@ -11,6 +11,8 @@ import { useGetUser } from '@/src/hooks/users/useGetUser'
 /* components */
 import UserType from './components/UserType'
 import UserPersonalData from './components/UserPersonalData'
+import UserBankData from './components/UserBankData'
+import UserSummary from './components/UserSummary'
 // import UserRegulations from './components/UserRegulations'
 // import UserCompanyData from './components/UserCompanyData'
 // import UserBankData from './components/UserBankData'
@@ -68,6 +70,14 @@ const Onboarding = () => {
                 component: <UserPersonalData nextStep={nextStep} />,
                 signup_status: 'user_personal_data'
             },
+            {
+                component: <UserBankData nextStep={nextStep} />,
+                signup_status: 'user_bank_data'
+            },
+            {
+                component: <UserSummary nextStep={nextStep} />,
+                signup_status: 'user_summary'
+            }
         ]
 
     return (
