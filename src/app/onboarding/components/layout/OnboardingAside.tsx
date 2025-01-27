@@ -2,7 +2,7 @@
 import BoxColorMode from '@/src/components/BoxColorMode'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
-import { Box, Center, CircularProgress, Container, Divider, Flex, Text } from '@chakra-ui/react'
+import { Box, Center, CircularProgress, Container, Divider, Flex, Spinner, Text } from '@chakra-ui/react'
 import React, { useContext } from 'react'
 import { IoCheckmark } from 'react-icons/io5'
 
@@ -36,55 +36,45 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
       <Center flexDirection='column' pt={10} height='100%'>
         <Box fontSize='sm' width='fit-content' margin='0 auto'>
           <Container maxW='sm'>
-            {isLoading ? (
-              <Center>
-                <CircularProgress
-                  size='32px'
-                  color='aquamarine'
-                  isIndeterminate
-                  thickness='8px'
-                />
+            {isLoading || !user ? (
+              <Center h="full">
+                <Spinner />
               </Center>
             ) : (
-              <Flex flexDirection='column'>
-                {steps.map((step, idx: number) => (
-                  <Flex alignItems='center' key={step.label} mb={4}>
+              <Flex flexDirection="column">
+                {steps.map((step, idx) => (
+                  <Flex alignItems="center" key={step.label} mb={4}>
                     <Center
                       mr={4}
-                      height='32px'
-                      width='32px'
-                      borderRadius='50%'
-                      zIndex='9'
-                      position='relative'
-                      border='1px solid gray'
+                      height="32px"
+                      width="32px"
+                      borderRadius="50%"
+                      zIndex="9"
+                      position="relative"
+                      border="1px solid gray"
                       bg={completedSteps > idx ? 'green.300' : 'gray.800'}
                     >
                       {idx + 1 !== steps.length && (
                         <Box
-                          position='absolute'
-                          height='16px'
-                          bottom='-55%'
-                          left='48%'
-                          zIndex='8'
+                          position="absolute"
+                          height="16px"
+                          bottom="-55%"
+                          left="48%"
+                          zIndex="8"
                         >
                           <Divider
-                            border='1px solid'
+                            border="1px solid"
                             color={completedSteps > idx ? 'secondary' : 'gray'}
-                            orientation='vertical'
+                            orientation="vertical"
                           />
                         </Box>
                       )}
                       {idx < completedSteps ? (
-                        <IoCheckmark color='black' />
+                        <IoCheckmark color="black" />
                       ) : idx === currentStep ? (
-                        <CircularProgress
-                          size='18px'
-                          color='primary'
-                          isIndeterminate
-                          thickness='8px'
-                        />
+                        <Spinner size="xs" color="primary" />
                       ) : (
-                        <Text color='white' fontSize='xs'>
+                        <Text color="white" fontSize="xs">
                           {step.number}
                         </Text>
                       )}
@@ -92,7 +82,7 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
                     <Text>{step.label}</Text>
                   </Flex>
                 ))}
-              </Flex> 
+              </Flex>
             )}
           </Container>
         </Box>

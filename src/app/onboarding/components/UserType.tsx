@@ -3,7 +3,6 @@ import { Flex, Box, Text, Button } from '@chakra-ui/react'
 import BoxColorMode from '@/src/components/BoxColorMode'
 import { useForm, FormProvider } from 'react-hook-form'
 import type { OnboardingComponent } from '../onboarding.types'
-import { useGetUser } from '@/src/hooks/users/useGetUser'
 import { UserType as UserTypes } from '../../types'
 import UserLogo from '@/src/assets/onboarding/user_type/user.svg'
 import ProviderLogo from '@/src/assets/onboarding/user_type/provider.svg'
@@ -17,8 +16,8 @@ interface IUserTypeOption {
   image: string
 }
 
-const UserType = ({ nextStep }: OnboardingComponent) => {
-  const { user } = useGetUser()
+const UserType = ({ userData, nextStep }: OnboardingComponent) => {
+  const { user_type } = userData
   const methods = useForm()
   const [isLoading, startTransition] = useTransition()
 
@@ -27,15 +26,18 @@ const UserType = ({ nextStep }: OnboardingComponent) => {
     if (!user_type) return
 
     startTransition(async () => {
-      const formData = new FormData()
-      formData.append('user_type', user_type)
-      await nextStep({ userData: formData })
+      try {
+        await nextStep({ userData: { user_type } })
+      }
+      catch (error) {
+        console.error(error)
+      }
     })
   })
 
   useEffect(() => {
-    if (!user?.user_type) return
-    methods.setValue('user_type', user?.user_type)
+    if (!user_type) return
+    methods.setValue('user_type', user_type)
   }, [])
 
   const userTypeOptions: IUserTypeOption[] = [
@@ -89,7 +91,7 @@ const UserType = ({ nextStep }: OnboardingComponent) => {
             ))}
           </Flex>
           <Flex justifyContent='flex-end'>
-          <Button
+            <Button
               variant='secondary'
               type='submit'
               mt={4}

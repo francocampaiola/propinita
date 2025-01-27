@@ -1,10 +1,10 @@
 'use client'
-import React, { useEffect, useState, useTransition } from 'react'
+import { useEffect, useState, useTransition } from 'react'
 import { Flex, Box, Text, Button, Spinner, Circle } from '@chakra-ui/react'
+import { FaArrowLeft, FaArrowRight, FaCheck } from 'react-icons/fa'
 import { useForm, FormProvider } from 'react-hook-form'
-import type { OnboardingComponent } from '../onboarding.types'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
-import { FaArrowLeft, FaArrowRight, FaCheck, FaCheckCircle } from 'react-icons/fa'
+import type { OnboardingComponent } from '../onboarding.types'
 
 const UserSummary = ({ nextStep }: OnboardingComponent) => {
     const { user } = useGetUser()

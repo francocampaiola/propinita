@@ -1,59 +1,71 @@
 'use client'
-import React, { useEffect, useContext, useTransition } from 'react'
+import React, { useContext, useEffect, useTransition } from 'react'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
 import { Box, Flex, Spinner } from '@chakra-ui/react'
-import { SignupStatus } from '../types'
-// import { editCompany } from '../action'
-// import { editUser } from '../dashboard/usuarios/actions'
-import { handleRequest } from '@/src/app/utils/functions'
-/* hooks */
-import { useGetUser } from '@/src/hooks/users/useGetUser'
-/* components */
-import UserType from './components/UserType'
-import UserPersonalData from './components/UserPersonalData'
-import UserBankData from './components/UserBankData'
-import UserSummary from './components/UserSummary'
-// import UserRegulations from './components/UserRegulations'
-// import UserCompanyData from './components/UserCompanyData'
-// import UserBankData from './components/UserBankData'
-// import UserDocuments from './components/UserDocuments'
-// import UserRevisionInternal from './components/UserRevisionInternal'
-// import UserRevisionManteca from './components/UserRevisionManteca'
-const Onboarding = () => {
+import type { Onboarding } from './onboarding.types'
+import type { SignupStatus } from '../types'
+import dynamic from 'next/dynamic'
+import { editUser } from './action'
 
-    const { currentStep, setCurrentStep, isApprovalSteps, setIsApprovalSteps, setIsLoadingSteps } =
+const UserType = dynamic(() => import('./components/UserType'), {
+    ssr: false,
+    loading: () => <>Cargando...</>
+})
+const UserPersonalData = dynamic(
+    () => import('./components/UserPersonalData'),
+    {
+        ssr: false,
+        loading: () => <>Cargando...</>
+    }
+)
+const UserBankData = dynamic(() => import('./components/UserBankData'), {
+    ssr: false,
+    loading: () => <>Cargando...</>
+})
+
+const Onboarding = ({ userData }: { userData: Onboarding }) => {
+    const { currentStep, setCurrentStep } =
         useContext(OnboardingContext)
+    const { user_data } = userData
 
-    const { user, refetch: refetchUser } = useGetUser()
     const [loadingPrevStep, setTransition] = useTransition()
-
-    useEffect(() => {
-        if (!user || !user.user_signup_status) return
-        const idx = steps.findIndex((step) => step.signup_status === user.user_signup_status)
-        setCurrentStep(idx)
-        setIsLoadingSteps(false)
-    }, [user?.user_signup_status])
-
     const nextStep = async ({
-        companyData,
         userData
     }: {
-        companyData?: FormData
-        userData?: FormData
-    }) => {
+        userData?: any
+    }): Promise<void> => {
         if (currentStep + 1 === steps.length) return
-        setCurrentStep((step: number) => step + 1)
+        try {
+            await editUser(
+                userData
+                    ? {
+                        ...userData,
+                        signup_status: steps[currentStep + 1].signup_status
+                    }
+                    : { signup_status: steps[currentStep + 1].signup_status }
+            )
+            setCurrentStep((step: number) => step + 1)
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const prevStep = async () => {
         // if (currentStep === 0) return
         // setTransition(async () => {
-        //   const userFormData = new FormData()
-        //   userFormData.append('signup_place_status', steps[currentStep - 1].signup_place_status)
-        //   const request = await handleRequest(() => editUser({ id: user?.id, data: userFormData }))
-        //   if (request.success) {
-        //     await refetchUser()
+        //   try {
+        //     await editAdmin({
+        //       signup_status: steps[currentStep - 1].signup_status
+        //     })
+        //     await editUserRawData({
+        //       admin_data: {
+        //         ...admin_data,
+        //         signup_status: steps[currentStep - 1].signup_status
+        //       }
+        //     })
         //     setCurrentStep((step: number) => step - 1)
+        //   } catch (error) {
+        //     console.log(error)
         //   }
         // })
     }
@@ -63,22 +75,44 @@ const Onboarding = () => {
         signup_status: SignupStatus
     }[] = [
             {
-                component: <UserType nextStep={nextStep} />,
-                signup_status: 'user_type'
+                component: <UserType userData={userData} nextStep={nextStep} />,
+                signup_status: 'user_type' as SignupStatus
             },
             {
-                component: <UserPersonalData nextStep={nextStep} />,
-                signup_status: 'user_personal_data'
+                component: (
+                    <UserPersonalData
+                        nextStep={nextStep}
+                        prevStep={prevStep}
+                        loadingPrevStep={loadingPrevStep}
+                        userData={userData}
+                    />
+                ),
+                signup_status: 'user_personal_data' as SignupStatus
             },
             {
-                component: <UserBankData nextStep={nextStep} />,
-                signup_status: 'user_bank_data'
-            },
-            {
-                component: <UserSummary nextStep={nextStep} />,
-                signup_status: 'user_summary'
+                component: (
+                    <UserBankData
+                        prevStep={prevStep}
+                        loadingPrevStep={loadingPrevStep}
+                        nextStep={nextStep}
+                        userData={userData}
+                    />
+                ),
+                signup_status: 'user_bank_data' as SignupStatus
             }
         ]
+
+    /* setea el step dependiendo del signup_status */
+    useEffect(() => {
+        if (!user_data?.signup_status) {
+            setCurrentStep(0)
+        } else {
+            const stepIdx = steps.findIndex(
+                (el: any) => el.signup_status === user_data?.signup_status
+            )
+            setCurrentStep(stepIdx)
+        }
+    }, [])
 
     return (
         <Box width='100%'>
