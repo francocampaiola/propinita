@@ -1,121 +1,62 @@
-import React, { useEffect, useTransition } from 'react'
-import { Flex, Box, Text, Button } from '@chakra-ui/react'
-import BoxColorMode from '@/src/components/BoxColorMode'
-import { useForm, FormProvider } from 'react-hook-form'
-import type { OnboardingComponent } from '../onboarding.types'
-import { UserType as UserTypes } from '../../types'
-import UserLogo from '@/src/assets/onboarding/user_type/user.svg'
-import ProviderLogo from '@/src/assets/onboarding/user_type/provider.svg'
-import Image from 'next/image'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+'use client'
+import { Box, Text, Button, Flex } from '@chakra-ui/react'
+import { useForm } from 'react-hook-form'
+import { OnboardingStepProps, UserType as UserTypeEnum } from '../onboarding.types'
 
-interface IUserTypeOption {
-  title: string
-  description: string
-  value: UserTypes
-  image: string
-}
+const options = [
+  {
+    value: 'user' as UserTypeEnum,
+    title: 'Usuario',
+    description: 'Voy a utilizar Propinita para gestionar propinas'
+  },
+  {
+    value: 'provider' as UserTypeEnum,
+    title: 'Proveedor', 
+    description: 'Voy a recibir propinas a través de la plataforma'
+  }
+]
 
-const UserType = ({ userData, nextStep }: OnboardingComponent) => {
-  const { user_type } = userData
-  const methods = useForm()
-  const [isLoading, startTransition] = useTransition()
-
-  const action: () => void = methods.handleSubmit(async (data) => {
-    const { user_type } = data
-    if (!user_type) return
-
-    startTransition(async () => {
-      try {
-        await nextStep({ userData: { user_type } })
-      }
-      catch (error) {
-        console.error(error)
-      }
-    })
+const UserType = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
+  const { handleSubmit, watch, setValue } = useForm({
+    defaultValues: {
+      user_type: userData.user_type
+    }
   })
 
-  useEffect(() => {
-    if (!user_type) return
-    methods.setValue('user_type', user_type)
-  }, [])
-
-  const userTypeOptions: IUserTypeOption[] = [
-    {
-      title: 'Usuario',
-      description:
-        'Voy a utilizar Propinita para vincular mi cuenta bancaria o billetera virtual y poder gestionar las propinas que brindo desde la aplicación.',
-      value: 'user',
-      image: UserLogo
-    },
-    {
-      title: 'Proveedor',
-      description:
-        'Como proveedor, recibo ventajas en el régimen monotributista. Me clasifico en categorías según mis ingresos y no tengo la opción de contratar empleados.',
-      value: 'provider',
-      image: ProviderLogo
-    }
-  ]
+  const onSubmit = handleSubmit((data) => onNext(data))
 
   return (
-    <Box w={'100%'}>
-      <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>Paso 1</Text>
-      <Text fontWeight='600' fontSize='2xl' mb={1}>¿Con qué perfil te identificás?</Text>
-      <Text fontSize='sm'>Seleccioná una opción para que te podamos dar información precisa.</Text>
-      <FormProvider {...methods}>
-        <form action={action}>
-          <Flex direction='column' gap={4} my={4}>
-            {userTypeOptions.map((option) => (
-              <BoxColorMode key={option.value} bg={['primary', 'gray.500']} borderRadius='md'>
-                <Box
-                  as='button'
-                  type='button'
-                  onClick={() => methods.setValue('user_type', option.value)}
-                  display='flex'
-                  alignItems='center'
-                  py={4}
-                  px={6}
-                  width='100%'
-                  cursor='pointer'
-                  border={methods.watch('user_type') === option.value ? '2px solid #B49B25' : '2px solid transparent'}
-                  borderRadius={6}
-                  textAlign={'left'}
-                >
-                  <Image src={option.image} alt={option.title} width={50} height={50} />
-                  <Box ml={4}>
-                    <Text fontSize='lg' fontWeight='600'>{option.title}</Text>
-                    <Text color='#D2D2D2' fontSize='xs'>{option.description}</Text>
-                  </Box>
-                </Box>
-              </BoxColorMode>
-            ))}
-          </Flex>
-          <Flex justifyContent='flex-end'>
-            <Button
-              variant='secondary'
-              type='submit'
-              mt={4}
-              mr={4}
-              size='sm'
-              isDisabled
-              leftIcon={<FaArrowLeft />}
+    <Box>
+      <Text fontSize="2xl" mb={4}>¿Con qué perfil te identificás?</Text>
+      
+      <form onSubmit={onSubmit}>
+        <Flex direction="column" gap={4} mb={6}>
+          {options.map(option => (
+            <Box
+              key={option.value}
+              onClick={() => setValue('user_type', option.value)}
+              p={4}
+              border="1px solid"
+              borderColor={watch('user_type') === option.value ? 'primary' : 'gray.200'}
+              borderRadius="md"
+              cursor="pointer"
             >
-              Volver
-            </Button>
-            <Button
-              variant='primary'
-              type='submit'
-              mt={4}
-              size='sm'
-              isLoading={isLoading}
-              isDisabled={!methods.watch('user_type')}
-              rightIcon={<FaArrowRight />}
-            >
-              Siguiente
-            </Button>
-          </Flex>
-        </form>
-      </FormProvider>
+              <Text fontWeight="bold">{option.title}</Text>
+              <Text fontSize="sm">{option.description}</Text>
+            </Box>
+          ))}
+        </Flex>
+
+        <Button
+          type="submit"
+          isLoading={isLoading}
+          isDisabled={!watch('user_type')}
+          colorScheme="blue"
+          width="full"
+        >
+          Continuar
+        </Button>
+      </form>
     </Box>
   )
 }

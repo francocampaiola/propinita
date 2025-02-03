@@ -3,7 +3,7 @@ import { useContext } from 'react'
 import { OnboardingContext, OnboardingProvider } from '@/src/context/OnboardingProvider'
 import OnboardingNavbar from './OnboardingNavbar'
 import OnboardingAside from './OnboardingAside'
-import { Center, Container, Flex } from '@chakra-ui/react'
+import { Center, Flex } from '@chakra-ui/react'
 import BoxColorMode from '@/src/components/BoxColorMode'
 
 const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {

@@ -1,33 +1,21 @@
-export interface Onboarding {
-  user_type?: 'user' | 'provider', 
-  user_data?: {
-    id?: number,
-    first_name?: string,
-    last_name?: string,
-    civil_state?: string,
-    nationality?: string,
-    phone?: string,
-    signup_status?: SignupStatus
-  },
-  bank?: {
-    cbu_cvu?: string,
-    details?: string
-  }
+import { Database } from '../types'
+
+export type UserType = Database['public']['Enums']['user_type']
+export type StepStatus = Database['public']['Enums']['signup_status']
+
+export interface UserData {
+  user_type?: UserType
+  first_name?: string
+  last_name?: string
+  civil_state?: string
+  nationality?: string
+  phone?: string
+  current_step?: StepStatus
 }
 
-export interface SignupStatus {
-  signup_status?: {
-    user_type: string
-    user_personal_data: string
-    user_bank_data: string
-    user_summary: string
-    completed: string
-  }
-}
-
-export interface OnboardingComponent {
-  userData: Onboarding
-  prevStep?: () => Promise<void>
-  nextStep: ({ userData }: { userData?: any }) => Promise<void>
-  loadingPrevStep?: boolean
+export interface OnboardingStepProps {
+  userData: UserData
+  onNext: (data: Partial<UserData>) => Promise<void>
+  onPrev?: () => Promise<void>
+  isLoading?: boolean
 }
