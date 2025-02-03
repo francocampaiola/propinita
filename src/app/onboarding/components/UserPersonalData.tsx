@@ -46,14 +46,14 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
             message: 'No se aceptan guiones, espacios y letras.'
           })
         }
-        if (isValidPhoneNumber(val, prefixCountry)) {
-          return true
-        } else {
-          customError.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: 'El número de teléfono no es válido'
-          })
-        }
+        // if (isValidPhoneNumber(val, prefixCountry)) {
+        //   return true
+        // } else {
+        //   customError.addIssue({
+        //     code: z.ZodIssueCode.custom,
+        //     message: 'El número de teléfono no es válido'
+        //   })
+        // }
       }),
     nationality: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     phone_prefix: z.string().trim().min(1, 'Este campo no puede quedar vacío')
@@ -90,17 +90,17 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
   })
 
   const onSubmit = methods.handleSubmit((data) => {
-    if (!isValidPhoneNumber(data.phone)) {
-      methods.setError('phone', { message: 'Número de teléfono inválido' })
-      return
-    }
+    // if (!isValidPhoneNumber(data.phone, getCountries().find(c => c === data.phone_prefix))) {
+    //   methods.setError('phone', { message: 'Número de teléfono inválido' })
+    //   return
+    // }
     console.log('Enviando...', data)
     onNext(data)
   })
 
   useEffect(() => {
     /* countiresOptions[10] = Argentina */
-    methods.setValue('nationality', userData?.nationality || countries[10]?.value)
+    methods.setValue('nationality', userData?.nationality || countries[0]?.value)
   }, [countries])
 
   return (
@@ -140,7 +140,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                     label='Nacionalidad'
                     placeholder='Seleccionar país'
                     options={countries.map((c) => ({ label: c.title, value: c.value }))}
-                    value={countries.find((c) => c.value === value)}
+                    value={countries.find((c) => c.value === value) || null}
                     handleOnChange={(val) => onChange(val?.value)}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
@@ -156,7 +156,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                     label='Estado civil'
                     placeholder='Seleccionar estado civil'
                     options={civil_state.map((c) => ({ label: c.title, value: c.value }))}
-                    value={civil_state.find((c) => c.value === value)}
+                    value={civil_state.find((c) => c.value === value) || null}
                     handleOnChange={(val) => onChange(val?.value)}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
