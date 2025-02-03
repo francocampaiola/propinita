@@ -1,21 +1,16 @@
 'use client'
-import React, { useEffect, useTransition } from 'react'
+import React, { useEffect } from 'react'
 import { Flex, Box, Text, Button } from '@chakra-ui/react'
-import type { OnboardingComponent } from '../onboarding.types'
-import { useGetUser } from '@/src/hooks/users/useGetUser'
+import type { OnboardingStepProps } from '../onboarding.types'
 import Input from '@/src/components/form/Input'
 import Select from '@/src/components/form/Select'
 import InputPhone from '@/src/components/form/PhoneInput'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, FormProvider, Controller } from 'react-hook-form'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
 
-const UserType = ({ nextStep, prevStep, loadingPrevStep }: OnboardingComponent) => {
-  const { user } = useGetUser()
-  const [isLoading, startTransition] = useTransition()
-
+const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
   const firstStepSchema = z.object({
     first_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     last_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
@@ -64,171 +59,136 @@ const UserType = ({ nextStep, prevStep, loadingPrevStep }: OnboardingComponent) 
     phone_prefix: z.string().trim().min(1, 'Este campo no puede quedar vacío')
   })
 
+  const countries = [
+    { title: 'Argentina', value: 'AR' },
+    { title: 'Brasil', value: 'BR' },
+    { title: 'Chile', value: 'CL' },
+    { title: 'Colombia', value: 'CO' },
+    { title: 'México', value: 'MX' },
+    { title: 'Perú', value: 'PE' },
+    { title: 'Uruguay', value: 'UY' },
+    { title: 'Venezuela', value: 'VE' }
+  ]
+
+  const civil_state = [
+    { title: 'Soltero/a', value: 'single' },
+    { title: 'Casado/a', value: 'married' },
+    { title: 'Divorciado/a', value: 'divorced' },
+    { title: 'Viudo/a', value: 'widowed' }
+  ]
+
   const methods = useForm({
     resolver: zodResolver(firstStepSchema),
-    mode: 'onSubmit',
-    reValidateMode: 'onSubmit'
+    defaultValues: {
+      first_name: userData?.first_name || '',
+      last_name: userData?.last_name || '',
+      phone: userData?.phone || '',
+      nationality: userData?.nationality || countries[0]?.value || '',
+      civil_state: userData?.civil_state || '',
+      phone_prefix: userData?.phone_prefix || ''
+    }
   })
 
-  const action: () => void = methods.handleSubmit(async (data) => {
-    const { personal_data } = data
-    if (!personal_data) return
-
-    startTransition(async () => {
-      // TODO: Guardar datos en el backend 
-    })
+  const onSubmit = methods.handleSubmit((data) => {
+    if (!isValidPhoneNumber(data.phone)) {
+      methods.setError('phone', { message: 'Número de teléfono inválido' })
+      return
+    }
+    console.log('Enviando...', data)
+    onNext(data)
   })
-
-  const countries = [{
-    title: 'Argentina',
-    value: 'AR'
-  }, {
-    title: 'Brasil',
-    value: 'BR'
-  }, {
-    title: 'Chile',
-    value: 'CL'
-  }, {
-    title: 'Colombia',
-    value: 'CO'
-  }, {
-    title: 'México',
-    value: 'MX'
-  }, {
-    title: 'Perú',
-    value: 'PE'
-  }, {
-    title: 'Uruguay',
-    value: 'UY'
-  }, {
-    title: 'Venezuela',
-    value: 'VE'
-  }]
 
   useEffect(() => {
     /* countiresOptions[10] = Argentina */
-    methods.setValue('nationality', user?.nationality || countries[10]?.value)
+    methods.setValue('nationality', userData?.nationality || countries[10]?.value)
   }, [countries])
-
-  
-  const civil_state = [{
-    title: 'Soltero/a',
-    value: 'single'
-  }, {
-    title: 'Casado/a',
-    value: 'married'
-  }, {
-    title: 'Divorciado/a',
-    value: 'divorced'
-  }, {
-    title: 'Viudo/a',
-    value: 'widowed'
-  }]
 
   return (
     <Box w={'100%'}>
-      <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>Paso 2</Text>
-      <Text fontWeight='600' fontSize='2xl' mb={1}>Datos personales</Text>
+      <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
+        Paso 2
+      </Text>
+      <Text fontWeight='600' fontSize='2xl' mb={1}>
+        Datos personales
+      </Text>
       <Text fontSize='sm'>Utilizamos esta información para personalizar tu experiencia.</Text>
       <FormProvider {...methods}>
-        <form action={action}>
+        <form onSubmit={onSubmit}>
           <Flex mb={4} mt={4} direction={'column'} gap={4}>
-            <Box width='100%' mt={2}>
+            <Box width='100%'>
               <Input
-                placeholder='Ingresar como figura en el DNI'
                 label='Nombre'
                 name='first_name'
                 size='lg'
-                defaultValue={user?.first_name}
+                placeholder='Ingresar como figura en el DNI'
               />
             </Box>
-            <Box width='100%' mr={2}>
+            <Box width='100%'>
               <Input
-                placeholder='Ingresar como figura en el DNI'
                 label='Apellido'
                 name='last_name'
                 size='lg'
-                defaultValue={user?.last_name}
+                placeholder='Ingresar como figura en el DNI'
               />
             </Box>
-            <Box width='100%' mr={2}>
+            <Box width='100%'>
               <Controller
                 name='nationality'
                 control={methods.control}
-                render={({ field: { onChange, value } }) => {
-                  /* forma para setear un defaultvalue sin usar la propiedad defaultValue (que solo sirve para uncontrolled fields) */
-                  return (
-                    <Select
-                      label='Nacionalidad'
-                      placeholder='Seleccionar país'
-                      options={countries.map((c) => ({ label: c.title, value: c.value }))}
-                      value={countries?.find((c) => c?.title === value)}
-                      handleOnChange={(val) => onChange(val?.value)}
-                      noOptionsMessage={() => "Sin opciones"}
-                    />
-                  )
-                }}
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    label='Nacionalidad'
+                    placeholder='Seleccionar país'
+                    options={countries.map((c) => ({ label: c.title, value: c.value }))}
+                    value={countries.find((c) => c.value === value)}
+                    handleOnChange={(val) => onChange(val?.value)}
+                    noOptionsMessage={() => 'Sin opciones'}
+                  />
+                )}
               />
             </Box>
-            <Box width='100%' mr={2}>
+            <Box width='100%'>
               <Controller
                 name='civil_state'
                 control={methods.control}
-                render={({ field: { onChange, value } }) => {
-                  /* forma para setear un defaultvalue sin usar la propiedad defaultValue (que solo sirve para uncontrolled fields) */
-                  return (
-                    <Select
-                      label='Estado civil'
-                      placeholder='Seleccionar estado civil'
-                      options={civil_state.map((c) => ({ label: c.title, value: c.value }))}
-                      value={civil_state?.find((c) => c?.title === value)}
-                      handleOnChange={(val) => onChange(val?.value)}
-                      noOptionsMessage={() => "Sin opciones"}
-                    />
-                  )
-                }}
+                render={({ field: { onChange, value } }) => (
+                  <Select
+                    label='Estado civil'
+                    placeholder='Seleccionar estado civil'
+                    options={civil_state.map((c) => ({ label: c.title, value: c.value }))}
+                    value={civil_state.find((c) => c.value === value)}
+                    handleOnChange={(val) => onChange(val?.value)}
+                    noOptionsMessage={() => 'Sin opciones'}
+                  />
+                )}
               />
             </Box>
-            <Box width='100%' mr={2}>
+            <Box width='100%'>
               <InputPhone
                 methods={methods}
                 name='phone'
                 label='Teléfono'
                 placeholder='11 2233 4455'
                 size='lg'
-                defaultValue={user?.phone}
                 bigSize
               />
             </Box>
           </Flex>
-          <Flex justifyContent='flex-end'>
-            <Button
-              variant='secondary'
-              type='submit'
-              mt={4}
-              mr={4}
-              size='sm'
-              isDisabled
-              leftIcon={<FaArrowLeft />}
-            >
-              Volver
-            </Button>
-            <Button
-              variant='primary'
-              type='submit'
-              mt={4}
-              size='sm'
-              isLoading={isLoading}
-              isDisabled={!methods.watch('user_type')}
-              rightIcon={<FaArrowRight />}
-            >
-              Siguiente
-            </Button>
-          </Flex>
+          <Button
+            type='submit'
+            isLoading={isLoading}
+            colorScheme='blue'
+            width='full'
+            isDisabled={
+              !methods.watch('first_name') || !methods.watch('last_name') || !methods.watch('phone')
+            }
+          >
+            Siguiente
+          </Button>
         </form>
       </FormProvider>
     </Box>
   )
 }
 
-export default UserType
+export default UserPersonalData

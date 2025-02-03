@@ -11,6 +11,7 @@ export interface UserData {
   nationality?: string
   phone?: string
   current_step?: StepStatus
+  phone_prefix?: string
 }
 
 export interface OnboardingStepProps {
