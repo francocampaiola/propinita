@@ -21,6 +21,10 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
         const prefixCountry = getCountries().find(
           (countrie) => getCountryCallingCode(countrie) === methods.watch('phone_prefix')
         )
+
+        // Combina el prefijo y el número
+        const fullPhoneNumber = `${methods.watch('phone_prefix')}${val}`
+
         if (val.startsWith('54')) {
           customError.addIssue({
             code: z.ZodIssueCode.custom,
@@ -46,14 +50,16 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
             message: 'No se aceptan guiones, espacios y letras.'
           })
         }
-        // if (isValidPhoneNumber(val, prefixCountry)) {
-        //   return true
-        // } else {
-        //   customError.addIssue({
-        //     code: z.ZodIssueCode.custom,
-        //     message: 'El número de teléfono no es válido'
-        //   })
-        // }
+
+        // Validar el número completo
+        if (isValidPhoneNumber(fullPhoneNumber, prefixCountry)) {
+          return true
+        } else {
+          customError.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: 'El número de teléfono no es válido'
+          })
+        }
       }),
     nationality: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     phone_prefix: z.string().trim().min(1, 'Este campo no puede quedar vacío')
@@ -90,11 +96,6 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
   })
 
   const onSubmit = methods.handleSubmit((data) => {
-    // if (!isValidPhoneNumber(data.phone, getCountries().find(c => c === data.phone_prefix))) {
-    //   methods.setError('phone', { message: 'Número de teléfono inválido' })
-    //   return
-    // }
-    console.log('Enviando...', data)
     onNext(data)
   })
 
@@ -140,7 +141,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                     label='Nacionalidad'
                     placeholder='Seleccionar país'
                     options={countries.map((c) => ({ label: c.title, value: c.value }))}
-                    value={countries.find((c) => c.value === value) || null}
+                    value={countries?.find((c) => c?.title === value)}
                     handleOnChange={(val) => onChange(val?.value)}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
@@ -156,7 +157,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                     label='Estado civil'
                     placeholder='Seleccionar estado civil'
                     options={civil_state.map((c) => ({ label: c.title, value: c.value }))}
-                    value={civil_state.find((c) => c.value === value) || null}
+                    value={civil_state?.find((c) => c?.title === value)}
                     handleOnChange={(val) => onChange(val?.value)}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
