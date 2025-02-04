@@ -31,20 +31,27 @@ const steps = {
 
 const Onboarding = ({ userData }: { userData: UserData }) => {
   const [isLoading, setIsLoading] = useState(false)
-  const [currentStep, setCurrentStep] = useState<StepStatus>(
-    userData.current_step || 'user_type'
-  )
+  const [currentStep, setCurrentStep] = useState<StepStatus>(userData.current_step || 'user_type')
 
   const handleNext = async (data: Partial<UserData>) => {
     setIsLoading(true)
     try {
-        console.log(data)
+      console.log(data)
       const nextStep = steps[currentStep].next
-      await editUser({
-        ...data,
-        current_step: nextStep
-      })
-      if (nextStep) setCurrentStep(nextStep)
+
+      // Verifica si el paso actual es 'user_summary' y establece el estado a 'completed'
+      if (currentStep === 'user_summary') {
+        await editUser({
+          ...data,
+          current_step: 'completed' // Cambia a 'completed' al finalizar el resumen
+        })
+      } else {
+        await editUser({
+          ...data,
+          current_step: nextStep
+        })
+        if (nextStep) setCurrentStep(nextStep)
+      }
     } catch (error) {
       console.error(error)
     } finally {
@@ -55,12 +62,8 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
   const CurrentStepComponent = steps[currentStep].component
 
   return (
-    <Box width="100%" maxW="800px" mx="auto" p={4}>
-      <CurrentStepComponent
-        userData={userData}
-        onNext={handleNext}
-        isLoading={isLoading}
-      />
+    <Box width='100%' maxW='800px' mx='auto' p={4}>
+      <CurrentStepComponent userData={userData} onNext={handleNext} isLoading={isLoading} />
     </Box>
   )
 }

@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Flex, Box, Text, Button } from '@chakra-ui/react'
 import type { OnboardingStepProps } from '../onboarding.types'
 import Input from '@/src/components/form/Input'
@@ -66,23 +66,29 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
     phone_prefix: z.string().trim().min(1, 'Este campo no puede quedar vacío')
   })
 
-  const countries = [
-    { title: 'Argentina', value: 'AR' },
-    { title: 'Brasil', value: 'BR' },
-    { title: 'Chile', value: 'CL' },
-    { title: 'Colombia', value: 'CO' },
-    { title: 'México', value: 'MX' },
-    { title: 'Perú', value: 'PE' },
-    { title: 'Uruguay', value: 'UY' },
-    { title: 'Venezuela', value: 'VE' }
-  ]
+  const countries = useMemo(
+    () => [
+      { label: 'Argentina', value: 'AR' },
+      { label: 'Brasil', value: 'BR' },
+      { label: 'Chile', value: 'CL' },
+      { label: 'Colombia', value: 'CO' },
+      { label: 'México', value: 'MX' },
+      { label: 'Perú', value: 'PE' },
+      { label: 'Uruguay', value: 'UY' },
+      { label: 'Venezuela', value: 'VE' }
+    ],
+    []
+  )
 
-  const civil_state = [
-    { title: 'Soltero/a', value: 'single' },
-    { title: 'Casado/a', value: 'married' },
-    { title: 'Divorciado/a', value: 'divorced' },
-    { title: 'Viudo/a', value: 'widowed' }
-  ]
+  const civil_state = useMemo(
+    () => [
+      { label: 'Soltero/a', value: 'single' },
+      { label: 'Casado/a', value: 'married' },
+      { label: 'Divorciado/a', value: 'divorced' },
+      { label: 'Viudo/a', value: 'widowed' }
+    ],
+    []
+  )
 
   const methods = useForm({
     resolver: zodResolver(firstStepSchema),
@@ -101,13 +107,11 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
   })
 
   useEffect(() => {
-    /* countiresOptions[10] = Argentina */
-    methods.setValue('nationality', userData?.nationality || countries[0]?.value)
-  }, [countries])
-
-  useEffect(() => {
-    methods.setValue('civil_state', userData?.civil_state || civil_state[0]?.value)
-  }, [civil_state])
+    if (userData) {
+      methods.setValue('nationality', userData.nationality || countries[0]?.value)
+      methods.setValue('civil_state', userData.civil_state || civil_state[0]?.value)
+    }
+  }, [civil_state, countries, methods, userData])
 
   return (
     <Box w={'100%'}>
@@ -145,8 +149,8 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                   <Select
                     label='Nacionalidad'
                     placeholder='Seleccionar país'
-                    options={countries.map((c) => ({ label: c.title, value: c.value }))}
-                    value={countries?.find((c) => c?.title === value)}
+                    options={countries.map((c) => ({ label: c.label, value: c.value }))}
+                    value={countries?.find((c) => c?.label === value)}
                     handleOnChange={(val) => onChange(val?.value)}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
@@ -161,11 +165,11 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                   <Select
                     label='Estado civil'
                     placeholder='Seleccionar estado civil'
-                    options={civil_state.map((c) => ({ label: c.title, value: c.value }))}
+                    options={civil_state.map((c) => ({ label: c.label, value: c.value }))}
                     value={civil_state?.find((c) => c?.value === value)}
                     handleOnChange={(val) => {
-                      console.log('Estado civil seleccionado:', val);
-                      onChange(val?.value);
+                      console.log('Estado civil seleccionado:', val)
+                      onChange(val?.value)
                     }}
                     noOptionsMessage={() => 'Sin opciones'}
                   />

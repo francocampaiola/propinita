@@ -25,7 +25,7 @@ const InputPhone = ({ methods, label, bigSize, ...rest }: IInputPhone) => {
   useEffect(() => {
     /* setting argentina for default value */
     methods?.setValue('phone_prefix', '54')
-  }, [])
+  }, [methods])
   return (
     <Box>
       <Flex alignItems='flex-end'>
