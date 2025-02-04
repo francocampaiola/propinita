@@ -61,6 +61,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
           })
         }
       }),
+    civil_state: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     nationality: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     phone_prefix: z.string().trim().min(1, 'Este campo no puede quedar vacío')
   })
@@ -90,7 +91,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
       last_name: userData?.last_name || '',
       phone: userData?.phone || '',
       nationality: userData?.nationality || countries[0]?.value || '',
-      civil_state: userData?.civil_state || '',
+      civil_state: userData?.civil_state || civil_state[0]?.value || '',
       phone_prefix: userData?.phone_prefix || ''
     }
   })
@@ -103,6 +104,10 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
     /* countiresOptions[10] = Argentina */
     methods.setValue('nationality', userData?.nationality || countries[0]?.value)
   }, [countries])
+
+  useEffect(() => {
+    methods.setValue('civil_state', userData?.civil_state || civil_state[0]?.value)
+  }, [civil_state])
 
   return (
     <Box w={'100%'}>
@@ -157,8 +162,11 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                     label='Estado civil'
                     placeholder='Seleccionar estado civil'
                     options={civil_state.map((c) => ({ label: c.title, value: c.value }))}
-                    value={civil_state?.find((c) => c?.title === value)}
-                    handleOnChange={(val) => onChange(val?.value)}
+                    value={civil_state?.find((c) => c?.value === value)}
+                    handleOnChange={(val) => {
+                      console.log('Estado civil seleccionado:', val);
+                      onChange(val?.value);
+                    }}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
                 )}

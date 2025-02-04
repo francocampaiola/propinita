@@ -38,6 +38,7 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
   const handleNext = async (data: Partial<UserData>) => {
     setIsLoading(true)
     try {
+        console.log(data)
       const nextStep = steps[currentStep].next
       await editUser({
         ...data,
