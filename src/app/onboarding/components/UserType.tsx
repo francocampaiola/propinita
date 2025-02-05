@@ -2,6 +2,7 @@
 import { Box, Text, Button, Flex } from '@chakra-ui/react'
 import { useForm } from 'react-hook-form'
 import { OnboardingStepProps, UserType as UserTypeEnum } from '../onboarding.types'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
 const options = [
   {
@@ -46,16 +47,30 @@ const UserType = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
             </Box>
           ))}
         </Flex>
-
-        <Button
-          type="submit"
-          isLoading={isLoading}
-          isDisabled={!watch('user_type')}
-          colorScheme="blue"
-          width="full"
-        >
-          Continuar
-        </Button>
+        <Flex justifyContent='flex-end'>
+            <Button
+              variant='secondary'
+              type='submit'
+              mt={4}
+              mr={4}
+              size='sm'
+              isDisabled
+              leftIcon={<FaArrowLeft />}
+            >
+              Volver
+            </Button>
+            <Button
+              variant='primary'
+              type='submit'
+              mt={4}
+              size='sm'
+              isLoading={isLoading}
+              isDisabled={!watch('user_type')}
+              rightIcon={<FaArrowRight />}
+            >
+              Siguiente
+            </Button>
+          </Flex>
       </form>
     </Box>
   )

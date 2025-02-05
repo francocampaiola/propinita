@@ -39,11 +39,10 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
       console.log(data)
       const nextStep = steps[currentStep].next
 
-      // Verifica si el paso actual es 'user_summary' y establece el estado a 'completed'
       if (currentStep === 'user_summary') {
         await editUser({
           ...data,
-          current_step: 'completed' // Cambia a 'completed' al finalizar el resumen
+          current_step: 'completed'
         })
       } else {
         await editUser({
