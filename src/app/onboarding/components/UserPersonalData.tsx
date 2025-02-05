@@ -93,25 +93,18 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
   const methods = useForm({
     resolver: zodResolver(firstStepSchema),
     defaultValues: {
-      first_name: userData?.first_name || '',
-      last_name: userData?.last_name || '',
-      phone: userData?.phone || '',
-      nationality: userData?.nationality || countries[0]?.value || '',
-      civil_state: userData?.civil_state || civil_state[0]?.value || '',
-      phone_prefix: userData?.phone_prefix || ''
+      first_name: userData.first_name || '',
+      last_name: userData.last_name || '',
+      phone: userData.phone || '',
+      civil_state: userData.civil_state || '',
+      nationality: userData.nationality || '',
+      phone_prefix: userData.phone_prefix || ''
     }
-  })
-
-  const onSubmit = methods.handleSubmit((data) => {
-    onNext(data)
   })
 
   useEffect(() => {
-    if (userData) {
-      methods.setValue('nationality', userData.nationality || countries[0]?.value)
-      methods.setValue('civil_state', userData.civil_state || civil_state[0]?.value)
-    }
-  }, [civil_state, countries, methods, userData])
+    methods.reset(userData)
+  }, [userData, methods])
 
   return (
     <Box w={'100%'}>
@@ -123,7 +116,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
       </Text>
       <Text fontSize='sm'>Utilizamos esta información para personalizar tu experiencia.</Text>
       <FormProvider {...methods}>
-        <form onSubmit={onSubmit}>
+        <form onSubmit={methods.handleSubmit(onNext)}>
           <Flex mb={4} mt={4} direction={'column'} gap={4}>
             <Box width='100%'>
               <Input

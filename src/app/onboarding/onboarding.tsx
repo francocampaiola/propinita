@@ -1,14 +1,30 @@
 'use client'
-import { useState } from 'react'
-import { Box } from '@chakra-ui/react'
-import dynamic from 'next/dynamic'
-import { UserData, StepStatus } from './onboarding.types'
+import React, { useState, useEffect } from 'react'
+import { Box, Flex, Spinner } from '@chakra-ui/react'
+import type { UserData, StepStatus } from './onboarding.types'
 import { editUser } from './action'
+import dynamic from 'next/dynamic'
 
-const UserType = dynamic(() => import('./components/UserType'))
-const UserPersonalData = dynamic(() => import('./components/UserPersonalData'))
-const UserBankData = dynamic(() => import('./components/UserBankData'))
-const UserSummary = dynamic(() => import('./components/UserSummary'))
+// Componentes dinámicos
+const UserType = dynamic(() => import('./components/UserType'), {
+  ssr: false,
+  loading: () => <Spinner size='xl' thickness='4px' />
+})
+
+const UserPersonalData = dynamic(() => import('./components/UserPersonalData'), {
+  ssr: false,
+  loading: () => <Spinner size='xl' thickness='4px' />
+})
+
+const UserBankData = dynamic(() => import('./components/UserBankData'), {
+  ssr: false,
+  loading: () => <Spinner size='xl' thickness='4px' />
+})
+
+const UserSummary = dynamic(() => import('./components/UserSummary'), {
+  ssr: false,
+  loading: () => <Spinner size='xl' thickness='4px' />
+})
 
 const steps = {
   user_type: {
@@ -39,30 +55,31 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
       console.log(data)
       const nextStep = steps[currentStep].next
 
+      // Verifica si el paso actual es 'user_summary' y establece el estado a 'completed'
       if (currentStep === 'user_summary') {
-        await editUser({
-          ...data,
-          current_step: 'completed'
-        })
+        await editUser({ ...data, current_step: 'completed' })
       } else {
-        await editUser({
-          ...data,
-          current_step: nextStep
-        })
-        if (nextStep) setCurrentStep(nextStep)
+        await editUser({ ...data, current_step: nextStep })
+        setCurrentStep(nextStep)
       }
     } catch (error) {
-      console.error(error)
+      console.error('Error en handleNext:', error)
     } finally {
       setIsLoading(false)
     }
   }
 
-  const CurrentStepComponent = steps[currentStep].component
+  const StepComponent = steps[currentStep].component
 
   return (
-    <Box width='100%' maxW='800px' mx='auto' p={4}>
-      <CurrentStepComponent userData={userData} onNext={handleNext} isLoading={isLoading} />
+    <Box width='100%' p={4}>
+      {isLoading ? (
+        <Flex justifyContent='center' alignItems='center' minH='300px'>
+          <Spinner size='xl' thickness='4px' />
+        </Flex>
+      ) : (
+        <StepComponent userData={userData} onNext={handleNext} isLoading={isLoading} />
+      )}
     </Box>
   )
 }
