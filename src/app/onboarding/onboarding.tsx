@@ -1,9 +1,9 @@
 'use client'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { Box, Flex, Spinner } from '@chakra-ui/react'
 import type { UserData, StepStatus } from './onboarding.types'
 import { editUser } from './action'
-import dynamic from 'next/dynamic'
 
 // Componentes dinámicos
 const UserType = dynamic(() => import('./components/UserType'), {
@@ -57,7 +57,7 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
 
       // Verifica si el paso actual es 'user_summary' y establece el estado a 'completed'
       if (currentStep === 'user_summary') {
-        await editUser({ ...data, current_step: 'completed' })
+        await editUser({ current_step: 'completed' })
       } else {
         await editUser({ ...data, current_step: nextStep })
         setCurrentStep(nextStep)
