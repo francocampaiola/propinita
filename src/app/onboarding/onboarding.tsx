@@ -1,13 +1,14 @@
 'use client'
 import React, { useState, useContext, useEffect } from 'react'
 import dynamic from 'next/dynamic'
-import { Box, Flex, Spinner, Circle, Text, useToast } from '@chakra-ui/react'
+import { Box, Flex, Spinner, Circle, Text, useToast, Center } from '@chakra-ui/react'
 import type { UserData, StepStatus } from './onboarding.types'
 import { editUser } from './action'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import { useRouter } from 'next/navigation'
 import { FaCheck } from 'react-icons/fa'
+import OnboardingLayout from './components/layout/OnboardingLayout'
 
 // Componentes dinámicos
 const UserType = dynamic(() => import('./components/UserType'), {
@@ -30,28 +31,37 @@ const UserSummary = dynamic(() => import('./components/UserSummary'), {
   loading: () => <Spinner size='xl' thickness='4px' />
 })
 
-const steps = {
+const steps: Record<StepStatus, {
+  component: React.ComponentType<any>;
+  next: StepStatus | null;
+  prev: StepStatus | null;
+}> = {
   user_type: {
     component: UserType,
-    next: 'user_personal_data' as StepStatus,
+    next: 'user_personal_data',
     prev: null
   },
   user_personal_data: {
     component: UserPersonalData,
-    next: 'user_bank_data' as StepStatus,
-    prev: 'user_type' as StepStatus
+    next: 'user_bank_data',
+    prev: 'user_type'
   },
   user_bank_data: {
     component: UserBankData,
-    next: 'user_summary' as StepStatus,
-    prev: 'user_personal_data' as StepStatus
+    next: 'user_summary',
+    prev: 'user_personal_data'
   },
   user_summary: {
     component: UserSummary,
     next: null,
-    prev: 'user_bank_data' as StepStatus
+    prev: 'user_bank_data'
+  },
+  completed: {
+    component: UserSummary,
+    next: null,
+    prev: null
   }
-} as const
+}
 
 const Onboarding = ({ userData }: { userData: UserData }) => {
   const [isLoading, setIsLoading] = useState(false)
@@ -79,6 +89,8 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
       // Verifica si el paso actual es 'user_summary' y establece el estado a 'completed'
       if (currentStep === 'user_summary') {
         await editUser({ ...data, current_step: 'completed' })
+        setCurrentStep('completed')
+        setContextStep('completed')
         setShowSuccess(true)
         setTimeout(() => {
           router.push('/dashboard')
@@ -125,31 +137,45 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
     }
   }
 
-  const StepComponent = steps[currentStep].component
+  const StepComponent = steps[currentStep]?.component
+
+  if (!StepComponent) {
+    return (
+      <OnboardingLayout showSuccess={showSuccess}>
+        <Box width='100%' p={4}>
+          <Center>
+            <Spinner size='xl' thickness='4px' />
+          </Center>
+        </Box>
+      </OnboardingLayout>
+    )
+  }
 
   return (
-    <Box width='100%' p={4}>
-      {showSuccess ? (
-        <Flex justifyContent='center' alignItems='center' mx='auto' direction='column'>
-          <Circle size='60px' bg='green.500' color='white' mb={4}>
-            <FaCheck size={32} color='white' />
-          </Circle>
-          <Text fontSize={'2xl'} fontWeight={'600'} mb={2}>
-            Registro completado con éxito
-          </Text>
-          <Text>Redirigiendo al dashboard</Text>
-          <Spinner color='primary' borderWidth={4} mt={4} />
-        </Flex>
-      ) : (
-        <StepComponent 
-          userData={userData}
-          onNext={handleNext}
-          onBack={handleBack}
-          isLoading={isLoading}
-          isLoadingBack={isLoadingBack}
-        />
-      )}
-    </Box>
+    <OnboardingLayout showSuccess={showSuccess}>
+      <Box width='100%' p={4}>
+        {showSuccess ? (
+          <Flex justifyContent='center' alignItems='center' mx='auto' direction='column'>
+            <Circle size='60px' bg='green.500' color='white' mb={4}>
+              <FaCheck size={32} color='white' />
+            </Circle>
+            <Text fontSize={'2xl'} fontWeight={'600'} mb={2}>
+              Registro completado con éxito
+            </Text>
+            <Text>Redirigiendo al dashboard</Text>
+            <Spinner color='primary' borderWidth={4} mt={4} />
+          </Flex>
+        ) : (
+          <StepComponent 
+            userData={userData}
+            onNext={handleNext}
+            onBack={handleBack}
+            isLoading={isLoading}
+            isLoadingBack={isLoadingBack}
+          />
+        )}
+      </Box>
+    </OnboardingLayout>
   )
 }
 

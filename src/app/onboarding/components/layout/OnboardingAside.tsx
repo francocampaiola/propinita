@@ -7,8 +7,15 @@ import React, { useContext } from 'react'
 import { IoCheckmark } from 'react-icons/io5'
 import { StepStatus } from '@/src/app/onboarding/onboarding.types'
 
-const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[] }) => {
-  const { currentStep, isLoadingSteps } = useContext(OnboardingContext)
+interface OnboardingAsideProps {
+  steps: { label: string, number: number }[];
+  showSuccess?: boolean;
+}
+
+const OnboardingAside = ({ steps, showSuccess }: OnboardingAsideProps) => {
+  const context = useContext(OnboardingContext)
+  const currentStep = context?.currentStep ?? 'user_type'
+  const isLoadingSteps = context?.isLoadingSteps ?? true
   const { user } = useGetUser()
 
   const getStepIndex = () => {
@@ -25,10 +32,16 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
   const currentStepIndex = getStepIndex()
 
   const isStepCompleted = (idx: number) => {
+    if (currentStep === 'completed') {
+      return true
+    }
     return currentStepIndex > idx
   }
 
   const isCurrentStep = (idx: number) => {
+    if (currentStep === 'completed') {
+      return false
+    }
     return currentStepIndex === idx
   }
 

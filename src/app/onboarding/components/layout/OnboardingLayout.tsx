@@ -1,21 +1,19 @@
 'use client'
-import { useContext } from 'react'
-import { OnboardingContext, OnboardingProvider } from '@/src/context/OnboardingProvider'
+import React, { useContext } from 'react'
+import { Box, Flex, Center } from '@chakra-ui/react'
+import { OnboardingContext } from '@/src/context/OnboardingProvider'
 import OnboardingNavbar from './OnboardingNavbar'
 import OnboardingAside from './OnboardingAside'
-import { Center, Flex } from '@chakra-ui/react'
 import BoxColorMode from '@/src/components/BoxColorMode'
 
-const OnboardingLayout = ({ children }: { children: React.ReactNode }) => {
-    return (
-        <OnboardingProvider>
-            <OnboardingContainer>{children}</OnboardingContainer>
-        </OnboardingProvider>
-    )
+interface OnboardingLayoutProps {
+    children: React.ReactNode;
+    showSuccess?: boolean;
 }
 
-const OnboardingContainer = ({ children }: { children: React.ReactNode }) => {
-    const { isApprovalSteps } = useContext(OnboardingContext)
+const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
+    const context = useContext(OnboardingContext)
+    const isApprovalSteps = context?.isApprovalSteps ?? false
     const steps: { label: string; number: number }[] = [
         {
             label: 'Tipo de usuario',
@@ -39,7 +37,7 @@ const OnboardingContainer = ({ children }: { children: React.ReactNode }) => {
         <>
             <OnboardingNavbar steps={isApprovalSteps ? steps.slice(0, steps.length - 1) : steps} />
             <Flex minHeight='calc(100vh - 72px)' width='100%'>
-                <OnboardingAside steps={steps} />
+                <OnboardingAside steps={steps} showSuccess={showSuccess} />
                 <BoxColorMode
                     bg={['white', 'gray.600']}
                     color={['black', 'white']}
