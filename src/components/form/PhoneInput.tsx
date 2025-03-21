@@ -1,18 +1,19 @@
 import 'react-phone-number-input/style.css'
-import React, { useEffect } from 'react'
+import React from 'react'
 import Select from './Select'
 import Input from './Input'
-import { Controller } from 'react-hook-form'
+import { Controller, useFormContext } from 'react-hook-form'
 import { Flex, Box, Text, type InputProps } from '@chakra-ui/react'
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input'
 
 interface IInputPhone extends InputProps {
   label: string
-  methods: any
+  name: string
   bigSize?: boolean
+  disabled?: boolean
 }
 
-const InputPhone = ({ methods, label, bigSize, ...rest }: IInputPhone) => {
+const InputPhone = ({ label, name, bigSize, disabled, ...rest }: IInputPhone) => {
   const callingCodes = getCountries().map((countrie) => ({
     label: (
       <Flex alignItems='center'>
@@ -20,45 +21,73 @@ const InputPhone = ({ methods, label, bigSize, ...rest }: IInputPhone) => {
       </Flex>
     ),
     value: getCountryCallingCode(countrie)
-  }))
+  }));
 
-  useEffect(() => {
-    /* setting argentina for default value */
-    methods?.setValue('phone_prefix', '54')
-  }, [methods])
+  let formContext;
+  try {
+    formContext = useFormContext();
+  } catch (error) {
+    formContext = null;
+  }
+
+  // Versión simplificada cuando no hay FormProvider
+  if (!formContext) {
+    return (
+      <Box>
+        <Flex alignItems='flex-end'>
+          <Box mr={2}>
+            <Select
+              label={label}
+              options={callingCodes}
+              value={callingCodes.find((c) => c.value === '54')}
+              disabled={disabled}
+              bigSize={bigSize}
+            />
+          </Box>
+          <Box ml={2} flex='1'>
+            <Input 
+              showErrors={false} 
+              name={name} 
+              disabled={disabled}
+              {...rest} 
+            />
+          </Box>
+        </Flex>
+      </Box>
+    );
+  }
+
+  // Versión completa con FormProvider
   return (
     <Box>
       <Flex alignItems='flex-end'>
         <Box mr={2}>
           <Controller
             name='phone_prefix'
-            control={methods?.control}
-            render={({ field: { onChange, value } }) => {
-              /* forma para setear un defaultvalue sin usar la propiedad defaultValue (que solo sirve para uncontrolled fields) */
-              return (
-                <Select
-                  label={label}
-                  options={callingCodes}
-                  value={callingCodes.find((c) => c.value === value)}
-                  defaultValue='54'
-                  handleOnChange={(val) => onChange(val.value)}
-                  bigSize={bigSize}
-                />
-              )
-            }}
+            control={formContext.control}
+            defaultValue='54'
+            render={({ field: { onChange, value } }) => (
+              <Select
+                label={label}
+                options={callingCodes}
+                value={callingCodes.find((c) => c.value === value)}
+                handleOnChange={(val) => onChange(val.value)}
+                bigSize={bigSize}
+              />
+            )}
           />
         </Box>
         <Box ml={2} flex='1'>
-          <Input showErrors={false} {...rest} />
+          <Input showErrors={false} name={name} {...rest} />
         </Box>
       </Flex>
       <Box mt={2}>
         <Text fontSize='sm' color='red.400'>
-          {methods?.formState?.errors?.phone?.message}
+          {formContext?.formState?.errors?.[name]?.message}
         </Text>
       </Box>
     </Box>
-  )
+  );
 }
 
 export default InputPhone
