@@ -32,6 +32,7 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
   const [authorizationUrl, setAuthorizationUrl] = useState<string | null>(null);
   const [mpInfo, setMpInfo] = useState<MercadoPagoInfo>({ connected: false });
   const [checkingConnection, setCheckingConnection] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   // Establecer valor predeterminado para birthdate si no existe
   useEffect(() => {
@@ -40,8 +41,15 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
     }
   }, [setValue, userData.birthdate]);
 
+  // Marcar el componente como montado
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   // Verificar parámetros de redirección
   useEffect(() => {
+    if (!isMounted) return;
+
     const success = searchParams.get('success');
     const error = searchParams.get('error');
     
@@ -62,10 +70,12 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
         isClosable: true,
       });
     }
-  }, [searchParams, toast]);
+  }, [searchParams, toast, isMounted]);
 
   // Verificar si el usuario ya tiene una cuenta conectada
   useEffect(() => {
+    if (!isMounted) return;
+
     const checkMercadoPagoConnection = async () => {
       try {
         setCheckingConnection(true);
@@ -127,34 +137,63 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
     };
     
     checkMercadoPagoConnection();
-  }, []);
+  }, [isMounted, toast]);
 
   // Obtener URL de autorización
   useEffect(() => {
-    if (!mpInfo.connected) {
-      const fetchAuthorizationUrl = async () => {
-        try {
-          const url = await api.user.authorize();
-          setAuthorizationUrl(url);
-        } catch (error) {
-          console.error("Error al obtener URL de autorización:", error);
-          toast({
-            title: 'Error',
-            description: 'No se pudo obtener el enlace de conexión con MercadoPago.',
-            status: 'error',
-            duration: 5000,
-            isClosable: true,
-          });
-        }
-      };
-      
-      fetchAuthorizationUrl();
-    }
-  }, [mpInfo.connected, toast]);
+    if (!isMounted || mpInfo.connected) return;
+
+    const fetchAuthorizationUrl = async () => {
+      try {
+        const url = await api.user.authorize();
+        setAuthorizationUrl(url);
+      } catch (error) {
+        toast({
+          title: 'Error',
+          description: 'No se pudo obtener el enlace de conexión con MercadoPago.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    };
+    
+    fetchAuthorizationUrl();
+  }, [mpInfo.connected, toast, isMounted]);
 
   const onSubmit = handleSubmit((data) => {
     onNext(data);
   });
+
+  // Renderizar un placeholder mientras el componente no está montado
+  if (!isMounted) {
+    return (
+      <Box w={'100%'}>
+        <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
+          Paso 3
+        </Text>
+        <Text fontWeight='600' fontSize='2xl' mb={1}>
+          Cuenta bancaria
+        </Text>
+        <Text fontSize='sm'>
+          Vinculá tu cuenta con MercadoPago para recibir o realizar tus pagos.
+        </Text>
+        <Flex direction='column' gap={4} my={4}>
+          <BoxColorMode bg={['primary', 'transparent']} borderRadius='md'>
+            <Flex 
+              justifyContent="center" 
+              alignItems="center" 
+              p={6} 
+              border={'1px solid white'} 
+              borderRadius={15}
+            >
+              <Text>Cargando...</Text>
+            </Flex>
+          </BoxColorMode>
+        </Flex>
+      </Box>
+    );
+  }
 
   return (
     <Box w={'100%'}>
@@ -191,7 +230,13 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
                 borderRadius={15}
                 textAlign={'left'}
               >
-                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} />
+                <Image 
+                  src={MercadoPagoLogo} 
+                  alt={'MercadoPago'} 
+                  width={50} 
+                  height={50}
+                  priority
+                />
                 <Box ml={4} flex="1">
                   <Flex alignItems="center" justifyContent="space-between">
                     <Text fontSize='lg' fontWeight='600'>
@@ -212,7 +257,7 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
             ) : (
               <Box
                 as="a"
-                href={authorizationUrl}
+                href={authorizationUrl || '#'}
                 display='flex'
                 alignItems='center'
                 py={4}
@@ -223,7 +268,13 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
                 borderRadius={15}
                 textAlign={'left'}
               >
-                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} />
+                <Image 
+                  src={MercadoPagoLogo} 
+                  alt={'MercadoPago'} 
+                  width={50} 
+                  height={50}
+                  priority
+                />
                 <Box ml={4}>
                   <Text fontSize='lg' fontWeight='600'>
                     MercadoPago
@@ -255,15 +306,14 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
             mt={4}
             size='sm'
             isLoading={isLoading}
-            isDisabled={!watch('birthdate') || (!mpInfo.connected && !checkingConnection)}
             rightIcon={<FaArrowRight />}
           >
-            Siguiente
+            Continuar
           </Button>
         </Flex>
       </form>
     </Box>
   );
-};
+}
 
 export default UserBankData;

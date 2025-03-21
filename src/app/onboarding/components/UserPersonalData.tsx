@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Flex, Box, Text, Button } from '@chakra-ui/react'
 import type { OnboardingStepProps } from '../onboarding.types'
 import Input from '@/src/components/form/Input'
@@ -11,19 +11,29 @@ import { useForm, FormProvider, Controller } from 'react-hook-form'
 import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
 
 const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
+  const [isMounted, setIsMounted] = useState(false);
+  const [formValues, setFormValues] = useState({
+    first_name: '',
+    last_name: '',
+    phone: '',
+    civil_state: '',
+    nationality: '',
+    phone_prefix: ''
+  });
+
   const firstStepSchema = z.object({
     first_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     last_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     phone: z
       .string()
       .min(1, 'Este campo no puede quedar vacío')
-      .superRefine(async (val, customError) => {
+      .superRefine((val, customError) => {
         const prefixCountry = getCountries().find(
-          (countrie) => getCountryCallingCode(countrie) === methods.watch('phone_prefix')
+          (countrie) => getCountryCallingCode(countrie) === formValues.phone_prefix
         )
 
         // Combina el prefijo y el número
-        const fullPhoneNumber = `${methods.watch('phone_prefix')}${val}`
+        const fullPhoneNumber = `${formValues.phone_prefix}${val}`
 
         if (val.startsWith('54')) {
           customError.addIssue({
@@ -92,19 +102,111 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
 
   const methods = useForm({
     resolver: zodResolver(firstStepSchema),
-    defaultValues: {
+    defaultValues: formValues
+  })
+
+  // Marcar el componente como montado
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Actualizar valores del formulario cuando cambian los datos del usuario
+  useEffect(() => {
+    if (!isMounted) return;
+    
+    const newValues = {
       first_name: userData.first_name || '',
       last_name: userData.last_name || '',
       phone: userData.phone || '',
       civil_state: userData.civil_state || '',
       nationality: userData.nationality || '',
       phone_prefix: userData.phone_prefix || ''
-    }
-  })
+    };
+    
+    setFormValues(newValues);
+    methods.reset(newValues);
+  }, [userData, methods, isMounted]);
 
+  // Actualizar formValues cuando cambian los valores del formulario
   useEffect(() => {
-    methods.reset(userData)
-  }, [userData, methods])
+    if (!isMounted) return;
+    
+    const subscription = methods.watch((value) => {
+      setFormValues(value as typeof formValues);
+    });
+    
+    return () => subscription.unsubscribe();
+  }, [methods, isMounted]);
+
+  if (!isMounted) {
+    return (
+      <Box w={'100%'}>
+        <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
+          Paso 2
+        </Text>
+        <Text fontWeight='600' fontSize='2xl' mb={1}>
+          Datos personales
+        </Text>
+        <Text fontSize='sm'>Utilizamos esta información para personalizar tu experiencia.</Text>
+        <Flex mb={4} mt={4} direction={'column'} gap={4}>
+          <Box width='100%'>
+            <Input
+              label='Nombre'
+              name='first_name'
+              size='lg'
+              placeholder='Ingresar como figura en el DNI'
+              disabled
+            />
+          </Box>
+          <Box width='100%'>
+            <Input
+              label='Apellido'
+              name='last_name'
+              size='lg'
+              placeholder='Ingresar como figura en el DNI'
+              disabled
+            />
+          </Box>
+          <Box width='100%'>
+            <Select
+              label='Nacionalidad'
+              placeholder='Seleccionar país'
+              options={countries}
+              disabled
+            />
+          </Box>
+          <Box width='100%'>
+            <Select
+              label='Estado civil'
+              placeholder='Seleccionar estado civil'
+              options={civil_state}
+              disabled
+            />
+          </Box>
+          <Box width='100%'>
+            <InputPhone
+              methods={methods}
+              name='phone'
+              label='Teléfono'
+              placeholder='11 2233 4455'
+              size='lg'
+              bigSize
+              disabled
+            />
+          </Box>
+        </Flex>
+        <Button
+          type='submit'
+          isLoading={isLoading}
+          colorScheme='blue'
+          width='full'
+          disabled
+        >
+          Cargando...
+        </Button>
+      </Box>
+    );
+  }
 
   return (
     <Box w={'100%'}>
@@ -160,10 +262,7 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
                     placeholder='Seleccionar estado civil'
                     options={civil_state.map((c) => ({ label: c.label, value: c.value }))}
                     value={civil_state?.find((c) => c?.value === value)}
-                    handleOnChange={(val) => {
-                      console.log('Estado civil seleccionado:', val)
-                      onChange(val?.value)
-                    }}
+                    handleOnChange={(val) => onChange(val?.value)}
                     noOptionsMessage={() => 'Sin opciones'}
                   />
                 )}
@@ -186,7 +285,12 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
             colorScheme='blue'
             width='full'
             isDisabled={
-              !methods.watch('first_name') || !methods.watch('last_name') || !methods.watch('phone')
+              !formValues.first_name || 
+              !formValues.last_name || 
+              !formValues.phone ||
+              !formValues.nationality ||
+              !formValues.civil_state ||
+              !formValues.phone_prefix
             }
           >
             Siguiente
