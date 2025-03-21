@@ -10,7 +10,6 @@ import Input from "@/src/components/form/Input"
 import Link from "next/link"
 
 const Login = () => {
-
     const [isLoading, startTransition] = useTransition()
     const router = useRouter()
 
@@ -66,6 +65,7 @@ const Login = () => {
                     w='100%'
                     type='submit'
                     isDisabled={!methods?.watch('email') || !methods?.watch('password')}
+                    isLoading={isLoading}
                 >
                     Iniciar sesión
                 </Button>

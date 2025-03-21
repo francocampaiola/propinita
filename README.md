@@ -1,36 +1,111 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Propinita | Franco Campaiola
 
-## Getting Started
+Propinita es un proyecto hecho en Next.JS con Supabase para facilitar el proceso de propinas en restaurantes, permitiendo a los clientes dejar propinas digitales y a los empleados recibirlas de manera segura y eficiente.
 
-First, run the development server:
+
+**Autor:** [@francocampaiola](https://twitter.com/francocampaiola)
+
+## Requerimientos
+
+- NodeJS (versión 18 o superior)
+- Cuenta de Supabase
+- Cuenta de MercadoPago para desarrolladores
+
+## Instalación
+
+```bash
+git clone https://github.com/francocampaiola/propinita
+cd propinita
+```
+
+## Instalación de paquetes de NPM
+
+```bash
+npm install
+# o
+yarn install
+```
+
+## Editar el archivo .env para desarrollo
+
+```env
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL="tu-url-de-supabase"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="tu-anon-key"
+
+# NextAuth
+NEXTAUTH_SECRET="tu-secreto-aqui"
+NEXTAUTH_URL="http://localhost:3000"
+
+# MercadoPago
+MP_CLIENT_ID="tu-client-id"
+MP_CLIENT_SECRET="tu-client-secret"
+MP_REDIRECT_URI="http://localhost:3000/api/mercadopago/callback"
+```
+
+## Para correr entorno de desarrollo
 
 ```bash
 npm run dev
-# or
+# o
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Para correr entorno de producción
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm run build
+npm run start
+# o
+yarn build
+yarn start
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estructura del Proyecto
 
-## Learn More
+```
+src/
+├── app/                 # Rutas y páginas de Next.js
+├── components/         # Componentes reutilizables
+├── context/           # Contextos de React
+├── hooks/             # Hooks personalizados
+├── utils/             # Utilidades y helpers
+├── assets/            # Recursos estáticos
+└── styles/            # Estilos globales
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Flujo de la Aplicación
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. **Registro y Onboarding**:
+   - El usuario se registra y completa un proceso de onboarding
+   - Se verifica la identidad del usuario
+   - Se vincula la cuenta de MercadoPago
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+2. **Empleados**:
+   - Crean su perfil profesional
+   - Reciben propinas digitales
+   - Gestionan su información bancaria
 
-## Deploy on Vercel
+3. **Clientes**:
+   - Buscan empleados
+   - Dejan propinas digitales
+   - Ver historial de propinas
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts Disponibles
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `npm run dev`: Inicia el servidor de desarrollo
+- `npm run build`: Construye la aplicación para producción
+- `npm run start`: Inicia el servidor de producción
+- `npm run lint`: Ejecuta el linter
+
+## Tecnologías Utilizadas
+
+- [Next.js](https://nextjs.org/) - Framework de React
+- [Chakra UI](https://chakra-ui.com/) - Biblioteca de componentes
+- [Supabase](https://supabase.com/) - Backend y autenticación
+- [MercadoPago](https://www.mercadopago.com.ar/) - Procesamiento de pagos
+- [React Query](https://tanstack.com/query/latest) - Gestión de estado y caché
+- [React Hook Form](https://react-hook-form.com/) - Manejo de formularios
+- [Zod](https://zod.dev/) - Validación de esquemas
+- [React Select](https://react-select.com/) - Componentes de selección
+- [React Phone Number Input](https://github.com/catamphetamine/react-phone-number-input) - Input para números de teléfono

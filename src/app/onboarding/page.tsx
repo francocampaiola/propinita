@@ -1,11 +1,10 @@
-'use client'
-import { Text } from '@chakra-ui/react'
 import React from 'react'
+import Onboarding from './onboarding'
+import { getUserRawData } from './action'
 
-const Onboarding = () => {
-  return (
-    <Text>Onboarding</Text>
-  )
+const Page = async () => {
+  const data = await getUserRawData()
+  return <Onboarding userData={data} />
 }
 
-export default Onboarding
+export default Page
