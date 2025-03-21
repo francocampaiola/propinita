@@ -63,18 +63,67 @@ export async function GET(request: NextRequest) {
     
     const isExpired = new Date() > tokenExpiration;
     
-    return NextResponse.json({
-      connected: !isExpired,
-      mp_user_id: mpCredentials.mp_user_id,
-      expires_in: mpCredentials.expires_in,
-      scope: mpCredentials.scope,
-      token_status: isExpired ? 'expired' : 'valid',
-      expiration_date: tokenExpiration.toISOString()
-    }, {
-      headers: {
-        'Content-Type': 'application/json'
+    if (isExpired) {
+      return NextResponse.json({
+        connected: false,
+        error: 'Token expirado'
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
+
+    // Validar el token con MercadoPago
+    try {
+      const response = await fetch('https://api.mercadopago.com/users/me', {
+        headers: {
+          'Authorization': `Bearer ${mpCredentials.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        // Si el token no es válido, actualizar el estado en la base de datos
+        await supabase
+          .from('oauth_mercadopago')
+          .delete()
+          .eq('fk_user', userData.id);
+
+        return NextResponse.json({
+          connected: false,
+          error: 'Token inválido o revocado'
+        }, {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
       }
-    });
+
+      const mpUserData = await response.json();
+      
+      return NextResponse.json({
+        connected: true,
+        mp_user_id: mpUserData.id,
+        expires_in: mpCredentials.expires_in,
+        scope: mpCredentials.scope,
+        token_status: 'valid',
+        expiration_date: tokenExpiration.toISOString()
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    } catch (error) {
+      return NextResponse.json({
+        connected: false,
+        error: 'Error al validar con MercadoPago'
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+    }
   } catch (error) {
     return NextResponse.json({ 
       connected: false, 
