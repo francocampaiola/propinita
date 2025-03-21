@@ -9,8 +9,9 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, FormProvider, Controller } from 'react-hook-form'
 import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
+import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
-const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
+const UserPersonalData = ({ userData, onNext, onBack, isLoading }: OnboardingStepProps) => {
   const firstStepSchema = z.object({
     first_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     last_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
@@ -172,17 +173,30 @@ const UserPersonalData = ({ userData, onNext, isLoading }: OnboardingStepProps) 
               />
             </Box>
           </Flex>
-          <Button
-            type='submit'
-            isLoading={isLoading}
-            colorScheme='blue'
-            width='full'
-            isDisabled={
-              !methods.formState.isValid
-            }
-          >
-            Siguiente
-          </Button>
+          <Flex justifyContent='flex-end'>
+            <Button
+              variant='secondary'
+              type='button'
+              mt={4}
+              mr={4}
+              size='sm'
+              onClick={onBack}
+              leftIcon={<FaArrowLeft />}
+            >
+              Volver
+            </Button>
+            <Button
+              variant='primary'
+              type='submit'
+              mt={4}
+              size='sm'
+              isLoading={isLoading}
+              isDisabled={!methods.formState.isValid}
+              rightIcon={<FaArrowRight />}
+            >
+              Siguiente
+            </Button>
+          </Flex>
         </form>
       </FormProvider>
     </Box>

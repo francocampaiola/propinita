@@ -8,23 +8,29 @@ import { IoCheckmark } from 'react-icons/io5'
 
 const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[] }) => {
   const { currentStep } = useContext(OnboardingContext)
-  const { user, isLoading } = useGetUser()
+  const { isLoading } = useGetUser()
 
-  const getStepCompletion = () => {
-    if (!user?.user_signup_status) return -1
-
+  const getStepIndex = () => {
     const stepsMap: { [key: string]: number } = {
       'user_type': 0,
       'user_personal_data': 1,
       'user_bank_data': 2,
-      'user_summary': 3
+      'user_summary': 3,
+      'completed': 4
     }
 
-    const stepIndex = stepsMap[user.user_signup_status] || -1
-    return stepIndex
+    return stepsMap[currentStep || 'user_type']
   }
 
-  const completedSteps = getStepCompletion()
+  const currentStepIndex = getStepIndex()
+
+  const isStepCompleted = (idx: number) => {
+    return currentStepIndex > idx
+  }
+
+  const isCurrentStep = (idx: number) => {
+    return currentStepIndex === idx
+  }
 
   return (
     <BoxColorMode
@@ -36,7 +42,7 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
       <Center flexDirection='column' pt={10} height='100%'>
         <Box fontSize='sm' width='fit-content' margin='0 auto'>
           <Container maxW='sm'>
-            {isLoading || !user ? (
+            {isLoading ? (
               <Center h="full">
                 <Spinner />
               </Center>
@@ -52,7 +58,7 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
                       zIndex="9"
                       position="relative"
                       border="1px solid gray"
-                      bg={completedSteps > idx ? 'green.300' : 'gray.800'}
+                      bg={isStepCompleted(idx) ? 'green.300' : 'gray.800'}
                     >
                       {idx + 1 !== steps.length && (
                         <Box
@@ -64,15 +70,15 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
                         >
                           <Divider
                             border="1px solid"
-                            color={completedSteps > idx ? 'secondary' : 'gray'}
+                            color={isStepCompleted(idx) ? 'secondary' : 'gray'}
                             orientation="vertical"
                           />
                         </Box>
                       )}
-                      {idx < completedSteps ? (
+                      {isStepCompleted(idx) ? (
                         <IoCheckmark color="black" />
-                      ) : idx === currentStep ? (
-                        <Spinner size="xs" color="primary" />
+                      ) : isCurrentStep(idx) ? (
+                        <Spinner size="xs" color="white" />
                       ) : (
                         <Text color="white" fontSize="xs">
                           {step.number}
