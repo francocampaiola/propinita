@@ -1,32 +1,132 @@
 'use client'
 import React, { useEffect, useState } from 'react'
-import { Flex, Box, Text, Button } from '@chakra-ui/react'
+import { Flex, Box, Text, Button, useToast, Badge } from '@chakra-ui/react'
 import BoxColorMode from '@/src/components/BoxColorMode'
 import { useForm } from 'react-hook-form'
 import type { OnboardingStepProps } from '../onboarding.types'
 import MercadoPagoLogo from '@/src/assets/onboarding/user_bank_data/mercadopago.png'
 import Image from 'next/image'
-import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
+import { FaArrowLeft, FaArrowRight, FaCheck } from 'react-icons/fa'
 import api from '@/src/api'
+import { useSearchParams } from 'next/navigation'
+
+// Tipo para la información de MercadoPago
+interface MercadoPagoInfo {
+  connected: boolean;
+  userInfo?: {
+    user_id: string;
+    expires_in: number;
+    scope?: string;
+  };
+}
 
 const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
   const { handleSubmit, watch, setValue } = useForm({
     defaultValues: {
-      birthdate: userData.birthdate
+      birthdate: userData.birthdate || ''
     }
-  })
+  });
+  
+  const searchParams = useSearchParams();
+  const toast = useToast();
+  const [authorizationUrl, setAuthorizationUrl] = useState<string | null>(null);
+  const [mpInfo, setMpInfo] = useState<MercadoPagoInfo>({ connected: false });
+  const [checkingConnection, setCheckingConnection] = useState(true);
 
-  const [authorizationUrl, setAuthorizationUrl] = useState<string | null>(null)
-  // useEffect para manejar la carga asincrónica
+  // Establecer valor predeterminado para birthdate si no existe
   useEffect(() => {
-    const fetchAuthorizationUrl = async () => {
-      const url = await api.user.authorize()
-      setAuthorizationUrl(url)
+    if (!userData.birthdate) {
+      setValue('birthdate', '1997-10-08');
     }
-    fetchAuthorizationUrl()
-  }, [])
+  }, [setValue, userData.birthdate]);
 
-  const onSubmit = handleSubmit((data) => onNext(data))
+  // Verificar parámetros de redirección
+  useEffect(() => {
+    const success = searchParams.get('success');
+    const error = searchParams.get('error');
+    
+    if (success === 'connected') {
+      toast({
+        title: 'Cuenta vinculada',
+        description: 'Tu cuenta de MercadoPago se ha vinculado correctamente.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+    } else if (error) {
+      toast({
+        title: 'Error de conexión',
+        description: `Hubo un problema al vincular tu cuenta: ${error}`,
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [searchParams, toast]);
+
+  // Verificar si el usuario ya tiene una cuenta conectada
+  useEffect(() => {
+    const checkMercadoPagoConnection = async () => {
+      try {
+        setCheckingConnection(true);
+        
+        // Llamada al endpoint para verificar conexión
+        const response = await fetch('/api/mercadopago/check-connection');
+        
+        if (response.ok) {
+          const data = await response.json();
+          setMpInfo({
+            connected: data.connected,
+            userInfo: data.connected ? {
+              user_id: data.mp_user_id,
+              expires_in: data.expires_in,
+              scope: data.scope
+            } : undefined
+          });
+        } else {
+          // Si hay error, asumir que no está conectado
+          setMpInfo({ connected: false });
+        }
+        // const url = await api.user.authorize()
+        // setAuthorizationUrl(url)
+        // console.log(url)
+      } catch (error) {
+        console.error("Error al verificar conexión con MercadoPago:", error);
+        setMpInfo({ connected: false });
+      } finally {
+        setCheckingConnection(false);
+      }
+    };
+    
+    checkMercadoPagoConnection();
+  }, []);
+
+  // Obtener URL de autorización
+  useEffect(() => {
+    if (!mpInfo.connected) {
+      const fetchAuthorizationUrl = async () => {
+        try {
+          const url = await api.user.authorize();
+          setAuthorizationUrl(url);
+        } catch (error) {
+          console.error("Error al obtener URL de autorización:", error);
+          toast({
+            title: 'Error',
+            description: 'No se pudo obtener el enlace de conexión con MercadoPago.',
+            status: 'error',
+            duration: 5000,
+            isClosable: true,
+          });
+        }
+      };
+      
+      fetchAuthorizationUrl();
+    }
+  }, [mpInfo.connected, toast]);
+
+  const onSubmit = handleSubmit((data) => {
+    onNext(data);
+  });
 
   return (
     <Box w={'100%'}>
@@ -42,38 +142,77 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
       <form onSubmit={onSubmit}>
         <Flex direction='column' gap={4} my={4}>
           <BoxColorMode bg={['primary', 'transparent']} borderRadius='md'>
-            {/* <Box
-              as='button'
-              type='button'
-              display='flex'
-              alignItems='center'
-              py={4}
-              px={6}
-              width='100%'
-              cursor='pointer'
-              border={'1px solid white'}
-              borderRadius={15}
-              textAlign={'left'}
-              onClick={() => setValue('birthdate', '08-10-1997')}
-            >
-              <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} />
-              <Box ml={4}>
-                <Text fontSize='lg' fontWeight='600'>
-                  MercadoPago
-                </Text>
-                <Text color='#D2D2D2' fontSize='xs'>
-                  Vinculamos tu cuenta bancaria con un cifrado de extremo a extremo para facilitar
-                  el pago y recepción de tus propinas.
-                </Text>
+            {checkingConnection ? (
+              <Flex 
+                justifyContent="center" 
+                alignItems="center" 
+                p={6} 
+                border={'1px solid white'} 
+                borderRadius={15}
+              >
+                <Text>Verificando estado de conexión...</Text>
+              </Flex>
+            ) : mpInfo.connected ? (
+              <Box
+                display='flex'
+                alignItems='center'
+                py={4}
+                px={6}
+                width='100%'
+                border={'1px solid white'}
+                borderRadius={15}
+                textAlign={'left'}
+              >
+                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} />
+                <Box ml={4} flex="1">
+                  <Flex alignItems="center" justifyContent="space-between">
+                    <Text fontSize='lg' fontWeight='600'>
+                      MercadoPago
+                    </Text>
+                    <Badge colorScheme="green" display="flex" alignItems="center">
+                      <FaCheck size={10} style={{ marginRight: '5px' }} /> Conectada
+                    </Badge>
+                  </Flex>
+                  <Text color='#D2D2D2' fontSize='xs'>
+                    Tu cuenta de MercadoPago ha sido vinculada correctamente.
+                    {mpInfo.userInfo?.user_id && (
+                      <Text as="span" color="green.300"> ID: {mpInfo.userInfo.user_id}</Text>
+                    )}
+                  </Text>
+                </Box>
               </Box>
-            </Box> */}
-            <a href={authorizationUrl}>Conectar con MercadoPago</a>
+            ) : (
+              <Box
+                as="a"
+                href={authorizationUrl}
+                display='flex'
+                alignItems='center'
+                py={4}
+                px={6}
+                width='100%'
+                cursor='pointer'
+                border={'1px solid white'}
+                borderRadius={15}
+                textAlign={'left'}
+              >
+                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} />
+                <Box ml={4}>
+                  <Text fontSize='lg' fontWeight='600'>
+                    MercadoPago
+                  </Text>
+                  <Text color='#D2D2D2' fontSize='xs'>
+                    Vinculamos tu cuenta bancaria con un cifrado de extremo a extremo para facilitar
+                    el pago y recepción de tus propinas.
+                  </Text>
+                </Box>
+              </Box>
+            )}
           </BoxColorMode>
         </Flex>
         <Flex justifyContent='flex-end'>
           <Button
             variant='secondary'
-            type='submit'
+            type='button'
             mt={4}
             mr={4}
             size='sm'
@@ -88,7 +227,7 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
             mt={4}
             size='sm'
             isLoading={isLoading}
-            isDisabled={!watch('birthdate')}
+            isDisabled={!watch('birthdate') || (!mpInfo.connected && !checkingConnection)}
             rightIcon={<FaArrowRight />}
           >
             Siguiente
@@ -96,7 +235,7 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
         </Flex>
       </form>
     </Box>
-  )
-}
+  );
+};
 
-export default UserBankData
+export default UserBankData;
