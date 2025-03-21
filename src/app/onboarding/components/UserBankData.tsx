@@ -33,6 +33,9 @@ const UserBankData = ({ userData, onNext, onBack, isLoading, isLoadingBack }: On
   const [mpInfo, setMpInfo] = useState<MercadoPagoInfo>({ connected: false });
   const [checkingConnection, setCheckingConnection] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
+  const [isLoadingConnection, setIsLoadingConnection] = useState(false);
+  const [connectionStatus, setConnectionStatus] = useState<'connected' | 'disconnected' | 'error'>('disconnected');
+  const [mpUserId, setMpUserId] = useState<string | null>(null);
 
   // Establecer valor predeterminado para birthdate si no existe
   useEffect(() => {
@@ -76,67 +79,57 @@ const UserBankData = ({ userData, onNext, onBack, isLoading, isLoadingBack }: On
   useEffect(() => {
     if (!isMounted) return;
 
-    const checkMercadoPagoConnection = async () => {
+    const checkConnection = async () => {
       try {
-        setCheckingConnection(true);
-        
-        // Llamada al endpoint para verificar conexión
+        setIsLoadingConnection(true)
         const response = await fetch('/api/mercadopago/check-connection', {
           credentials: 'include',
           headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
           }
-        });
+        })
 
-        // Si la respuesta no es ok, lanzar error
         if (!response.ok) {
-          throw new Error(`Error HTTP: ${response.status}`);
+          throw new Error(`Error HTTP: ${response.status}`)
         }
 
-        // Verificar el tipo de contenido
-        const contentType = response.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          throw new Error('La respuesta no es JSON');
-        }
-
-        // Obtener y parsear la respuesta
-        const data = await response.json();
+        const data = await response.json()
+        console.log('MercadoPago connection data:', data)
         
-        setMpInfo({
-          connected: data.connected,
-          userInfo: data.connected ? {
-            user_id: data.mp_user_id,
-            expires_in: data.expires_in,
-            scope: data.scope
-          } : undefined
-        });
-
-        // Si hay un error en la respuesta, mostrarlo
-        if (data.error) {
-          toast({
-            title: "Error de conexión",
-            description: data.error,
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          });
+        if (data.connected) {
+          setMpUserId(data.mp_user_id)
+          setConnectionStatus('connected')
+          setMpInfo({ 
+            connected: true, 
+            userInfo: { 
+              user_id: data.mp_user_id,
+              expires_in: data.expires_in || 0,
+              scope: data.scope
+            } 
+          })
+        } else {
+          setConnectionStatus('disconnected')
+          setMpInfo({ connected: false })
         }
       } catch (error) {
-        setMpInfo({ connected: false });
+        console.error('Error checking connection:', error)
+        setConnectionStatus('error')
+        setMpInfo({ connected: false })
         toast({
-          title: "Error de conexión",
-          description: "No se pudo verificar la conexión con MercadoPago. Por favor, intenta nuevamente.",
-          status: "error",
+          title: 'Error',
+          description: 'No se pudo verificar la conexión con MercadoPago. Por favor, intenta nuevamente.',
+          status: 'error',
           duration: 5000,
           isClosable: true,
-        });
+        })
       } finally {
-        setCheckingConnection(false);
+        setIsLoadingConnection(false)
+        setCheckingConnection(false)
       }
-    };
+    }
     
-    checkMercadoPagoConnection();
+    checkConnection();
   }, [isMounted, toast]);
 
   // Obtener URL de autorización

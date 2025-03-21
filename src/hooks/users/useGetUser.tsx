@@ -14,7 +14,7 @@ export const useGetUser = () => {
     queryKey: ['user'],
     queryFn: () => getUser(),
     staleTime: 0,
-    cacheTime: 0
+    gcTime: 0
   })
 
   return { user, isLoading, refetch }

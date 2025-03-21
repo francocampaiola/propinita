@@ -24,7 +24,9 @@ const UserType = ({ userData, onNext, onBack, isLoading, isLoadingBack }: Onboar
     }
   })
 
-  const onSubmit = handleSubmit((data) => onNext(data))
+  const onSubmit = handleSubmit(() => {
+    onNext()
+  })
 
   return (
     <Box>

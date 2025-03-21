@@ -12,6 +12,21 @@ import BoxColorMode from '@/src/components/BoxColorMode'
 const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
   const { currentStep } = useContext(OnboardingContext)
   const router = useRouter()
+
+  const getCurrentStepIndex = (step: string | null): number => {
+    if (!step) return 0
+    const stepMap: Record<string, number> = {
+      'user-type': 0,
+      'personal-data': 1,
+      'bank-data': 2,
+      'summary': 3,
+      'completed': 4
+    }
+    return stepMap[step] || 0
+  }
+
+  const currentStepIndex = getCurrentStepIndex(currentStep)
+
   const handleLogout = async () => {
     try {
       await logout()
@@ -20,6 +35,7 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
       console.log(error)
     }
   }
+
   return (
     <>
       {/* Navbar Desktop */}
@@ -42,7 +58,7 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
       </Flex>
       {/* Navbar Mobile */}
       <BoxColorMode p={4} display={{ base: 'block', md: 'none' }}>
-        <Text mb={4}>{steps[currentStep - 1]?.label ? steps[currentStep - 1]?.label : null}</Text>
+        <Text mb={4}>{steps[currentStepIndex]?.label || null}</Text>
         <Flex>
           {steps.map((step, idx) => (
             <Box
@@ -51,7 +67,7 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
               width='100%'
               borderRadius='md'
               mr={idx + 1 !== steps.length && 1}
-              background={currentStep > idx ? 'primary' : 'gray'}
+              background={currentStepIndex > idx ? 'primary' : 'gray'}
             />
           ))}
         </Flex>

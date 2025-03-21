@@ -23,71 +23,68 @@ const InputPhone = ({ label, name, bigSize, disabled, ...rest }: IInputPhone) =>
     value: getCountryCallingCode(countrie)
   }));
 
-  let formContext;
-  try {
-    formContext = useFormContext();
-  } catch (error) {
-    formContext = null;
-  }
+  const formContext = useFormContext()
 
-  // Versión simplificada cuando no hay FormProvider
-  if (!formContext) {
+  const renderContent = () => {
+    if (!formContext) {
+      return (
+        <Box>
+          <Flex alignItems='flex-end'>
+            <Box mr={2}>
+              <Select
+                label={label}
+                options={callingCodes}
+                value={callingCodes.find((c) => c.value === '54')}
+                isDisabled={disabled}
+                bigSize={bigSize}
+              />
+            </Box>
+            <Box ml={2} flex='1'>
+              <Input 
+                showErrors={false} 
+                name={name} 
+                disabled={disabled}
+                {...rest} 
+              />
+            </Box>
+          </Flex>
+        </Box>
+      )
+    }
+
     return (
       <Box>
         <Flex alignItems='flex-end'>
           <Box mr={2}>
-            <Select
-              label={label}
-              options={callingCodes}
-              value={callingCodes.find((c) => c.value === '54')}
-              disabled={disabled}
-              bigSize={bigSize}
+            <Controller
+              name='phone_prefix'
+              control={formContext.control}
+              defaultValue='54'
+              render={({ field: { onChange, value } }) => (
+                <Select
+                  label={label}
+                  options={callingCodes}
+                  value={callingCodes.find((c) => c.value === value)}
+                  handleOnChange={(val) => onChange(val.value)}
+                  bigSize={bigSize}
+                />
+              )}
             />
           </Box>
           <Box ml={2} flex='1'>
-            <Input 
-              showErrors={false} 
-              name={name} 
-              disabled={disabled}
-              {...rest} 
-            />
+            <Input showErrors={false} name={name} {...rest} />
           </Box>
         </Flex>
+        <Box mt={2}>
+          <Text fontSize='sm' color='red.400'>
+            {formContext.formState?.errors?.[name]?.message?.toString()}
+          </Text>
+        </Box>
       </Box>
-    );
+    )
   }
 
-  // Versión completa con FormProvider
-  return (
-    <Box>
-      <Flex alignItems='flex-end'>
-        <Box mr={2}>
-          <Controller
-            name='phone_prefix'
-            control={formContext.control}
-            defaultValue='54'
-            render={({ field: { onChange, value } }) => (
-              <Select
-                label={label}
-                options={callingCodes}
-                value={callingCodes.find((c) => c.value === value)}
-                handleOnChange={(val) => onChange(val.value)}
-                bigSize={bigSize}
-              />
-            )}
-          />
-        </Box>
-        <Box ml={2} flex='1'>
-          <Input showErrors={false} name={name} {...rest} />
-        </Box>
-      </Flex>
-      <Box mt={2}>
-        <Text fontSize='sm' color='red.400'>
-          {formContext?.formState?.errors?.[name]?.message}
-        </Text>
-      </Box>
-    </Box>
-  );
+  return renderContent()
 }
 
 export default InputPhone

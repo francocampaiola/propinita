@@ -27,6 +27,7 @@ export interface IInput extends InputProps {
     tooltip?: string | React.ReactNode
     showErrors?: boolean
     reactHookForm?: boolean
+    disabled?: boolean
 }
 
 export interface IInputFile {
@@ -50,9 +51,83 @@ const Input = ({
 }: IInput) => {
     const [showInput, setShowInput] = useState(false)
     const rightAddonRef = useRef(null)
+    const formContext = useFormContext()
 
-    try {
-        const { register, formState, watch } = useFormContext()
+    const renderInput = () => {
+        if (!formContext) {
+            return (
+                <FormControl>
+                    <Flex alignItems='center' mb={2}>
+                        <FormLabel mb={0} fontSize='sm'>
+                            {label}
+                        </FormLabel>
+                        {tooltip && (
+                            <Tooltip color='white' background='black' hasArrow borderRadius='md' padding='2'>
+                                <Box>{tooltip}</Box>
+                            </Tooltip>
+                        )}
+                    </Flex>
+
+                    <InputGroup borderTopRightRadius='20px'>
+                        <ChakraInput
+                            pl={4}
+                            pr={4 + rightAddonRef?.current?.offsetWidth}
+                            {...rest}
+                            name={name}
+                            disabled={disabled}
+                            borderRadius='15px !important'
+                            fontSize='sm'
+                            _placeholder={{ fontSize: 'sm' }}
+                            type={showInput ? 'text' : type}
+                        />
+                        {showPassword && (
+                            <InputRightAddon
+                                height='100%'
+                                zIndex='10'
+                                position='absolute'
+                                background='transparent'
+                                right='0'
+                                top='0'
+                                mr={0}
+                                ref={rightAddonRef}
+                                {...inputRightProps}
+                            >
+                                <Button
+                                    size='sm'
+                                    padding={0}
+                                    background='transparent'
+                                    fontSize='24px'
+                                    color={'primary'}
+                                    onClick={() => setShowInput(!showInput)}
+                                    _hover={{ background: 'transparent' }}
+                                    _active={{ background: 'transparent' }}
+                                    _focus={{ boxShadow: 'none' }}
+                                >
+                                    {showInput ? <LuEyeOff /> : <LuEye />}
+                                </Button>
+                            </InputRightAddon>
+                        )}
+                        {inputRight && (
+                            <InputRightAddon
+                                height='100%'
+                                zIndex='10'
+                                position='absolute'
+                                background='transparent'
+                                right='0'
+                                top='0'
+                                mr={0}
+                                ref={rightAddonRef}
+                                {...inputRightProps}
+                            >
+                                {typeof inputRight === 'object' ? inputRight : <Text>{inputRight}</Text>}
+                            </InputRightAddon>
+                        )}
+                    </InputGroup>
+                </FormControl>
+            )
+        }
+
+        const { register, formState, watch } = formContext
 
         return (
             <FormControl>
@@ -79,34 +154,32 @@ const Input = ({
                         type={showInput ? 'text' : type}
                     />
                     {showPassword && (
-                        <>
-                            <InputRightAddon
-                                height='100%'
-                                zIndex='10'
-                                position='absolute'
+                        <InputRightAddon
+                            height='100%'
+                            zIndex='10'
+                            position='absolute'
+                            background='transparent'
+                            right='0'
+                            top='0'
+                            mr={0}
+                            ref={rightAddonRef}
+                            {...inputRightProps}
+                        >
+                            <Button
+                                isDisabled={!watch(name)}
+                                size='sm'
+                                padding={0}
                                 background='transparent'
-                                right='0'
-                                top='0'
-                                mr={0}
-                                ref={rightAddonRef}
-                                {...inputRightProps}
+                                fontSize='24px'
+                                color={'primary'}
+                                onClick={() => setShowInput(!showInput)}
+                                _hover={{ background: 'transparent' }}
+                                _active={{ background: 'transparent' }}
+                                _focus={{ boxShadow: 'none' }}
                             >
-                                <Button
-                                    isDisabled={!watch(name)}
-                                    size='sm'
-                                    padding={0}
-                                    background='transparent'
-                                    fontSize='24px'
-                                    color={'primary'}
-                                    onClick={() => setShowInput(!showInput)}
-                                    _hover={{ background: 'transparent' }}
-                                    _active={{ background: 'transparent' }}
-                                    _focus={{ boxShadow: 'none' }}
-                                >
-                                    {showInput ? <LuEyeOff /> : <LuEye />}
-                                </Button>
-                            </InputRightAddon>
-                        </>
+                                {showInput ? <LuEyeOff /> : <LuEye />}
+                            </Button>
+                        </InputRightAddon>
                     )}
                     {inputRight && (
                         <InputRightAddon
@@ -131,81 +204,9 @@ const Input = ({
                 )}
             </FormControl>
         )
-    } catch (error) {
-        // Versión simplificada cuando no hay FormProvider
-        return (
-            <FormControl>
-                <Flex alignItems='center' mb={2}>
-                    <FormLabel mb={0} fontSize='sm'>
-                        {label}
-                    </FormLabel>
-                    {tooltip && (
-                        <Tooltip color='white' background='black' hasArrow borderRadius='md' padding='2'>
-                            <Box>{tooltip}</Box>
-                        </Tooltip>
-                    )}
-                </Flex>
-
-                <InputGroup borderTopRightRadius='20px'>
-                    <ChakraInput
-                        pl={4}
-                        pr={4 + rightAddonRef?.current?.offsetWidth}
-                        {...rest}
-                        name={name}
-                        disabled={disabled}
-                        borderRadius='15px !important'
-                        fontSize='sm'
-                        _placeholder={{ fontSize: 'sm' }}
-                        type={showInput ? 'text' : type}
-                    />
-                    {showPassword && (
-                        <>
-                            <InputRightAddon
-                                height='100%'
-                                zIndex='10'
-                                position='absolute'
-                                background='transparent'
-                                right='0'
-                                top='0'
-                                mr={0}
-                                ref={rightAddonRef}
-                                {...inputRightProps}
-                            >
-                                <Button
-                                    size='sm'
-                                    padding={0}
-                                    background='transparent'
-                                    fontSize='24px'
-                                    color={'primary'}
-                                    onClick={() => setShowInput(!showInput)}
-                                    _hover={{ background: 'transparent' }}
-                                    _active={{ background: 'transparent' }}
-                                    _focus={{ boxShadow: 'none' }}
-                                >
-                                    {showInput ? <LuEyeOff /> : <LuEye />}
-                                </Button>
-                            </InputRightAddon>
-                        </>
-                    )}
-                    {inputRight && (
-                        <InputRightAddon
-                            height='100%'
-                            zIndex='10'
-                            position='absolute'
-                            background='transparent'
-                            right='0'
-                            top='0'
-                            mr={0}
-                            ref={rightAddonRef}
-                            {...inputRightProps}
-                        >
-                            {typeof inputRight === 'object' ? inputRight : <Text>{inputRight}</Text>}
-                        </InputRightAddon>
-                    )}
-                </InputGroup>
-            </FormControl>
-        )
     }
+
+    return renderInput()
 }
 
 export const Radio = ({
@@ -220,8 +221,31 @@ export const Radio = ({
     value?: any
     defaultChecked?: any
 }) => {
-    try {
-        const { register } = useFormContext()
+    const formContext = useFormContext()
+
+    const renderRadio = () => {
+        if (!formContext) {
+            return (
+                <Box>
+                    {children}
+                    <input
+                        name={name}
+                        value={value}
+                        defaultChecked={defaultChecked}
+                        type='radio'
+                        style={{
+                            height: '20px',
+                            width: '20px',
+                            cursor: 'pointer',
+                            verticalAlign: 'middle'
+                        }}
+                        {...rest}
+                    />
+                </Box>
+            )
+        }
+
+        const { register } = formContext
         return (
             <Box>
                 {children}
@@ -240,26 +264,9 @@ export const Radio = ({
                 />
             </Box>
         )
-    } catch (error) {
-        return (
-            <Box>
-                {children}
-                <input
-                    name={name}
-                    value={value}
-                    defaultChecked={defaultChecked}
-                    type='radio'
-                    style={{
-                        height: '20px',
-                        width: '20px',
-                        cursor: 'pointer',
-                        verticalAlign: 'middle'
-                    }}
-                    {...rest}
-                />
-            </Box>
-        )
     }
+
+    return renderRadio()
 }
 
 export const InputFile = ({
@@ -274,8 +281,59 @@ export const InputFile = ({
     info?: string
     defaultValue?: string
 }) => {
-    try {
-        const { register, formState, resetField, watch } = useFormContext()
+    const formContext = useFormContext()
+
+    const renderInputFile = () => {
+        if (!formContext) {
+            return (
+                <>
+                    <Flex alignItems='center' justifyContent='space-between'>
+                        <FormLabel fontSize='sm' htmlFor={name} mb={2}>
+                            {label}
+                        </FormLabel>
+                    </Flex>
+                    <Flex
+                        backgroundColor='#292929'
+                        cursor='pointer'
+                        position='relative'
+                        border='1px dashed gray'
+                        borderRadius='xl'
+                        alignItems='center'
+                        p={6}
+                        height='100%'
+                    >
+                        <Flex width='100%' justifyContent='space-between' alignItems='center'>
+                            <Box>
+                                <Text fontSize='sm'>Arrastra y suelta o selecciona la imagen</Text>
+                                {info && (
+                                    <Text mt={2} color='gray' fontSize='xs'>
+                                        {info}
+                                    </Text>
+                                )}
+                            </Box>
+                            <Box fontSize='2xl' color='primary'>
+                                <LuPaperclip />
+                            </Box>
+                        </Flex>
+                        <FormControl position='absolute' opacity='0' top={0} left={0} height='100%'>
+                            <ChakraInput
+                                name={name}
+                                type='file'
+                                style={{
+                                    width: '100%',
+                                    height: '100%',
+                                    cursor: 'pointer'
+                                }}
+                                {...rest}
+                            />
+                        </FormControl>
+                    </Flex>
+                </>
+            )
+        }
+
+        const { register, formState, resetField, watch } = formContext
+
         return (
             <>
                 <Flex alignItems='center' justifyContent='space-between'>
@@ -342,53 +400,9 @@ export const InputFile = ({
                 )}
             </>
         )
-    } catch (error) {
-        return (
-            <>
-                <Flex alignItems='center' justifyContent='space-between'>
-                    <FormLabel fontSize='sm' htmlFor={name} mb={2}>
-                        {label}
-                    </FormLabel>
-                </Flex>
-                <Flex
-                    backgroundColor='#292929'
-                    cursor='pointer'
-                    position='relative'
-                    border='1px dashed gray'
-                    borderRadius='xl'
-                    alignItems='center'
-                    p={6}
-                    height='100%'
-                >
-                    <Flex width='100%' justifyContent='space-between' alignItems='center'>
-                        <Box>
-                            <Text fontSize='sm'>Arrastra y suelta o selecciona la imagen</Text>
-                            {info && (
-                                <Text mt={2} color='gray' fontSize='xs'>
-                                    {info}
-                                </Text>
-                            )}
-                        </Box>
-                        <Box fontSize='2xl' color='primary'>
-                            <LuPaperclip />
-                        </Box>
-                    </Flex>
-                    <FormControl position='absolute' opacity='0' top={0} left={0} height='100%'>
-                        <ChakraInput
-                            name={name}
-                            type='file'
-                            style={{
-                                width: '100%',
-                                height: '100%',
-                                cursor: 'pointer'
-                            }}
-                            {...rest}
-                        />
-                    </FormControl>
-                </Flex>
-            </>
-        )
     }
+
+    return renderInputFile()
 }
 
 export const SimpleInput = ({

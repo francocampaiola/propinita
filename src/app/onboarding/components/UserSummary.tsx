@@ -84,8 +84,8 @@ const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: Onb
     checkMercadoPagoConnection();
   }, []);
 
-  const onSubmit = handleSubmit((data) => {
-    onNext(data)
+  const onSubmit = handleSubmit(() => {
+    onNext()
     setStep(1)
   })
 
