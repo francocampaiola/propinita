@@ -13,7 +13,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ 
         connected: false, 
         error: 'No se encontró una sesión válida' 
-      }, { status: 401 });
+      }, { 
+        status: 401,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     }
     
     // Buscar al usuario en la tabla users del schema public
@@ -27,7 +32,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ 
         connected: false, 
         error: 'Usuario no encontrado' 
-      }, { status: 404 });
+      }, { 
+        status: 404,
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
     }
 
     // Verificar si ya existen credenciales para este usuario
@@ -40,6 +50,10 @@ export async function GET(request: NextRequest) {
     if (mpError || !mpCredentials) {
       return NextResponse.json({ 
         connected: false 
+      }, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
       });
     }
     
@@ -56,12 +70,20 @@ export async function GET(request: NextRequest) {
       scope: mpCredentials.scope,
       token_status: isExpired ? 'expired' : 'valid',
       expiration_date: tokenExpiration.toISOString()
+    }, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
   } catch (error) {
-    console.error('Error al verificar conexión con MercadoPago:', error);
     return NextResponse.json({ 
       connected: false, 
       error: 'Error interno del servidor' 
-    }, { status: 500 });
+    }, { 
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
   }
 }

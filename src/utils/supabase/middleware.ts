@@ -40,6 +40,15 @@ export async function updateSession(request: NextRequest) {
     data: { user }
   } = await supabase.auth.getUser()
 
+  // Excluir rutas de API y otros endpoints que no requieren redirección
+  if (
+    request.nextUrl.pathname.startsWith('/api/') ||
+    request.nextUrl.pathname.startsWith('/_next/') ||
+    request.nextUrl.pathname.startsWith('/static/')
+  ) {
+    return supabaseResponse;
+  }
+
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&

@@ -71,28 +71,56 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
         setCheckingConnection(true);
         
         // Llamada al endpoint para verificar conexión
-        const response = await fetch('/api/mercadopago/check-connection');
-        
-        if (response.ok) {
-          const data = await response.json();
-          setMpInfo({
-            connected: data.connected,
-            userInfo: data.connected ? {
-              user_id: data.mp_user_id,
-              expires_in: data.expires_in,
-              scope: data.scope
-            } : undefined
-          });
-        } else {
-          // Si hay error, asumir que no está conectado
-          setMpInfo({ connected: false });
+        const response = await fetch('/api/mercadopago/check-connection', {
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        // Si la respuesta no es ok, lanzar error
+        if (!response.ok) {
+          throw new Error(`Error HTTP: ${response.status}`);
         }
-        // const url = await api.user.authorize()
-        // setAuthorizationUrl(url)
-        // console.log(url)
+
+        // Verificar el tipo de contenido
+        const contentType = response.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          throw new Error('La respuesta no es JSON');
+        }
+
+        // Obtener y parsear la respuesta
+        const data = await response.json();
+        
+        setMpInfo({
+          connected: data.connected,
+          userInfo: data.connected ? {
+            user_id: data.mp_user_id,
+            expires_in: data.expires_in,
+            scope: data.scope
+          } : undefined
+        });
+
+        // Si hay un error en la respuesta, mostrarlo
+        if (data.error) {
+          toast({
+            title: "Error de conexión",
+            description: data.error,
+            status: "error",
+            duration: 5000,
+            isClosable: true,
+          });
+        }
       } catch (error) {
-        console.error("Error al verificar conexión con MercadoPago:", error);
         setMpInfo({ connected: false });
+        toast({
+          title: "Error de conexión",
+          description: "No se pudo verificar la conexión con MercadoPago. Por favor, intenta nuevamente.",
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
       } finally {
         setCheckingConnection(false);
       }
