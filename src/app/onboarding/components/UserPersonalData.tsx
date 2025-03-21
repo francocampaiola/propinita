@@ -11,7 +11,7 @@ import { useForm, FormProvider, Controller } from 'react-hook-form'
 import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
-const UserPersonalData = ({ userData, onNext, onBack, isLoading }: OnboardingStepProps) => {
+const UserPersonalData = ({ userData, onNext, onBack, isLoading, isLoadingBack }: OnboardingStepProps) => {
   const firstStepSchema = z.object({
     first_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     last_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
@@ -181,6 +181,7 @@ const UserPersonalData = ({ userData, onNext, onBack, isLoading }: OnboardingSte
               mr={4}
               size='sm'
               onClick={onBack}
+              isLoading={isLoadingBack}
               leftIcon={<FaArrowLeft />}
             >
               Volver

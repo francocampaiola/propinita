@@ -17,7 +17,8 @@ export interface UserData {
 
 export interface OnboardingStepProps {
   userData: UserData
-  onNext: (data: Partial<UserData>) => Promise<void>
-  onPrev?: () => Promise<void>
-  isLoading?: boolean
+  onNext: () => void
+  onBack: () => void
+  isLoading: boolean
+  isLoadingBack: boolean
 }

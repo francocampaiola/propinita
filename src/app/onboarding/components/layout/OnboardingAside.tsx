@@ -2,13 +2,14 @@
 import BoxColorMode from '@/src/components/BoxColorMode'
 import { OnboardingContext } from '@/src/context/OnboardingProvider'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
-import { Box, Center, CircularProgress, Container, Divider, Flex, Spinner, Text } from '@chakra-ui/react'
+import { Box, Center, Container, Divider, Flex, Spinner, Text } from '@chakra-ui/react'
 import React, { useContext } from 'react'
 import { IoCheckmark } from 'react-icons/io5'
+import { StepStatus } from '@/src/app/onboarding/onboarding.types'
 
 const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[] }) => {
-  const { currentStep } = useContext(OnboardingContext)
-  const { isLoading } = useGetUser()
+  const { currentStep, isLoadingSteps } = useContext(OnboardingContext)
+  const { user } = useGetUser()
 
   const getStepIndex = () => {
     const stepsMap: { [key: string]: number } = {
@@ -18,7 +19,6 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
       'user_summary': 3,
       'completed': 4
     }
-
     return stepsMap[currentStep || 'user_type']
   }
 
@@ -42,7 +42,7 @@ const OnboardingAside = ({ steps }: { steps: { label: string, number: number }[]
       <Center flexDirection='column' pt={10} height='100%'>
         <Box fontSize='sm' width='fit-content' margin='0 auto'>
           <Container maxW='sm'>
-            {isLoading ? (
+            {isLoadingSteps ? (
               <Center h="full">
                 <Spinner />
               </Center>

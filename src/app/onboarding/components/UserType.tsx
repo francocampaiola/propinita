@@ -17,7 +17,7 @@ const options = [
   }
 ]
 
-const UserType = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
+const UserType = ({ userData, onNext, onBack, isLoading, isLoadingBack }: OnboardingStepProps) => {
   const { handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       user_type: userData.user_type
@@ -50,11 +50,13 @@ const UserType = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
         <Flex justifyContent='flex-end'>
             <Button
               variant='secondary'
-              type='submit'
+              type='button'
               mt={4}
               mr={4}
               size='sm'
-              isDisabled
+              onClick={onBack}
+              isLoading={isLoadingBack}
+              isDisabled={true}
               leftIcon={<FaArrowLeft />}
             >
               Volver

@@ -25,15 +25,22 @@ const civil_state = [
   { label: 'Viudo/a', value: 'widowed' }
 ]
 
+const options = [
+  { label: 'Usuario', value: 'user' },
+  { label: 'Proveedor', value: 'provider' }
+]
+
 const getLabel = (value: string, options: { value: string; label: string }[]) => {
   const option = options.find((option) => option.value === value)
   return option ? option.label : value
 }
 
-const UserSummary = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
+const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: OnboardingStepProps) => {
   const { user } = useGetUser()
   const router = useRouter()
   const [step, setStep] = useState(0)
+  const [mpUserId, setMpUserId] = useState<string | null>(null)
+  const [isLoadingMp, setIsLoadingMp] = useState(true)
 
   const { handleSubmit, watch, setValue } = useForm({
     defaultValues: {
@@ -47,12 +54,39 @@ const UserSummary = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
     }
   })
 
+  useEffect(() => {
+    const checkMercadoPagoConnection = async () => {
+      try {
+        const connectionResponse = await fetch('/api/mercadopago/check-connection', {
+          credentials: 'include',
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!connectionResponse.ok) {
+          throw new Error(`Error HTTP: ${connectionResponse.status}`);
+        }
+
+        const connectionData = await connectionResponse.json();
+        
+        if (connectionData.connected && connectionData.mp_user_id) {
+          setMpUserId(connectionData.mp_user_id.toString());
+        }
+      } catch (error) {
+        console.error('Error al obtener el ID de MercadoPago:', error);
+      } finally {
+        setIsLoadingMp(false);
+      }
+    };
+    
+    checkMercadoPagoConnection();
+  }, []);
+
   const onSubmit = handleSubmit((data) => {
     onNext(data)
     setStep(1)
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 2000)
   })
 
   useEffect(() => {
@@ -67,114 +101,111 @@ const UserSummary = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
     }
   }, [userData, setValue])
 
+  // Si estamos cargando el ID de MercadoPago, mostramos un spinner
+  if (isLoadingMp) {
+    return (
+      <Flex justifyContent='center' alignItems='center' h='100%'>
+        <Spinner color='primary' size='xl' />
+      </Flex>
+    );
+  }
+
   return (
     <Box w={'100%'}>
-      {step === 0 ? (
-        <>
-          <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
-            Paso 4
-          </Text>
-          <Text fontWeight='600' fontSize='2xl' mb={1}>
-            Resumen
-          </Text>
-          <Text fontSize='sm'>
-            Chequeá la información referida a tu cuenta antes de confirmar el envío de datos.
-          </Text>
-          <form onSubmit={onSubmit}>
-            <Flex direction='column' gap={4} my={4}>
-              <Flex
-                wrap='wrap'
-                gap={4}
-                justify='space-between'
-                p={4}
-                border={'1px solid white'}
-                borderRadius={15}
-              >
-                <Box w='48%'>
-                  <Text fontWeight='600' fontSize='lg'>
-                    Perfil
-                  </Text>
-                  <Text fontSize='sm'>
-                    {watch('user_type') === 'user' ? 'Usuario' : 'Proveedor'}
-                  </Text>
-                </Box>
-                <Box w='48%'>
-                  <Text fontWeight='600' fontSize='lg'>
-                    Nacionalidad
-                  </Text>
-                  <Text fontSize='sm'>{getLabel(user?.nationality, countries)}</Text>
-                </Box>
-                <Box w='48%'>
-                  <Text fontWeight='600' fontSize='lg'>
-                    Nombre y apellido
-                  </Text>
-                  <Text fontSize='sm'>
-                    {user?.first_name} {user?.last_name}
-                  </Text>
-                </Box>
-                <Box w='48%'>
-                  <Text fontWeight='600' fontSize='lg'>
-                    Estado civil
-                  </Text>
-                  <Text fontSize='sm'>{getLabel(user?.civil_state, civil_state)}</Text>
-                </Box>
-                <Box w='48%'>
-                  <Text fontWeight='600' fontSize='lg'>
-                    Teléfono
-                  </Text>
-                  <Text fontSize='sm'>{user?.phone}</Text>
-                </Box>
-
-                <Box w='48%'>
-                  <Text fontWeight='600' fontSize='lg'>
-                    CVU
-                  </Text>
-                  <Text fontSize='sm'>{user?.id}</Text>
-                </Box>
-              </Flex>
-            </Flex>
-            <Flex justifyContent='flex-end'>
-              <Button
-                variant='secondary'
-                type='submit'
-                mt={4}
-                mr={4}
-                size='sm'
-                isDisabled
-                leftIcon={<FaArrowLeft />}
-              >
-                Volver
-              </Button>
-              <Button
-                variant='primary'
-                type='submit'
-                mt={4}
-                size='sm'
-                isLoading={isLoading}
-                // TODO: Agregar onclick
-                // onClick={() => {
-                //     setStep(1)
-                // }}
-                // isDisabled={!watch('user_type')}
-                rightIcon={<FaArrowRight />}
-              >
-                Siguiente
-              </Button>
-            </Flex>
-          </form>
-        </>
-      ) : step === 1 ? (
-        <Flex justifyContent='center' alignItems='center' mx='auto' direction='column'>
-          <Circle size='60px' bg='green.500' color='white' mb={4}>
-            <FaCheck size={32} color='white' />
-          </Circle>
-          <Text fontSize={'2xl'} fontWeight={'600'} mb={2}>
-            Registro completado con éxito
-          </Text>
-          <Text>Redirigiendo al dashboard</Text>
-          <Spinner color='primary' borderWidth={4} mt={4} />
+      <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
+        Paso 4
+      </Text>
+      <Text fontWeight='600' fontSize='2xl' mb={1}>
+        Resumen
+      </Text>
+      <Text fontSize='sm'>
+        Chequeá la información referida a tu cuenta antes de confirmar el envío de datos.
+      </Text>
+      <form onSubmit={onSubmit}>
+        <Flex direction='column' gap={4} my={4}>
+          <Flex
+            wrap='wrap'
+            gap={4}
+            justify='space-between'
+            p={4}
+            border={'1px solid white'}
+            borderRadius={15}
+          >
+            <Box w='48%'>
+              <Text fontWeight='600' fontSize='lg'>
+                Perfil
+              </Text>
+              <Text fontSize='sm'>
+                {getLabel(watch('user_type') || '', options)}
+              </Text>
+            </Box>
+            <Box w='48%'>
+              <Text fontWeight='600' fontSize='lg'>
+                Nacionalidad
+              </Text>
+              <Text fontSize='sm'>{getLabel(watch('nationality') || '', countries)}</Text>
+            </Box>
+            <Box w='48%'>
+              <Text fontWeight='600' fontSize='lg'>
+                Nombre y apellido
+              </Text>
+              <Text fontSize='sm'>
+                {watch('first_name')} {watch('last_name')}
+              </Text>
+            </Box>
+            <Box w='48%'>
+              <Text fontWeight='600' fontSize='lg'>
+                Estado civil
+              </Text>
+              <Text fontSize='sm'>{getLabel(watch('civil_state') || '', civil_state)}</Text>
+            </Box>
+            <Box w='48%'>
+              <Text fontWeight='600' fontSize='lg'>
+                Teléfono
+              </Text>
+              <Text fontSize='sm'>{watch('phone')}</Text>
+            </Box>
+            <Box w='48%'>
+              <Text fontWeight='600' fontSize='lg'>
+                ID MercadoPago
+              </Text>
+              <div className="flex items-center gap-2">
+                {isLoadingMp ? (
+                  <Spinner size='sm' />
+                ) : mpUserId ? (
+                  <span className="text-sm font-medium text-gray-900">{mpUserId}</span>
+                ) : (
+                  <span className="text-sm font-medium text-red-500">No disponible</span>
+                )}
+              </div>
+            </Box>
+          </Flex>
         </Flex>
-      ) : null}
+        <Flex justifyContent='flex-end'>
+          <Button
+            variant='secondary'
+            type='button'
+            mt={4}
+            mr={4}
+            size='sm'
+            onClick={onBack}
+            isLoading={isLoadingBack}
+            leftIcon={<FaArrowLeft />}
+          >
+            Volver
+          </Button>
+          <Button
+            variant='primary'
+            type='submit'
+            mt={4}
+            size='sm'
+            isLoading={isLoading}
+            rightIcon={<FaArrowRight />}
+          >
+            Finalizar
+          </Button>
+        </Flex>
+      </form>
     </Box>
   )
 }

@@ -20,7 +20,7 @@ interface MercadoPagoInfo {
   };
 }
 
-const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
+const UserBankData = ({ userData, onNext, onBack, isLoading, isLoadingBack }: OnboardingStepProps) => {
   const { handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       birthdate: userData.birthdate || ''
@@ -161,8 +161,8 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
     fetchAuthorizationUrl();
   }, [mpInfo.connected, toast, isMounted]);
 
-  const onSubmit = handleSubmit((data) => {
-    onNext(data);
+  const onSubmit = handleSubmit(() => {
+    onNext();
   });
 
   // Renderizar un placeholder mientras el componente no está montado
@@ -295,7 +295,8 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
             mt={4}
             mr={4}
             size='sm'
-            isDisabled
+            onClick={onBack}
+            isLoading={isLoadingBack}
             leftIcon={<FaArrowLeft />}
           >
             Volver
@@ -306,6 +307,7 @@ const UserBankData = ({ userData, onNext, isLoading }: OnboardingStepProps) => {
             mt={4}
             size='sm'
             isLoading={isLoading}
+            isDisabled={!mpInfo.connected}
             rightIcon={<FaArrowRight />}
           >
             Continuar
