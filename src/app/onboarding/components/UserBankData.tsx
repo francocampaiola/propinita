@@ -154,8 +154,8 @@ const UserBankData = ({ userData, onNext, onBack, isLoading, isLoadingBack }: On
     fetchAuthorizationUrl();
   }, [mpInfo.connected, toast, isMounted]);
 
-  const onSubmit = handleSubmit(() => {
-    onNext();
+  const onSubmit = handleSubmit((data) => {
+    onNext(data);
   });
 
   // Renderizar un placeholder mientras el componente no está montado
