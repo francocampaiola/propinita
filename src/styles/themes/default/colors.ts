@@ -19,6 +19,12 @@ const colors = {
   navbar: {
     bg: '#2C2C2C'
   },
+  components: {
+    qr: {
+      bg: '#3C3C3C',
+      divider: '#525252'
+    }
+  },
   gray: {
     50: '#F6F6F6',
     100: '#E7E7E7',

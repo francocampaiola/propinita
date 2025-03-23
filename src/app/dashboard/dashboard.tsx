@@ -2,6 +2,7 @@
 import React, { useState } from 'react'
 /* Chakra ui */
 import { Box, Grid, Text, Flex } from '@chakra-ui/react'
+import QrComponent from './components/qr'
 // import CobrarComponent from './cobrar/cobrar'
 // import SelectStore from './components/SelectStore'
 // import WelcomeBanner from './components/WelcomeBanner'
@@ -15,7 +16,17 @@ const Dashboard = () => {
   return (
     <>
       {/* <WelcomeBanner /> */}
-      <Grid gridTemplateColumns={{ base: 'repeat(1,1fr)', md: '0.8fr 1.2fr' }} gap='20px' px={0} />
+      <Grid gridTemplateColumns={{ base: 'repeat(1,1fr)', md: '0.8fr 1.2fr' }} gap='20px' px={0} p={8}>
+        <Box>
+          <QrComponent />
+        </Box>
+        <Box gridRow={{ base: '3', md: 'auto' }}>
+          <Text>2</Text>
+        </Box>
+      </Grid>
+      <Box mt={6} gridColumn={{ base: 'span 1', md: 'span 2' }}>
+        <Text>3</Text>
+      </Box>
       {/* <Box>
           <Text fontSize='xl' fontWeight='600'>
             {t('title')}
