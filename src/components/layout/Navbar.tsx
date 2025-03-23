@@ -1,25 +1,29 @@
 import React from 'react'
 /* Chakra UI */
-import { Flex, Box, Button } from '@chakra-ui/react'
-/* components */
-// import { ProfileMenu } from '@/src/app/dashboard/perfil/components/ProfileMenu'
-/* icons */
-// import { FaBell } from 'react-icons/fa6'
+import { Flex, Box, Button, Avatar, AvatarBadge, AvatarGroup } from '@chakra-ui/react'
+import { useGetUser } from '@/src/hooks/users/useGetUser'
+
 const Navbar = () => {
+  const { user } = useGetUser()
   return (
-    <Box display={{ base: 'none', md: 'block' }} width='100%'>
-      <Flex alignItems='center' justifyContent='space-between'>
-        <Flex alignItems='center'></Flex>
-        <Flex alignItems='center'>
-          {/* <Button mx='5' variant='icon'>
-            <FaBell />
-          </Button> */}
-          {/* Botón que desplega un menú para desloguearse */}
-          {/* <ProfileMenu /> */}
-        </Flex>
-        {/* Botón de icono de notificaciones */}
+    <Box
+      display={{ base: 'none', md: 'flex' }}
+      width='100%'
+      backgroundColor={'navbar.bg'}
+      height={'16'}
+      alignItems={'center'}
+      justifyContent={'flex-end'}
+    >
+      <Flex mr={4} alignItems={'center'}>
+        <Avatar
+          name={user?.first_name + ' ' + user?.last_name}
+          backgroundColor={'primary'}
+          variant='subtle'
+          size='sm'
+        >
+          <AvatarBadge boxSize='4' bg='green.500' />
+        </Avatar>
       </Flex>
-      {/*<EmployeesActivity isOpen={isOpen} />*/}
     </Box>
   )
 }

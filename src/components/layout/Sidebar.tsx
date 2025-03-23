@@ -1,13 +1,16 @@
-import { useGetUser } from '@/src/hooks/users/useGetUser'
-import { sidebarItems } from '@/src/utils/utils'
-import { Box, Button, Divider, Flex, Text, useColorModeValue } from '@chakra-ui/react'
-import { usePathname } from 'next/navigation'
 import React from 'react'
+
+import { usePathname } from 'next/navigation'
 import NextLink from 'next/link'
-import { Link } from '@chakra-ui/react'
 import Image from 'next/image'
+
+import { Box, Button, Flex, Text, useColorModeValue } from '@chakra-ui/react'
+import { Link } from '@chakra-ui/react'
+import { TbLayoutSidebarRightCollapse } from 'react-icons/tb'
+
+import { sidebarItems } from '@/src/utils/utils'
 import logo from '@/src/assets/logo.svg'
-import { MdClose } from 'react-icons/md'
+import smallLogo from '@/src/assets/small_logo.svg'
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -16,8 +19,6 @@ interface SidebarProps {
 
 export const SidebarItems = ({ isCollapsed }: SidebarProps) => {
   const router = usePathname()
-  const bg = useColorModeValue('lightGray', '#333')
-  const { user } = useGetUser()
   return (
     <Box my={6} px={isCollapsed ? 2 : 5}>
       <Flex flexDirection='column'>
@@ -30,18 +31,10 @@ export const SidebarItems = ({ isCollapsed }: SidebarProps) => {
               mb={1}
               variant='aside'
               fontWeight={router === item.path ? '600' : 'normal'}
-              background={router === item.path ? bg : 'transparent'}
-              _before={
-                router === item.path && {
-                  content: '""',
-                  position: 'absolute',
-                  height: '82%',
-                  width: '4px',
-                  borderRadius: 'md',
-                  background: '#62FEE2',
-                  left: '0'
-                }
-              }
+              background={router === item.path ? 'primary' : 'transparent'}
+              _hover={{
+                background: router === item.path ? 'secondary' : 'gray.900'
+              }}
             >
               <Box mx={3} fontSize='xl'>
                 {item.icon}
@@ -70,8 +63,8 @@ const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
         <Box minHeight='29px' ml={!isCollapsed && 3}>
           <Image
             style={{ filter: 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.5))' }}
-            src={!isCollapsed ? logo : logo}
-            alt='Logo de Megapix'
+            src={!isCollapsed ? logo : smallLogo}
+            alt='Logo de Propinita'
             height={isCollapsed ? '20' : '30'}
           />
         </Box>
@@ -91,36 +84,11 @@ const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
             my={6}
           >
             <Box mx={3} fontSize='xl' transform={isCollapsed ? '' : 'rotate(180deg)'}>
-              <MdClose />
+              <TbLayoutSidebarRightCollapse />
             </Box>
             {!isCollapsed ? <Text>Cerrar</Text> : null}
           </Button>
         </Box>
-        {/* <Button
-              justifyContent={isCollapsed ? 'center' : 'flex-start'}
-              width='100%'
-              px={0}
-              mb={1}
-              variant='aside'
-              fontWeight={router === item.path ? '600' : 'normal'}
-              background={router === item.path ? bg : 'transparent'}
-              _before={
-                router === item.path && {
-                  content: '""',
-                  position: 'absolute',
-                  height: '82%',
-                  width: '4px',
-                  borderRadius: 'md',
-                  background: '#62FEE2',
-                  left: '0'
-                }
-              }
-            >
-              <Box mx={3} fontSize='xl'>
-                {item.icon}
-              </Box>
-              {!isCollapsed ? <Text>{item.title}</Text> : null}
-            </Button> */}
       </Flex>
     </Box>
   )

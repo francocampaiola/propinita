@@ -16,6 +16,9 @@ const colors = {
       bg: '#FFFFFF'
     }
   },
+  navbar: {
+    bg: '#2C2C2C'
+  },
   gray: {
     50: '#F6F6F6',
     100: '#E7E7E7',

@@ -8,8 +8,8 @@ type Props = {
 }
 
 export const metadata = {
-  title: 'Dashboard de Megapix',
-  description: 'Dashboard de Megapix'
+  title: 'Dashboard | Propinita',
+  description: 'Dashboard | Propinita'
 }
 
 const layout = async ({ children }: Props) => {
