@@ -1,6 +1,8 @@
-import { Box, Divider, Flex, Image, Text } from '@chakra-ui/react'
+import { Divider, Flex, Text } from '@chakra-ui/react'
+import Image from 'next/image'
 import React from 'react'
 import { IoRefreshSharp } from 'react-icons/io5'
+import qr from '@/src/assets/templates/qr.svg'
 
 const QrComponent = () => {
   return (
@@ -18,7 +20,7 @@ const QrComponent = () => {
       </Flex>
       <Divider borderColor='components.qr.divider' />
       <Flex flex={1} alignItems='center' justifyContent='center'>
-        {/* <Image src='https://placehold.co/80x80' alt='QR' width={60} height={60} /> */}
+        <Image src={qr} alt='QR' width={200} height={200} />
       </Flex>
     </Flex>
   )

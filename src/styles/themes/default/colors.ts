@@ -23,6 +23,10 @@ const colors = {
     qr: {
       bg: '#3C3C3C',
       divider: '#525252'
+    },
+    balance: {
+      bg: '#3C3C3C',
+      divider: '#525252'
     }
   },
   gray: {
