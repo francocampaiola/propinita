@@ -8,8 +8,10 @@ import {
   TagLeftIcon,
   Text,
   Tooltip,
-  Box
+  Box,
+  Spinner
 } from '@chakra-ui/react'
+import { useGetBalance } from '@/src/hooks/balance/useGetBalance'
 import { IoEye, IoEyeOff } from 'react-icons/io5'
 import { FaInfoCircle } from 'react-icons/fa'
 import { BsGraphUp } from 'react-icons/bs'
@@ -17,6 +19,23 @@ import { GrUpdate } from 'react-icons/gr'
 
 const BalanceComponent = () => {
   const [showBalance, setShowBalance] = useState(false)
+  const [isRefetching, setIsRefetching] = useState(false)
+
+  const { balance, isLoading, refetch } = useGetBalance()
+
+  const handleRefetch = async () => {
+    setIsRefetching(true)
+    console.log('Iniciando refetch del balance...')
+    await refetch()
+    console.log('Refetch completado')
+    setIsRefetching(false)
+  }
+
+  if (isLoading) {
+    return <Text>Cargando...</Text>
+  }
+
+  console.log(balance)
 
   return (
     <Flex
@@ -46,7 +65,9 @@ const BalanceComponent = () => {
       <Flex flex={1} alignItems={'flex-start'} ml={5} direction={'column'}>
         <Flex alignItems={'center'} gap={3.5}>
           <Text fontSize='6xl' fontWeight={700}>
-            {showBalance ? '$******' : '$100.000'}
+            {showBalance
+              ? '$******'
+              : balance?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}
           </Text>
           <Text fontSize={'4xl'} fontWeight={700}>
             ARS
@@ -78,9 +99,16 @@ const BalanceComponent = () => {
             _hover={{
               backgroundColor: 'primary'
             }}
+            onClick={handleRefetch}
+            isLoading={isRefetching}
+            loadingText='Actualizando...'
           >
-            <GrUpdate size={'0.875rem'} />
-            Actualizar saldo
+            {!isRefetching && (
+              <>
+                <GrUpdate size={'0.875rem'} />
+                Actualizar saldo
+              </>
+            )}
           </Button>
         </Flex>
         <Flex mt={6} gap={2} direction={'column'} w={'100%'} pr={4}>

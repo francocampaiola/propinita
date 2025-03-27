@@ -4,6 +4,7 @@ import { Box, Grid } from '@chakra-ui/react'
 import QrComponent from './components/qr'
 import BalanceComponent from './components/balance'
 import HistoryComponent from './components/history'
+import { useGetBalance } from '@/src/hooks/balance/useGetBalance'
 
 const Dashboard = () => {
   return (

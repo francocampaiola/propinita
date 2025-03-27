@@ -14,6 +14,35 @@ export const getUser = async (): Promise<Database['public']['Tables']['users']['
   return userPublic
 }
 
+export const getBalance = async (
+  userId: number
+): Promise<Database['public']['Tables']['wallets']['Row']> => {
+  const supabase = createClient()
+
+  const { data, error } = await supabase.from('wallets').select('*').eq('fk_user', userId).single()
+
+  if (error) {
+    console.error('Error fetching balance:', error)
+    return null
+  }
+
+  return data
+}
+
+export const getTransactions = async (
+  userId: number
+): Promise<Database['public']['Tables']['transactions']['Row'][]> => {
+  const supabase = createClient()
+  const { data, error } = await supabase.from('transactions').select('*').eq('fk_user', userId)
+
+  if (error) {
+    console.error('Error fetching transactions:', error)
+    return null
+  }
+
+  return data
+}
+
 export const logout = async () => {
   const supabase = createClient()
 
