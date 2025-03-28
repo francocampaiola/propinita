@@ -3,18 +3,26 @@ import Image from 'next/image'
 import QRCode from 'qrcode'
 import { Divider, Flex, Text, Spinner, VStack } from '@chakra-ui/react'
 import { IoRefreshSharp } from 'react-icons/io5'
+import { useGetUser } from '@/src/hooks/users/useGetUser'
 
 const QrComponent = () => {
   const [qrUrl, setQrUrl] = useState<string>('')
   const [qrText, setQrText] = useState<string>('')
   const [isLoading, setIsLoading] = useState(false)
+  const { user } = useGetUser()
 
   const generateQR = async () => {
     setIsLoading(true)
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      const url = 'https://propinita.app'
+      // Construir la URL de pago con los datos del proveedor
+      const paymentUrl = `${process.env.NEXT_PUBLIC_APP_URL}/pago?providerId=${
+        user?.id
+      }&providerName=${encodeURIComponent(
+        `${user?.first_name || ''} ${user?.last_name || ''}`.trim() || 'Proveedor'
+      )}`
+
       const options: QRCode.QRCodeToDataURLOptions = {
         margin: 2,
         width: 250,
@@ -29,9 +37,9 @@ const QrComponent = () => {
         maskPattern: Math.floor(Math.random() * 8) as QRCode.QRCodeMaskPattern
       }
 
-      const qrDataUrl = await QRCode.toDataURL(url, options)
+      const qrDataUrl = await QRCode.toDataURL(paymentUrl, options)
       setQrUrl(qrDataUrl)
-      setQrText(url)
+      setQrText(paymentUrl)
     } catch (err) {
       console.error('Error generando QR:', err)
     } finally {
@@ -40,8 +48,10 @@ const QrComponent = () => {
   }
 
   useEffect(() => {
-    generateQR()
-  }, [])
+    if (user) {
+      generateQR()
+    }
+  }, [user])
 
   return (
     <Flex
