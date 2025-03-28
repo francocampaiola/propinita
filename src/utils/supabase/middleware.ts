@@ -46,13 +46,13 @@ export async function updateSession(request: NextRequest) {
     request.nextUrl.pathname.startsWith('/_next/') ||
     request.nextUrl.pathname.startsWith('/static/')
   ) {
-    return supabaseResponse;
+    return supabaseResponse
   }
 
   if (
     !user &&
     !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/recuperar') && 
+    !request.nextUrl.pathname.startsWith('/recuperar') &&
     !request.nextUrl.pathname.startsWith('/nueva_clave')
   ) {
     // no user, potentially respond by redirecting the user to the login page

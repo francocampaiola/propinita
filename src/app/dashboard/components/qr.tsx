@@ -1,10 +1,32 @@
-import { Divider, Flex, Text } from '@chakra-ui/react'
+import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
-import React from 'react'
+import QRCode from 'qrcode'
+import { Divider, Flex, Text } from '@chakra-ui/react'
 import { IoRefreshSharp } from 'react-icons/io5'
-import qr from '@/src/assets/templates/qr.svg'
 
 const QrComponent = () => {
+  const [qrUrl, setQrUrl] = useState<string>('')
+
+  const generateQR = async () => {
+    try {
+      // TODO: Cambiar por la URL del usuario
+      const url = 'https://propinita.app'
+      const qrDataUrl = await QRCode.toDataURL(url, {
+        color: {
+          dark: '#B49B25',
+          light: '#00000000'
+        }
+      })
+      setQrUrl(qrDataUrl)
+    } catch (err) {
+      console.error('Error generando QR:', err)
+    }
+  }
+
+  useEffect(() => {
+    generateQR()
+  }, [])
+
   return (
     <Flex
       backgroundColor='components.qr.bg'
@@ -16,11 +38,11 @@ const QrComponent = () => {
     >
       <Flex justifyContent='space-between' alignItems={'center'} height={'15%'} mx={4}>
         <Text fontWeight={700}>Mi QR</Text>
-        <IoRefreshSharp size='1.5rem' />
+        <IoRefreshSharp size='1.5rem' style={{ cursor: 'pointer' }} onClick={generateQR} />
       </Flex>
       <Divider borderColor='components.qr.divider' />
       <Flex flex={1} alignItems='center' justifyContent='center'>
-        <Image src={qr} alt='QR' width={200} height={200} />
+        {qrUrl && <Image src={qrUrl} alt='QR' width={250} height={250} />}
       </Flex>
     </Flex>
   )
