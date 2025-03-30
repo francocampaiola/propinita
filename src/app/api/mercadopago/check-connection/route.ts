@@ -3,10 +3,7 @@ import { createClient } from '@/src/utils/supabase/server'
 
 export async function GET(request: NextRequest) {
   try {
-    // Crear cliente de Supabase para el servidor
     const supabase = await createClient()
-
-    // Obtener el usuario actual
     const {
       data: { user },
       error: authError
@@ -27,7 +24,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Buscar al usuario en la tabla users del schema public
     const { data: userData, error: userError } = await supabase
       .from('users')
       .select('id')
@@ -49,7 +45,6 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Verificar si ya existen credenciales para este usuario
     const { data: mpCredentials, error: mpError } = await supabase
       .from('oauth_mercadopago')
       .select('*')
@@ -69,12 +64,9 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    // Verificar si el token está vencido
     const tokenExpiration = new Date(mpCredentials.updated_at)
     tokenExpiration.setSeconds(tokenExpiration.getSeconds() + mpCredentials.expires_in)
-
     const isExpired = new Date() > tokenExpiration
-
     if (isExpired) {
       return NextResponse.json(
         {
@@ -88,10 +80,8 @@ export async function GET(request: NextRequest) {
         }
       )
     }
-
-    // Validar el token con MercadoPago
     try {
-      const response = await fetch('https://api.mercadopago.com/users/me', {
+      const response = await fetch(`${process.env.MERCADOPAGO_API_URL}/users/me`, {
         headers: {
           Authorization: `Bearer ${mpCredentials.access_token}`,
           'Content-Type': 'application/json'
@@ -99,9 +89,7 @@ export async function GET(request: NextRequest) {
       })
 
       if (!response.ok) {
-        // Si el token no es válido, actualizar el estado en la base de datos
         await supabase.from('oauth_mercadopago').delete().eq('fk_user', userData.id)
-
         return NextResponse.json(
           {
             connected: false,
@@ -117,11 +105,9 @@ export async function GET(request: NextRequest) {
 
       const mpUserData = await response.json()
 
-      // Verificar si el usuario está vinculado al marketplace
       let marketplaceLinked = false
       try {
-        // Verificar que el usuario tenga los permisos necesarios
-        const marketplaceResponse = await fetch('https://api.mercadopago.com/users/me', {
+        const marketplaceResponse = await fetch(`${process.env.MERCADOPAGO_API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${mpCredentials.access_token}`,
             'Content-Type': 'application/json'
@@ -130,17 +116,14 @@ export async function GET(request: NextRequest) {
 
         if (marketplaceResponse.ok) {
           const marketplaceData = await marketplaceResponse.json()
-          // Verificar que el usuario tenga los permisos necesarios para recibir pagos
           marketplaceLinked = marketplaceData.status?.sell?.allow === true
-          console.log('Datos del usuario:', marketplaceData)
         } else {
           const errorText = await marketplaceResponse.text()
-          console.error('Error al verificar permisos:', errorText)
+          throw new Error(errorText)
         }
       } catch (error) {
-        console.error('Error al verificar permisos:', error)
-        // Si falla la verificación, asumimos que no está vinculado
         marketplaceLinked = false
+        throw new Error(error as string)
       }
 
       return NextResponse.json(
