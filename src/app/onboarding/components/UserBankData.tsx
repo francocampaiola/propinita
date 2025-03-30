@@ -74,9 +74,21 @@ const UserBankData = ({
         isClosable: true
       })
     } else if (error) {
+      let errorMessage = 'Hubo un problema al vincular tu cuenta.'
+      switch (error) {
+        case 'permisos_invalidos':
+          errorMessage = 'No se pudieron verificar los permisos de tu cuenta de MercadoPago.'
+          break
+        case 'sin_permisos_venta':
+          errorMessage =
+            'Tu cuenta de MercadoPago no tiene permisos para recibir pagos. Por favor, habilita la opción de recibir pagos en tu cuenta.'
+          break
+        default:
+          errorMessage = `Hubo un problema al vincular tu cuenta: ${error}`
+      }
       toast({
         title: 'Error de conexión',
-        description: `Hubo un problema al vincular tu cuenta: ${error}`,
+        description: errorMessage,
         status: 'error',
         duration: 5000,
         isClosable: true
@@ -163,7 +175,7 @@ const UserBankData = ({
     }
 
     fetchAuthorizationUrl()
-  }, [mpInfo.connected, toast, isMounted])
+  }, [isMounted, mpInfo.connected, toast])
 
   const onSubmit = handleSubmit((data) => {
     onNext(data)
@@ -258,7 +270,8 @@ const UserBankData = ({
                       </Text>
                     ) : (
                       <Text as='span' color='red.300' display='block'>
-                        ✗ No vinculada al marketplace
+                        ✗ No vinculada al marketplace. Por favor, asegúrate de que tu cuenta de
+                        MercadoPago tenga permisos para recibir pagos.
                       </Text>
                     )}
                   </Text>

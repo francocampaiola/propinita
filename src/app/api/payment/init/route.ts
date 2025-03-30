@@ -12,6 +12,9 @@ export async function POST(request: Request) {
 
     console.log('Datos recibidos:', { amount, providerId, providerName })
 
+    // Convertir amount a número
+    const numericAmount = Number(amount)
+
     // Obtener las credenciales de MercadoPago del mozo
     const { data: mpCredentials, error: mpError } = await supabase
       .from('oauth_mercadopago')
@@ -29,8 +32,8 @@ export async function POST(request: Request) {
     const paymentPreference = {
       items: [
         {
-          title: 'Propina para Mozo Restaurante',
-          unit_price: amount,
+          title: `Propina - ${providerName}`,
+          unit_price: numericAmount,
           quantity: 1
         }
       ],
@@ -40,10 +43,10 @@ export async function POST(request: Request) {
         pending: `${process.env.NEXT_PUBLIC_APP_URL}/pago/pending`
       },
       auto_return: 'approved',
-      external_reference: `tip_${Date.now()}_${providerId}`,
+      external_reference: `tip_${Date.now()}_${mpCredentials.mp_user_id}`,
       notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/webhook`,
       marketplace: process.env.MP_MARKETPLACE_ID,
-      marketplace_fee: Math.round(amount * 0.1),
+      marketplace_fee: Math.round(numericAmount * 0.1),
       binary_mode: true,
       expires: true,
       expiration_date_from: new Date().toISOString(),

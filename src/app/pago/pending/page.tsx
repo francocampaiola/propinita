@@ -1,25 +1,65 @@
 'use client'
 
-import Link from 'next/link'
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  Box,
+  Button,
+  Container,
+  Heading,
+  Text,
+  VStack,
+  useToast,
+  Card,
+  CardBody,
+  CardHeader,
+  Divider,
+  Spinner
+} from '@chakra-ui/react'
+import { FaClock } from 'react-icons/fa'
 
 export default function PendingPage() {
+  const router = useRouter()
+  const toast = useToast()
+
+  useEffect(() => {
+    toast({
+      title: 'Pago en proceso',
+      description: 'Tu propina está siendo procesada.',
+      status: 'info',
+      duration: 5000,
+      isClosable: true
+    })
+  }, [toast])
+
   return (
-    <div className='min-h-screen flex items-center justify-center bg-gray-50'>
-      <div className='max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow text-center'>
-        <div className='text-yellow-500 text-6xl mb-4'>⏳</div>
-        <h2 className='text-3xl font-bold text-gray-900'>Pago Pendiente</h2>
-        <p className='text-gray-600'>
-          Tu pago está siendo procesado. Te notificaremos cuando se complete.
-        </p>
-        <div className='mt-8'>
-          <Link
-            href='/'
-            className='inline-block bg-indigo-600 text-white px-6 py-2 rounded-md hover:bg-indigo-700'
-          >
-            Volver al inicio
-          </Link>
-        </div>
-      </div>
-    </div>
+    <Container maxW='container.sm' py={8}>
+      <Card>
+        <CardHeader>
+          <VStack spacing={4} align='stretch'>
+            <Box display='flex' justifyContent='center'>
+              <FaClock size={50} color='#4299E1' />
+            </Box>
+            <Heading size='lg' textAlign='center'>
+              Pago en Proceso
+            </Heading>
+            <Text textAlign='center' color='gray.600'>
+              Tu propina está siendo procesada. Te notificaremos cuando esté lista.
+            </Text>
+            <Box display='flex' justifyContent='center'>
+              <Spinner size='xl' color='yellow.500' />
+            </Box>
+          </VStack>
+        </CardHeader>
+        <Divider />
+        <CardBody>
+          <VStack spacing={4}>
+            <Button colorScheme='yellow' size='lg' width='100%' onClick={() => router.push('/')}>
+              Volver al inicio
+            </Button>
+          </VStack>
+        </CardBody>
+      </Card>
+    </Container>
   )
 }
