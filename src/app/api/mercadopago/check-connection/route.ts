@@ -81,7 +81,7 @@ export async function GET(request: NextRequest) {
       )
     }
     try {
-      const response = await fetch(`${process.env.MERCADOPAGO_API_URL}/users/me`, {
+      const response = await fetch(`${process.env.MP_API_URL}/users/me`, {
         headers: {
           Authorization: `Bearer ${mpCredentials.access_token}`,
           'Content-Type': 'application/json'
@@ -107,7 +107,7 @@ export async function GET(request: NextRequest) {
 
       let marketplaceLinked = false
       try {
-        const marketplaceResponse = await fetch(`${process.env.MERCADOPAGO_API_URL}/users/me`, {
+        const marketplaceResponse = await fetch(`${process.env.MP_API_URL}/users/me`, {
           headers: {
             Authorization: `Bearer ${mpCredentials.access_token}`,
             'Content-Type': 'application/json'
