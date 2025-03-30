@@ -33,7 +33,11 @@ export const getTransactions = async (
   userId: number
 ): Promise<Database['public']['Tables']['transactions']['Row'][]> => {
   const supabase = createClient()
-  const { data, error } = await supabase.from('transactions').select('*').eq('fk_user', userId)
+  const { data, error } = await supabase
+    .from('transactions')
+    .select('*')
+    .eq('fk_user', userId)
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching transactions:', error)

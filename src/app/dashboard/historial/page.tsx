@@ -2,7 +2,7 @@
 import HistoryComponent from '../components/history'
 
 const HistoryContainer = () => {
-  return <HistoryComponent />
+  return <HistoryComponent full />
 }
 
 export default HistoryContainer
