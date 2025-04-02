@@ -1,6 +1,6 @@
 'use client'
-import { Text, Flex } from '@chakra-ui/react'
 import React from 'react'
+import { Text, Flex } from '@chakra-ui/react'
 
 interface Props {
   title: string
@@ -11,7 +11,7 @@ interface Props {
 
 const Card = ({ title, amount, icon, description }: Props) => {
   return (
-    <Flex bg={'gray.1000'} w={'23rem'} direction={'column'} borderRadius={'xl'}>
+    <Flex bg={'gray.1000'} flex={1} direction={'column'} borderRadius={'xl'}>
       <Flex flex={1} justifyContent={'space-between'} alignItems={'start'} mx={4} mt={4}>
         <Text size={'md'} color={'gray.300'}>
           {title}
