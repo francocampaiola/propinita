@@ -27,3 +27,14 @@ export const handleRequest = async <T>(
 
   return { data: requestData?.data, success: true }
 }
+
+export const formatDate = (date: string) => {
+  const dateObject = new Date(date)
+  return dateObject.toLocaleDateString('es-AR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}

@@ -8,6 +8,27 @@ const colors = {
   white: '#FFFFFF',
   error: '#FC8181',
   success: '#9AE6B4',
+  sidebar: {
+    dark: {
+      bg: '#1E1E1E'
+    },
+    light: {
+      bg: '#FFFFFF'
+    }
+  },
+  navbar: {
+    bg: '#2C2C2C'
+  },
+  components: {
+    qr: {
+      bg: '#3C3C3C',
+      divider: '#525252'
+    },
+    balance: {
+      bg: '#3C3C3C',
+      divider: '#525252'
+    }
+  },
   gray: {
     50: '#F6F6F6',
     100: '#E7E7E7',
@@ -19,7 +40,7 @@ const colors = {
     700: '#4F4F4F',
     800: '#454545',
     900: '#3D3D3D'
-  } 
+  }
 }
 
 export default colors

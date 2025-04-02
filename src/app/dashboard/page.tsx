@@ -1,23 +1,11 @@
-'use client'
+import React from 'react'
+import DashboardClient from './DashboardClient'
 
-import { Text } from '@chakra-ui/react'
-import { useGetUser } from '@/src/hooks/users/useGetUser'
+// TODO: Add DashboardSkeleton
+// import DashboardSkeleton from './components/DashboardSkeleton'
 
-const Dashboard = () => {
-
-  const { user, isLoading } = useGetUser()
-
-  if (isLoading) {
-    return (
-      <Text>Cargando...</Text>
-    )
-  }
-
-  console.log(user)
-
-  return (
-    <Text>{user?.created_at}</Text>
-  )
+const DashboardServer = async () => {
+  return <DashboardClient />
 }
 
-export default Dashboard
+export default DashboardServer
