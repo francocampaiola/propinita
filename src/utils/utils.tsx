@@ -12,16 +12,16 @@ export const sidebarItems: SidebarItems[] = [
   {
     icon: <FaRegCreditCard />,
     title: 'Cobrar',
-    path: '/dashboard/billetera'
+    path: '/dashboard/cobrar'
   },
   {
     icon: <FaUserAlt />,
     title: 'Mi perfil',
-    path: '/dashboard/tiendas'
+    path: '/dashboard/perfil'
   },
   {
     icon: <IoSettings />,
     title: 'Ajustes',
-    path: '/dashboard/usuarios'
+    path: '/dashboard/ajustes'
   }
 ]
