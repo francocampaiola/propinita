@@ -8,8 +8,7 @@ import {
   TagLeftIcon,
   Text,
   Tooltip,
-  Box,
-  Spinner
+  Box
 } from '@chakra-ui/react'
 import { useGetBalance } from '@/src/hooks/balance/useGetBalance'
 import { IoEye, IoEyeOff } from 'react-icons/io5'
@@ -21,21 +20,17 @@ const BalanceComponent = () => {
   const [showBalance, setShowBalance] = useState(false)
   const [isRefetching, setIsRefetching] = useState(false)
 
-  const { balance, isLoading, refetch } = useGetBalance()
+  const { balance: data, isLoading, refetch } = useGetBalance()
 
   const handleRefetch = async () => {
     setIsRefetching(true)
-    console.log('Iniciando refetch del balance...')
     await refetch()
-    console.log('Refetch completado')
     setIsRefetching(false)
   }
 
   if (isLoading) {
     return <Text>Cargando...</Text>
   }
-
-  console.log(balance)
 
   return (
     <Flex
@@ -50,7 +45,8 @@ const BalanceComponent = () => {
           <Text fontWeight={700}>Balance</Text>
           <Tooltip
             placement='bottom'
-            label='Muestra tu saldo actual y el progreso hacia tu meta mensual de ahorro'
+            label='Muestra tu saldo actual recibido en concepto de propinas y el progreso hacia tu meta mensual de ahorro'
+            w={'350px'}
           >
             <FaInfoCircle color='#B49B25' size='1rem' />
           </Tooltip>
@@ -67,7 +63,7 @@ const BalanceComponent = () => {
           <Text fontSize='6xl' fontWeight={700}>
             {showBalance
               ? '$******'
-              : balance?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}
+              : data?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}
           </Text>
           <Text fontSize={'4xl'} fontWeight={700}>
             ARS
@@ -92,13 +88,7 @@ const BalanceComponent = () => {
             gap={2}
             w={48}
             size={'sm'}
-            backgroundColor='white'
-            color={'black'}
-            fontSize={'sm'}
-            borderRadius={'xl'}
-            _hover={{
-              backgroundColor: 'primary'
-            }}
+            variant={'primary'}
             onClick={handleRefetch}
             isLoading={isRefetching}
             loadingText='Actualizando...'

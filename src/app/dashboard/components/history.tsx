@@ -51,12 +51,14 @@ const HistoryComponent = ({ full = false }: Props) => {
       <Divider borderColor='components.balance.divider' />
       <TableContainer>
         <Table variant='striped'>
-          {full && (
+          {transactions?.length > 1 && full ? (
             <TableCaption mb={4}>
               <Flex justifyContent={'flex-end'}>
                 <Text>Total de propinas: {transactions?.length}</Text>
               </Flex>
             </TableCaption>
+          ) : (
+            <TableCaption />
           )}
           <Thead>
             <Tr>
@@ -65,44 +67,9 @@ const HistoryComponent = ({ full = false }: Props) => {
             </Tr>
           </Thead>
           <Tbody>
-            {/* <Tr>
-              <Td>
-                <Flex dir='row' alignItems={'center'}>
-                  <MdOutlineAttachMoney size={30} />
-                  <Flex direction={'column'}>
-                    <Text>Propina recibida</Text>
-                    <Text>hace 1 día</Text>
-                  </Flex>
-                </Flex>
-              </Td>
-              <Td isNumeric>+$25.4</Td>
-            </Tr>
-            <Tr>
-              <Td>
-                <Flex dir='row' alignItems={'center'}>
-                  <MdOutlineAttachMoney size={30} />
-                  <Flex direction={'column'}>
-                    <Text>Propina recibida</Text>
-                    <Text>hace 1 día</Text>
-                  </Flex>
-                </Flex>
-              </Td>
-              <Td isNumeric>+$30.48</Td>
-            </Tr>
-            <Tr>
-              <Td>
-                <Flex dir='row' alignItems={'center'}>
-                  <MdOutlineAttachMoney size={30} />
-                  <Flex direction={'column'}>
-                    <Text>Propina recibida</Text>
-                    <Text>hace 1 día</Text>
-                  </Flex>
-                </Flex>
-              </Td>
-              <Td isNumeric>+$0.91444</Td>
-            </Tr> */}
-            {full
-              ? transactions?.map((transaction) => (
+            {transactions?.length > 1 ? (
+              full ? (
+                transactions?.map((transaction) => (
                   <Tr key={transaction.id}>
                     <Td>
                       <Flex alignItems={'center'} gap={2}>
@@ -121,7 +88,8 @@ const HistoryComponent = ({ full = false }: Props) => {
                     </Td>
                   </Tr>
                 ))
-              : transactions?.slice(0, 3).map((transaction) => (
+              ) : (
+                transactions?.slice(0, 3).map((transaction) => (
                   <Tr key={transaction.id}>
                     <Td>
                       <Flex alignItems={'center'} gap={2}>
@@ -139,7 +107,17 @@ const HistoryComponent = ({ full = false }: Props) => {
                       })}
                     </Td>
                   </Tr>
-                ))}
+                ))
+              )
+            ) : (
+              <Tr>
+                <Td colSpan={2}>
+                  <Flex justifyContent={'center'} alignItems={'center'} w={'100%'} h={'20'}>
+                    <Text>Todavía no recibiste propinas.</Text>
+                  </Flex>
+                </Td>
+              </Tr>
+            )}
           </Tbody>
         </Table>
       </TableContainer>

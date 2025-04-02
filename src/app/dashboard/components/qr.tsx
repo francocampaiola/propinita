@@ -83,10 +83,10 @@ const QrComponent = () => {
           qrUrl && (
             <Flex direction={'column'} alignItems={'center'} justifyContent={'center'}>
               <Image src={qrUrl} alt='QR' width={220} height={220} />
-              {/* TODO: Eliminar el enlaces de la URL, es temporal para el desarrollo */}
+              {/* TODO: Eliminar el enlaces de la URL, es temporal para el desarrollo
               <Text color='white' fontSize='xs' fontWeight='medium'>
                 {qrText}
-              </Text>
+              </Text> */}
             </Flex>
           )
         )}

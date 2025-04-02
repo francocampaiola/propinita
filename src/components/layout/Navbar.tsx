@@ -4,10 +4,10 @@ import { Flex, Box, Button, Avatar, AvatarBadge, AvatarGroup } from '@chakra-ui/
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import { useRouter } from 'next/navigation'
 import { logout } from '@/src/app/action'
-import { FiLogOut } from 'react-icons/fi'
+import { SkeletonCircle } from '@chakra-ui/react'
 
 const Navbar = () => {
-  const { user } = useGetUser()
+  const { user, isLoading } = useGetUser()
 
   // Temporalmente se muestra el logout
 
@@ -32,18 +32,22 @@ const Navbar = () => {
       justifyContent={'flex-end'}
     >
       <Flex mr={4} alignItems={'center'}>
-        <Avatar
-          name={user?.first_name + ' ' + user?.last_name}
-          backgroundColor={'primary'}
-          variant='subtle'
-          size='sm'
-        >
-          <AvatarBadge boxSize='4' bg='green.500' />
-        </Avatar>
+        {user ? (
+          <Avatar
+            name={user?.first_name + ' ' + user?.last_name}
+            backgroundColor={'primary'}
+            variant='subtle'
+            size='sm'
+          >
+            <AvatarBadge boxSize='4' bg='green.500' />
+          </Avatar>
+        ) : (
+          <SkeletonCircle size={'8'} />
+        )}
       </Flex>
-      <Button onClick={handleLogout} variant='icon'>
+      {/* <Button onClick={handleLogout} variant='icon'>
         <FiLogOut />
-      </Button>
+      </Button> */}
     </Box>
   )
 }
