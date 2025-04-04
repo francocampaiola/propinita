@@ -1,9 +1,9 @@
 'use client'
 import React from 'react'
 import { Container, Flex } from '@chakra-ui/react'
+import { MdOutlineAttachMoney } from 'react-icons/md'
 import Card from './components/Card'
 import PaymentComponent from './components/Payment'
-import { MdOutlineAttachMoney } from 'react-icons/md'
 
 const ChargeContainer = () => {
   return (
