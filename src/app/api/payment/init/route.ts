@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import QRCode from 'qrcode'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -9,6 +10,7 @@ const supabase = createClient(
 export async function POST(request: Request) {
   try {
     const { amount, providerId, providerName } = await request.json()
+
     const numericAmount = Number(amount)
     const { data: mpCredentials, error: mpError } = await supabase
       .from('oauth_mercadopago')
@@ -18,6 +20,21 @@ export async function POST(request: Request) {
 
     if (mpError || !mpCredentials) {
       throw new Error('No se encontraron las credenciales de MercadoPago del proveedor')
+    }
+
+    // Crear la transacción en la base de datos
+    const { data: transaction, error: transactionError } = await supabase
+      .from('transactions')
+      .insert({
+        fk_user: providerId,
+        amount: numericAmount,
+        status: 'pending'
+      })
+      .select()
+      .single()
+
+    if (transactionError) {
+      throw new Error('Error al crear la transacción')
     }
 
     const paymentPreference = {
@@ -34,7 +51,7 @@ export async function POST(request: Request) {
         pending: `${process.env.NEXT_PUBLIC_APP_URL}/pago/pending`
       },
       auto_return: 'approved',
-      external_reference: `tip_${Date.now()}_${mpCredentials.fk_user}`,
+      external_reference: transaction.id.toString(),
       notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/webhook`,
       marketplace: process.env.MP_MARKETPLACE_ID,
       marketplace_fee: Math.round(numericAmount * 0.1),
@@ -56,11 +73,21 @@ export async function POST(request: Request) {
     const data = await response.json()
 
     if (!response.ok) {
-      throw new Error(`Error al crear la preferencia de pago: ${JSON.stringify(data)}`)
+      throw new Error(data.message || 'Error al generar la preferencia de pago')
     }
 
-    return NextResponse.json({ initPoint: data.init_point })
+    // Generar QR code
+    const qrCode = await QRCode.toDataURL(data.init_point)
+
+    return NextResponse.json({
+      initPoint: data.init_point,
+      qrCode,
+      transactionId: transaction.id
+    })
   } catch (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Error al generar el pago' },
+      { status: 500 }
+    )
   }
 }
