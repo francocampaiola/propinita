@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import QRCode from 'qrcode'
 import { Divider, Flex, Text, Spinner, VStack } from '@chakra-ui/react'
@@ -11,7 +11,7 @@ const QrComponent = () => {
   const [isLoading, setIsLoading] = useState(false)
   const { user } = useGetUser()
 
-  const generateQR = async () => {
+  const generateQR = useCallback(async () => {
     setIsLoading(true)
     try {
       await new Promise((resolve) => setTimeout(resolve, 1000))
@@ -45,13 +45,13 @@ const QrComponent = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [user])
 
   useEffect(() => {
     if (user) {
       generateQR()
     }
-  }, [user])
+  }, [user, generateQR])
 
   return (
     <Flex
