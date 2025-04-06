@@ -5,8 +5,7 @@ export const metadata: Metadata = {
   description: 'Genera códigos QR y enlaces de pago para recibir propinas de tus clientes',
   openGraph: {
     title: 'Cobrar | Propinita',
-    description: 'Genera códigos QR y enlaces de pago para recibir propinas de tus clientes',
-    type: 'website'
+    description: 'Genera códigos QR y enlaces de pago para recibir propinas de tus clientes'
   }
 }
 
