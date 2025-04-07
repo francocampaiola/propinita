@@ -76,12 +76,10 @@ export async function POST(request: Request) {
       throw new Error(data.message || 'Error al generar la preferencia de pago')
     }
 
-    // Generar QR code
-    const qrCode = await QRCode.toDataURL(data.init_point)
-
+    // Ya no generamos el QR en el servidor
+    // Devolvemos solo la URL de pago para que el cliente genere el QR
     return NextResponse.json({
       initPoint: data.init_point,
-      qrCode,
       transactionId: transaction.id
     })
   } catch (error) {

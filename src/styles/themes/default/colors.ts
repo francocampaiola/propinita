@@ -4,6 +4,7 @@ export interface IColors {
 
 const colors = {
   primary: '#B49B25',
+  secondary: '#624A21',
   black: '#000000',
   white: '#FFFFFF',
   error: '#FC8181',
