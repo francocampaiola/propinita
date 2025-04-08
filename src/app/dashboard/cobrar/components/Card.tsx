@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { memo, useMemo } from 'react'
 import { Text, Flex } from '@chakra-ui/react'
 
 interface Props {
@@ -9,7 +9,14 @@ interface Props {
   description?: string
 }
 
-const Card = ({ title, amount, icon, description }: Props) => {
+const Card = memo(({ title, amount, icon, description }: Props) => {
+  const formattedAmount = useMemo(() => {
+    return amount.toLocaleString('es-AR', {
+      style: 'currency',
+      currency: 'ARS'
+    })
+  }, [amount])
+
   return (
     <Flex bg={'gray.1000'} flex={1} direction={'column'} borderRadius={'xl'}>
       <Flex flex={1} justifyContent={'space-between'} alignItems={'start'} mx={4} mt={4}>
@@ -19,16 +26,18 @@ const Card = ({ title, amount, icon, description }: Props) => {
         {icon}
       </Flex>
       <Text fontSize={'4xl'} fontWeight={700} color={'white'} ml={4}>
-        {amount.toLocaleString('es-AR', {
-          style: 'currency',
-          currency: 'ARS'
-        })}
+        {formattedAmount}
       </Text>
-      <Text fontSize={'sm'} color={'gray.500'} ml={4} mb={4}>
-        {description}
-      </Text>
+      {description && (
+        <Text fontSize={'sm'} color={'gray.500'} ml={4} mb={4}>
+          {description}
+        </Text>
+      )}
     </Flex>
   )
-}
+})
+
+// Agregar displayName para facilitar la depuración
+Card.displayName = 'Card'
 
 export default Card

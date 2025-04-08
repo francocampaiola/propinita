@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback, useMemo, Suspense } from 'react'
 import Image from 'next/image'
-import { useRouter } from 'next/navigation'
 import QRCode from 'qrcode'
 import {
   Box,
@@ -15,18 +14,74 @@ import {
   Text,
   Tooltip,
   useToast,
-  Icon
+  Icon,
+  Spinner,
 } from '@chakra-ui/react'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import qrImage from '@/src/assets/templates/qr.svg'
-import { FaInfoCircle, FaShareAlt, FaCheckCircle, FaPlus } from 'react-icons/fa'
+import { FaInfoCircle, FaShareAlt, FaCheckCircle } from 'react-icons/fa'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { BiCopy, BiErrorCircle } from 'react-icons/bi'
+
+const LoadingState = () => (
+  <Flex justifyContent='center' alignItems='center' p={8}>
+    <Spinner size='xl' color='primary.500' />
+  </Flex>
+)
+
+const QRDisplay = React.memo(
+  ({ qrCode, paymentStatus }: { qrCode: string | null; paymentStatus: string }) => (
+    <Box position={'relative'} width={200} height={200}>
+      {qrCode ? (
+        <Image src={qrCode} alt='QR Code' fill style={{ objectFit: 'contain' }} priority />
+      ) : (
+        <>
+          <Image src={qrImage} alt='QR Code' fill style={{ objectFit: 'contain' }} priority />
+          <Flex
+            position={'absolute'}
+            top={0}
+            left={0}
+            right={0}
+            bottom={0}
+            backgroundColor={'whiteAlpha.300'}
+            borderRadius={'md'}
+            backdropFilter={'blur(4px)'}
+            justifyContent={'center'}
+            alignItems={'center'}
+          >
+            <BiErrorCircle size={40} color='#2C2C2C' />
+          </Flex>
+        </>
+      )}
+      {(paymentStatus === 'paid' || paymentStatus === 'expired') && (
+        <Flex
+          position={'absolute'}
+          top={0}
+          left={0}
+          right={0}
+          bottom={0}
+          backgroundColor={'whiteAlpha.300'}
+          borderRadius={'md'}
+          backdropFilter={'blur(4px)'}
+          justifyContent={'center'}
+          alignItems={'center'}
+        >
+          <Icon
+            as={paymentStatus === 'paid' ? FaCheckCircle : BiErrorCircle}
+            boxSize={10}
+            color={paymentStatus === 'paid' ? 'green.500' : 'red.500'}
+          />
+        </Flex>
+      )}
+    </Box>
+  )
+)
+
+QRDisplay.displayName = 'QRDisplay'
 
 const PaymentComponent = () => {
   const toast = useToast()
 
-  // States y refs
   const [amount, setAmount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [paymentLink, setPaymentLink] = useState<string | null>(null)
@@ -37,11 +92,53 @@ const PaymentComponent = () => {
   const [currentTransactionId, setCurrentTransactionId] = useState<string | null>(null)
   const [isCheckingPayment, setIsCheckingPayment] = useState(false)
   const [expirationTime, setExpirationTime] = useState<number | null>(null)
+  const [isComponentReady, setIsComponentReady] = useState(false)
   const { user, isLoading: isLoadingUser } = useGetUser()
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const expirationTimeoutRef = useRef<NodeJS.Timeout | null>(null)
+  const timerRef = useRef<NodeJS.Timeout | null>(null)
 
-  const checkTransactionStatus = async () => {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsComponentReady(true)
+    }, 100)
+
+    return () => clearTimeout(timer)
+  }, [])
+
+  const clearTimeouts = useCallback(() => {
+    if (checkIntervalRef.current) {
+      clearInterval(checkIntervalRef.current)
+      checkIntervalRef.current = null
+    }
+    if (expirationTimeoutRef.current) {
+      clearTimeout(expirationTimeoutRef.current)
+      expirationTimeoutRef.current = null
+    }
+    if (timerRef.current) {
+      clearInterval(timerRef.current)
+      timerRef.current = null
+    }
+  }, [])
+
+  const handleExpiration = useCallback(() => {
+    setPaymentStatus('expired')
+    setPaymentLink(null)
+    setQrCode(null)
+    setExpirationTime(null)
+    clearTimeouts()
+    setAmount('')
+
+    toast({
+      title: 'Cobro expirado',
+      description: 'El código QR y el enlace de pago han expirado. Por favor, genera uno nuevo.',
+      status: 'warning',
+      duration: 5000,
+      isClosable: true
+    })
+  }, [clearTimeouts, toast])
+
+  const checkTransactionStatus = useCallback(async () => {
     if (!currentTransactionId) return
 
     try {
@@ -59,6 +156,7 @@ const PaymentComponent = () => {
         setPaymentLink(null)
         setQrCode(null)
         clearTimeouts()
+        setAmount('')
 
         toast({
           title: '¡Pago recibido!',
@@ -73,102 +171,108 @@ const PaymentComponent = () => {
     } finally {
       setIsCheckingPayment(false)
     }
-  }
-
-  const clearTimeouts = () => {
-    if (checkIntervalRef.current) {
-      clearInterval(checkIntervalRef.current)
-      checkIntervalRef.current = null
-    }
-    if (expirationTimeoutRef.current) {
-      clearTimeout(expirationTimeoutRef.current)
-      expirationTimeoutRef.current = null
-    }
-  }
-
-  const handleExpiration = () => {
-    setPaymentStatus('expired')
-    setPaymentLink(null)
-    setQrCode(null)
-    setExpirationTime(null)
-    clearTimeouts()
-    setAmount('')
-
-    toast({
-      title: 'Cobro expirado',
-      description: 'El código QR y el enlace de pago han expirado. Por favor, genera uno nuevo.',
-      status: 'warning',
-      duration: 5000,
-      isClosable: true
-    })
-  }
+  }, [currentTransactionId, clearTimeouts, toast])
 
   useEffect(() => {
-    if (paymentStatus === 'active' && currentTransactionId) {
-      checkTransactionStatus()
+    return () => {
+      clearTimeouts()
+    }
+  }, [clearTimeouts])
 
-      checkIntervalRef.current = setInterval(() => {
+  useEffect(() => {
+    if (!isComponentReady) return
+
+    if (paymentStatus === 'active' && currentTransactionId) {
+      clearTimeouts()
+      checkTransactionStatus()
+      const interval = setInterval(() => {
         checkTransactionStatus()
       }, 2000)
+      checkIntervalRef.current = interval
 
-      // Configurar el temporizador de expiración (30 segundos)
-      const expirationDelay = 60000 // 60 segundos
+      const expirationDelay = 600000 // 10 minutos
       setExpirationTime(Date.now() + expirationDelay)
 
-      expirationTimeoutRef.current = setTimeout(() => {
+      const timeout = setTimeout(() => {
         handleExpiration()
       }, expirationDelay)
+      expirationTimeoutRef.current = timeout
 
-      return () => clearTimeouts()
+      return () => {
+        clearTimeouts()
+      }
     }
-  }, [paymentStatus, currentTransactionId])
+  }, [
+    paymentStatus,
+    currentTransactionId,
+    checkTransactionStatus,
+    handleExpiration,
+    clearTimeouts,
+    isComponentReady
+  ])
 
-  // Efecto para actualizar el tiempo restante
   useEffect(() => {
-    let timer: NodeJS.Timeout
+    if (!isComponentReady) return
+
     if (expirationTime && paymentStatus === 'active') {
-      timer = setInterval(() => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current)
+        timerRef.current = null
+      }
+
+      const timer = setInterval(() => {
         const now = Date.now()
         if (now >= expirationTime) {
           handleExpiration()
         }
       }, 1000)
-      return () => clearInterval(timer)
-    }
-  }, [expirationTime, paymentStatus])
 
-  const generateQRCode = async (url: string) => {
-    try {
-      const options: QRCode.QRCodeToDataURLOptions = {
-        margin: 1,
-        width: 200,
-        errorCorrectionLevel: 'M',
-        color: {
-          dark: '#B49B25',
-          light: '#00000000'
-        },
-        type: 'image/png'
+      timerRef.current = timer
+
+      return () => {
+        if (timerRef.current) {
+          clearInterval(timerRef.current)
+          timerRef.current = null
+        }
       }
-
-      const qrDataUrl = await QRCode.toDataURL(url, options)
-      setQrCode(qrDataUrl)
-    } catch (error) {
-      console.error('Error al generar el código QR:', error)
-      toast({
-        title: 'Error',
-        description: 'No se pudo generar el código QR. Por favor, intenta nuevamente.',
-        status: 'error',
-        duration: 5000,
-        isClosable: true
-      })
     }
-  }
+  }, [expirationTime, paymentStatus, handleExpiration, isComponentReady])
 
-  const handleGeneratePayment = async () => {
+  const generateQRCode = useCallback(
+    async (url: string) => {
+      try {
+        const options: QRCode.QRCodeToDataURLOptions = {
+          margin: 1,
+          width: 200,
+          errorCorrectionLevel: 'M',
+          color: {
+            dark: '#B49B25',
+            light: '#00000000'
+          },
+          type: 'image/png'
+        }
+
+        const qrDataUrl = await QRCode.toDataURL(url, options)
+        setQrCode(qrDataUrl)
+      } catch (error) {
+        console.error('Error al generar el código QR:', error)
+        toast({
+          title: 'Error',
+          description: 'No se pudo generar el código QR. Por favor, intenta nuevamente.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+      }
+    },
+    [toast]
+  )
+
+  const handleGeneratePayment = useCallback(async () => {
     if (!amount || parseFloat(amount) <= 0) {
       toast({
         title: 'Error',
-        description: 'Por favor ingresa un monto válido',
+        description: 'Por favor, ingresa un monto válido',
         status: 'error',
         duration: 3000,
         isClosable: true
@@ -208,14 +312,13 @@ const PaymentComponent = () => {
       }
 
       setPaymentLink(data.initPoint)
-      // Generar el código QR en el cliente
       await generateQRCode(data.initPoint)
       setPaymentStatus('active')
       setCurrentTransactionId(data.transactionId)
 
       toast({
         title: 'Éxito',
-        description: 'Link de pago generado correctamente. Expirará en 30 segundos.',
+        description: 'Link de pago generado correctamente. Expirará en 10 minutos.',
         status: 'success',
         duration: 3000,
         isClosable: true
@@ -231,9 +334,9 @@ const PaymentComponent = () => {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [amount, user, generateQRCode, toast])
 
-  const handleCopyLink = () => {
+  const handleCopyLink = useCallback(() => {
     if (paymentLink) {
       navigator.clipboard.writeText(paymentLink)
       toast({
@@ -244,25 +347,45 @@ const PaymentComponent = () => {
         isClosable: true
       })
     }
-  }
+  }, [paymentLink, toast])
 
-  const handleShareLink = () => {
+  const handleShareLink = useCallback(() => {
     if (paymentLink) {
       const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
         `Paga tu propina aquí: ${paymentLink}`
       )}`
       window.open(whatsappUrl, '_blank')
     }
-  }
+  }, [paymentLink])
 
-  const handleNewPayment = () => {
-    setAmount('')
-    setPaymentLink(null)
-    setQrCode(null)
-    setPaymentStatus('inactive')
-    setCurrentTransactionId(null)
-    setExpirationTime(null)
-    clearTimeouts()
+  const paymentStatusText = useMemo(() => {
+    switch (paymentStatus) {
+      case 'active':
+        return 'Pendiente'
+      case 'paid':
+        return 'Pagado'
+      case 'expired':
+        return 'Expirado'
+      default:
+        return 'Inactivo'
+    }
+  }, [paymentStatus])
+
+  const statusColors = useMemo(() => {
+    switch (paymentStatus) {
+      case 'active':
+        return { bg: 'primary', color: 'secondary' }
+      case 'paid':
+        return { bg: 'blue.100', color: 'blue.700' }
+      case 'expired':
+        return { bg: 'red.100', color: 'red.700' }
+      default:
+        return { bg: 'primary', color: '#624A21' }
+    }
+  }, [paymentStatus])
+
+  if (!isComponentReady) {
+    return <LoadingState />
   }
 
   return (
@@ -282,49 +405,9 @@ const PaymentComponent = () => {
       <Divider borderColor='components.balance.divider' />
       <Flex mx={'auto'} direction={'row'} p={6} gap={6} alignItems={'center'}>
         <Flex justifyContent={'center'} alignItems={'center'}>
-          <Box position={'relative'} width={200} height={200}>
-            {qrCode ? (
-              <Image src={qrCode} alt='QR Code' fill style={{ objectFit: 'contain' }} priority />
-            ) : (
-              <>
-                <Image src={qrImage} alt='QR Code' fill style={{ objectFit: 'contain' }} priority />
-                <Flex
-                  position={'absolute'}
-                  top={0}
-                  left={0}
-                  right={0}
-                  bottom={0}
-                  backgroundColor={'whiteAlpha.300'}
-                  borderRadius={'md'}
-                  backdropFilter={'blur(4px)'}
-                  justifyContent={'center'}
-                  alignItems={'center'}
-                >
-                  <BiErrorCircle size={40} color='#2C2C2C' />
-                </Flex>
-              </>
-            )}
-            {(paymentStatus === 'paid' || paymentStatus === 'expired') && (
-              <Flex
-                position={'absolute'}
-                top={0}
-                left={0}
-                right={0}
-                bottom={0}
-                backgroundColor={'whiteAlpha.300'}
-                borderRadius={'md'}
-                backdropFilter={'blur(4px)'}
-                justifyContent={'center'}
-                alignItems={'center'}
-              >
-                <Icon
-                  as={paymentStatus === 'paid' ? FaCheckCircle : BiErrorCircle}
-                  boxSize={10}
-                  color={paymentStatus === 'paid' ? 'green.500' : 'red.500'}
-                />
-              </Flex>
-            )}
-          </Box>
+          <Suspense fallback={<LoadingState />}>
+            <QRDisplay qrCode={qrCode} paymentStatus={paymentStatus} />
+          </Suspense>
         </Flex>
         <Flex>
           <Flex direction={'column'} gap={2} my={4}>
@@ -364,33 +447,11 @@ const PaymentComponent = () => {
                   <Tag
                     size={'sm'}
                     variant='subtle'
-                    backgroundColor={
-                      paymentStatus === 'active'
-                        ? 'primary'
-                        : paymentStatus === 'paid'
-                        ? 'blue.100'
-                        : paymentStatus === 'expired'
-                        ? 'red.100'
-                        : 'primary'
-                    }
-                    color={
-                      paymentStatus === 'active'
-                        ? 'secondary'
-                        : paymentStatus === 'paid'
-                        ? 'blue.700'
-                        : paymentStatus === 'expired'
-                        ? 'red.700'
-                        : '#624A21'
-                    }
+                    backgroundColor={statusColors.bg}
+                    color={statusColors.color}
                     fontWeight={700}
                   >
-                    {paymentStatus === 'active'
-                      ? 'Pendiente'
-                      : paymentStatus === 'paid'
-                      ? 'Pagado'
-                      : paymentStatus === 'expired'
-                      ? 'Expirado'
-                      : 'Inactivo'}
+                    {paymentStatusText}
                   </Tag>
                 </Flex>
                 <Flex direction={'row'} gap={2} alignItems={'center'} mt={1}>
