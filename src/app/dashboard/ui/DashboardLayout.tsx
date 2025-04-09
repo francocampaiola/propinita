@@ -25,6 +25,7 @@ const DashboardLayout = ({ children }: IDashboardLayout) => {
       display={{ base: 'block', md: 'grid' }}
       minHeight='100vh'
       pb={{ base: '20', md: '0' }}
+      backgroundColor={'background.dark.bg'}
     >
       <Box display={{ base: 'none', md: 'block' }}>
         <Sidebar isCollapsed={isCollapsed === true} handleCollapse={handleCollapse} />

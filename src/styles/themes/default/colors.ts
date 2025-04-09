@@ -4,6 +4,7 @@ export interface IColors {
 
 const colors = {
   primary: '#B49B25',
+  secondary: '#624A21',
   black: '#000000',
   white: '#FFFFFF',
   error: '#FC8181',
@@ -39,7 +40,8 @@ const colors = {
     600: '#5D5D5D',
     700: '#4F4F4F',
     800: '#454545',
-    900: '#3D3D3D'
+    900: '#3D3D3D',
+    1000: '#3E3E3E'
   }
 }
 

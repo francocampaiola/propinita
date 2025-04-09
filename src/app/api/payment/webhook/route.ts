@@ -16,6 +16,7 @@ export async function POST(request: Request) {
 
     let payment = body.data
 
+    // Verificar si el pago es de MercadoPago
     if (!payment.id.startsWith('test_')) {
       const response = await fetch(`${process.env.MP_API_URL}/v1/payments/${payment.id}`, {
         headers: {
@@ -34,18 +35,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'El pago no fue aprobado' })
     }
 
-    const fk_user = parseInt(payment.external_reference.split('_')[2])
+    const transactionId = parseInt(payment.external_reference)
 
-    const { error } = await supabase.from('transactions').insert({
-      fk_user: fk_user,
-      amount: payment.transaction_amount,
-      status: 'completed',
-      external_reference: payment.external_reference,
-      mp_payment_id: payment.id.toString()
-    })
+    const { data: existingTransaction, error: fetchError } = await supabase
+      .from('transactions')
+      .select('*')
+      .eq('id', transactionId)
+      .single()
 
-    if (error) {
-      throw error
+    if (fetchError) {
+      console.error('Error al buscar la transacción:', fetchError)
+      throw new Error('No se encontró la transacción')
+    }
+
+    // Actualizar la transacción existente
+    const { data: updatedTransaction, error: updateError } = await supabase
+      .from('transactions')
+      .update({
+        status: 'completed',
+        mp_payment_id: payment.id.toString()
+      })
+      .eq('id', transactionId)
+      .select()
+      .single()
+
+    if (updateError) {
+      console.error('Error al actualizar la transacción:', updateError)
+      throw updateError
     }
 
     return NextResponse.json({ message: 'El pago se ha procesado correctamente' })
