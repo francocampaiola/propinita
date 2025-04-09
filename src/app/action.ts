@@ -36,6 +36,7 @@ export const getTransactions = async (
   const { data, error } = await supabase
     .from('transactions')
     .select('*')
+    .eq('status', 'completed')
     .eq('fk_user', userId)
     .order('created_at', { ascending: false })
 

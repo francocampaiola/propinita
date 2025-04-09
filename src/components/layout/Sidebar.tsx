@@ -33,7 +33,8 @@ export const SidebarItems = ({ isCollapsed }: SidebarProps) => {
               fontWeight={router === item.path ? '600' : 'normal'}
               background={router === item.path ? 'primary' : 'transparent'}
               _hover={{
-                background: router === item.path ? 'secondary' : 'gray.900'
+                background:
+                  router === item.path ? null : router === item.path ? 'secondary' : 'gray.900'
               }}
             >
               <Box mx={3} fontSize='xl'>

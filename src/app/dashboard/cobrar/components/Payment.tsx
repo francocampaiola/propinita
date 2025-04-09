@@ -15,11 +15,11 @@ import {
   Tooltip,
   useToast,
   Icon,
-  Spinner,
+  Spinner
 } from '@chakra-ui/react'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import qrImage from '@/src/assets/templates/qr.svg'
-import { FaInfoCircle, FaShareAlt, FaCheckCircle } from 'react-icons/fa'
+import { FaInfoCircle, FaCheckCircle, FaWhatsapp } from 'react-icons/fa'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { BiCopy, BiErrorCircle } from 'react-icons/bi'
 
@@ -93,10 +93,12 @@ const PaymentComponent = () => {
   const [isCheckingPayment, setIsCheckingPayment] = useState(false)
   const [expirationTime, setExpirationTime] = useState<number | null>(null)
   const [isComponentReady, setIsComponentReady] = useState(false)
+  const [paidTimestamp, setPaidTimestamp] = useState<number | null>(null)
   const { user, isLoading: isLoadingUser } = useGetUser()
   const checkIntervalRef = useRef<NodeJS.Timeout | null>(null)
   const expirationTimeoutRef = useRef<NodeJS.Timeout | null>(null)
   const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const paidResetTimerRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -119,6 +121,10 @@ const PaymentComponent = () => {
       clearInterval(timerRef.current)
       timerRef.current = null
     }
+    if (paidResetTimerRef.current) {
+      clearTimeout(paidResetTimerRef.current)
+      paidResetTimerRef.current = null
+    }
   }, [])
 
   const handleExpiration = useCallback(() => {
@@ -128,15 +134,7 @@ const PaymentComponent = () => {
     setExpirationTime(null)
     clearTimeouts()
     setAmount('')
-
-    toast({
-      title: 'Cobro expirado',
-      description: 'El código QR y el enlace de pago han expirado. Por favor, genera uno nuevo.',
-      status: 'warning',
-      duration: 5000,
-      isClosable: true
-    })
-  }, [clearTimeouts, toast])
+  }, [clearTimeouts])
 
   const checkTransactionStatus = useCallback(async () => {
     if (!currentTransactionId) return
@@ -157,21 +155,14 @@ const PaymentComponent = () => {
         setQrCode(null)
         clearTimeouts()
         setAmount('')
-
-        toast({
-          title: '¡Pago recibido!',
-          description: 'La propina ha sido recibida correctamente.',
-          status: 'success',
-          duration: 5000,
-          isClosable: true
-        })
+        setPaidTimestamp(Date.now())
       }
     } catch (error) {
       console.error('Error al verificar el estado del pago:', error)
     } finally {
       setIsCheckingPayment(false)
     }
-  }, [currentTransactionId, clearTimeouts, toast])
+  }, [currentTransactionId, clearTimeouts])
 
   useEffect(() => {
     return () => {
@@ -238,6 +229,29 @@ const PaymentComponent = () => {
     }
   }, [expirationTime, paymentStatus, handleExpiration, isComponentReady])
 
+  // Efecto para reiniciar el estado después de 5 minutos de pago
+  useEffect(() => {
+    if (paymentStatus === 'paid' && paidTimestamp) {
+      // Limpiar cualquier temporizador existente
+      if (paidResetTimerRef.current) {
+        clearTimeout(paidResetTimerRef.current)
+      }
+
+      const resetTimer = setTimeout(() => {
+        setPaymentStatus('inactive')
+        setPaidTimestamp(null)
+      }, 10000) // 10 segundos
+
+      paidResetTimerRef.current = resetTimer
+
+      return () => {
+        if (paidResetTimerRef.current) {
+          clearTimeout(paidResetTimerRef.current)
+        }
+      }
+    }
+  }, [paymentStatus, paidTimestamp])
+
   const generateQRCode = useCallback(
     async (url: string) => {
       try {
@@ -269,28 +283,6 @@ const PaymentComponent = () => {
   )
 
   const handleGeneratePayment = useCallback(async () => {
-    if (!amount || parseFloat(amount) <= 0) {
-      toast({
-        title: 'Error',
-        description: 'Por favor, ingresa un monto válido',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      })
-      return
-    }
-
-    if (!user) {
-      toast({
-        title: 'Error',
-        description: 'No se pudo obtener la información del usuario',
-        status: 'error',
-        duration: 3000,
-        isClosable: true
-      })
-      return
-    }
-
     setIsLoading(true)
     try {
       const response = await fetch('/api/payment/init', {
@@ -315,14 +307,6 @@ const PaymentComponent = () => {
       await generateQRCode(data.initPoint)
       setPaymentStatus('active')
       setCurrentTransactionId(data.transactionId)
-
-      toast({
-        title: 'Éxito',
-        description: 'Link de pago generado correctamente. Expirará en 10 minutos.',
-        status: 'success',
-        duration: 3000,
-        isClosable: true
-      })
     } catch (error) {
       toast({
         title: 'Error',
@@ -336,18 +320,19 @@ const PaymentComponent = () => {
     }
   }, [amount, user, generateQRCode, toast])
 
+  const handleNewPayment = useCallback(() => {
+    setPaymentStatus('inactive')
+    setPaymentLink(null)
+    setQrCode(null)
+    setCurrentTransactionId(null)
+    setAmount('')
+  }, [])
+
   const handleCopyLink = useCallback(() => {
     if (paymentLink) {
       navigator.clipboard.writeText(paymentLink)
-      toast({
-        title: 'Copiado',
-        description: 'El enlace se ha copiado al portapapeles',
-        status: 'success',
-        duration: 2000,
-        isClosable: true
-      })
     }
-  }, [paymentLink, toast])
+  }, [paymentLink])
 
   const handleShareLink = useCallback(() => {
     if (paymentLink) {
@@ -376,11 +361,11 @@ const PaymentComponent = () => {
       case 'active':
         return { bg: 'primary', color: 'secondary' }
       case 'paid':
-        return { bg: 'blue.100', color: 'blue.700' }
+        return { bg: 'green.100', color: 'green.700' }
       case 'expired':
         return { bg: 'red.100', color: 'red.700' }
       default:
-        return { bg: 'primary', color: '#624A21' }
+        return { bg: 'gray.700', color: 'white' }
     }
   }, [paymentStatus])
 
@@ -423,19 +408,33 @@ const PaymentComponent = () => {
                 type='number'
                 min='0'
                 step='0.01'
-                isDisabled={paymentStatus === 'paid' || paymentStatus === 'active'}
+                isDisabled={paymentStatus === 'active' || paymentStatus === 'paid'}
               />
               <InputRightElement width={'auto'} mr={2}>
-                <Button
-                  h='1.75rem'
-                  size='sm'
-                  variant={'primary'}
-                  onClick={handleGeneratePayment}
-                  isLoading={isLoading}
-                  isDisabled={paymentStatus === 'paid' || paymentStatus === 'active'}
-                >
-                  Generar cobro
-                </Button>
+                {paymentStatus !== 'active' ? (
+                  <Button
+                    h='1.75rem'
+                    size='sm'
+                    variant={'primary'}
+                    onClick={handleGeneratePayment}
+                    isLoading={isLoading}
+                    isDisabled={amount === ''}
+                  >
+                    Generar cobro
+                  </Button>
+                ) : (
+                  <Button
+                    h='1.75rem'
+                    size='sm'
+                    backgroundColor='gray.100'
+                    color='gray.700'
+                    _hover={{ backgroundColor: 'gray.200' }}
+                    onClick={handleNewPayment}
+                    isLoading={isLoading}
+                  >
+                    Nuevo cobro
+                  </Button>
+                )}
               </InputRightElement>
             </InputGroup>
             <Flex direction={'column'} gap={5} mt={2}>
@@ -463,6 +462,13 @@ const PaymentComponent = () => {
                       <Text color={'gray.900'} noOfLines={1} maxW='300px' fontSize={'xs'}>
                         {paymentLink}
                       </Text>
+                    ) : paymentStatus === 'paid' ? (
+                      <>
+                        <Spinner size='xs' color='#2C2C2C' />
+                        <Text color={'gray.900'} fontSize={'xs'}>
+                          En unos segundos podrás generar un nuevo cobro
+                        </Text>
+                      </>
                     ) : (
                       <>
                         <BiErrorCircle color='#2C2C2C' />
@@ -490,10 +496,10 @@ const PaymentComponent = () => {
                   isDisabled={
                     !paymentLink || paymentStatus === 'paid' || paymentStatus === 'expired'
                   }
-                  leftIcon={<FaShareAlt />}
+                  leftIcon={<FaWhatsapp />}
                   onClick={handleShareLink}
                 >
-                  Compartir enlace
+                  Enviar enlace
                 </Button>
               </Flex>
             </Flex>
