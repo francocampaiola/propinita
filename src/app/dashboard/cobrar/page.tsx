@@ -30,7 +30,7 @@ const CobrosPage = () => {
       description: `${
         stats.today.percentageChange >= 0 ? '+' : ''
       }${stats.today.percentageChange.toFixed(1)}% que ayer`,
-      icon: <MdOutlineAttachMoney size={32} color='#E2E8F0' />
+      icon: <MdOutlineAttachMoney size={32} color='#B49B25' />
     },
     {
       id: 2,
@@ -39,14 +39,14 @@ const CobrosPage = () => {
       description: `${
         stats.thisWeek.percentageChange >= 0 ? '+' : ''
       }${stats.thisWeek.percentageChange.toFixed(1)}% que la semana pasada`,
-      icon: <BsGraphUpArrow size={24} color='#E2E8F0' />
+      icon: <BsGraphUpArrow size={22} color='#B49B25' />
     },
     {
       id: 3,
       title: 'Propinas promedio',
       amount: stats.average.amount,
       description: `Basado en ${stats.average.totalTransactions} propinas`,
-      icon: <IoStatsChart size={24} color='#E2E8F0' />
+      icon: <IoStatsChart size={24} color='#B49B25' />
     }
   ]
 
