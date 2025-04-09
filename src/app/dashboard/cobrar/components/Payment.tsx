@@ -229,10 +229,8 @@ const PaymentComponent = () => {
     }
   }, [expirationTime, paymentStatus, handleExpiration, isComponentReady])
 
-  // Efecto para reiniciar el estado después de 5 minutos de pago
   useEffect(() => {
     if (paymentStatus === 'paid' && paidTimestamp) {
-      // Limpiar cualquier temporizador existente
       if (paidResetTimerRef.current) {
         clearTimeout(paidResetTimerRef.current)
       }
@@ -240,7 +238,7 @@ const PaymentComponent = () => {
       const resetTimer = setTimeout(() => {
         setPaymentStatus('inactive')
         setPaidTimestamp(null)
-      }, 10000) // 10 segundos
+      }, 10000)
 
       paidResetTimerRef.current = resetTimer
 
