@@ -13,7 +13,6 @@ import {
   Tag,
   Text,
   Tooltip,
-  useToast,
   Icon,
   Spinner
 } from '@chakra-ui/react'
@@ -22,6 +21,7 @@ import qrImage from '@/src/assets/templates/qr.svg'
 import { FaInfoCircle, FaCheckCircle, FaWhatsapp } from 'react-icons/fa'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { BiCopy, BiErrorCircle } from 'react-icons/bi'
+import { handleToast } from '@/src/utils/toast'
 
 const LoadingState = () => (
   <Flex justifyContent='center' alignItems='center' p={8}>
@@ -80,8 +80,6 @@ const QRDisplay = React.memo(
 QRDisplay.displayName = 'QRDisplay'
 
 const PaymentComponent = () => {
-  const toast = useToast()
-
   const [amount, setAmount] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [paymentLink, setPaymentLink] = useState<string | null>(null)
@@ -250,35 +248,32 @@ const PaymentComponent = () => {
     }
   }, [paymentStatus, paidTimestamp])
 
-  const generateQRCode = useCallback(
-    async (url: string) => {
-      try {
-        const options: QRCode.QRCodeToDataURLOptions = {
-          margin: 1,
-          width: 200,
-          errorCorrectionLevel: 'M',
-          color: {
-            dark: '#B49B25',
-            light: '#00000000'
-          },
-          type: 'image/png'
-        }
-
-        const qrDataUrl = await QRCode.toDataURL(url, options)
-        setQrCode(qrDataUrl)
-      } catch (error) {
-        console.error('Error al generar el código QR:', error)
-        toast({
-          title: 'Error',
-          description: 'No se pudo generar el código QR. Por favor, intenta nuevamente.',
-          status: 'error',
-          duration: 5000,
-          isClosable: true
-        })
+  const generateQRCode = useCallback(async (url: string) => {
+    try {
+      const options: QRCode.QRCodeToDataURLOptions = {
+        margin: 1,
+        width: 200,
+        errorCorrectionLevel: 'M',
+        color: {
+          dark: '#B49B25',
+          light: '#00000000'
+        },
+        type: 'image/png'
       }
-    },
-    [toast]
-  )
+
+      const qrDataUrl = await QRCode.toDataURL(url, options)
+      setQrCode(qrDataUrl)
+    } catch (error) {
+      console.error('Error al generar el código QR:', error)
+      handleToast({
+        title: 'Error',
+        text: 'No se pudo generar el código QR. Por favor, intenta nuevamente.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+  }, [])
 
   const handleGeneratePayment = useCallback(async () => {
     setIsLoading(true)
@@ -306,9 +301,9 @@ const PaymentComponent = () => {
       setPaymentStatus('active')
       setCurrentTransactionId(data.transactionId)
     } catch (error) {
-      toast({
+      handleToast({
         title: 'Error',
-        description: 'Hubo un problema al generar el pago. Por favor, intenta nuevamente.',
+        text: 'Hubo un problema al generar el pago. Por favor, intenta nuevamente.',
         status: 'error',
         duration: 5000,
         isClosable: true
@@ -316,7 +311,7 @@ const PaymentComponent = () => {
     } finally {
       setIsLoading(false)
     }
-  }, [amount, user, generateQRCode, toast])
+  }, [amount, user, generateQRCode])
 
   const handleNewPayment = useCallback(() => {
     setPaymentStatus('inactive')
@@ -329,6 +324,13 @@ const PaymentComponent = () => {
   const handleCopyLink = useCallback(() => {
     if (paymentLink) {
       navigator.clipboard.writeText(paymentLink)
+      handleToast({
+        title: 'Enlace copiado',
+        text: 'El enlace ha sido copiado al portapapeles',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     }
   }, [paymentLink])
 
