@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import NextLink from 'next/link'
 import Image from 'next/image'
 
@@ -11,6 +11,8 @@ import { TbLayoutSidebarRightCollapse } from 'react-icons/tb'
 import { sidebarItems } from '@/src/utils/utils'
 import logo from '@/src/assets/logo.svg'
 import smallLogo from '@/src/assets/small_logo.svg'
+import { BiLogOut } from 'react-icons/bi'
+import { logout } from '@/src/app/action'
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -19,6 +21,7 @@ interface SidebarProps {
 
 export const SidebarItems = ({ isCollapsed }: SidebarProps) => {
   const router = usePathname()
+
   return (
     <Box my={6} px={isCollapsed ? 2 : 5}>
       <Flex flexDirection='column'>
@@ -51,6 +54,16 @@ export const SidebarItems = ({ isCollapsed }: SidebarProps) => {
 
 const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
   const bg = useColorModeValue('sidebar.light.bg', 'sidebar.dark.bg')
+  const router = useRouter()
+  const handleLogout = async () => {
+    try {
+      await logout()
+      router.push('/login')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <Box
       minHeight='100%'
@@ -88,6 +101,23 @@ const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
               <TbLayoutSidebarRightCollapse />
             </Box>
             {!isCollapsed ? <Text>Cerrar</Text> : null}
+          </Button>
+          {/* Cerrar sesión */}
+          <Button
+            justifyContent={isCollapsed ? 'center' : 'flex-start'}
+            width='100%'
+            px={0}
+            mb={1}
+            variant='aside'
+            fontWeight={'normal'}
+            background={'transparent'}
+            onClick={() => handleLogout()}
+            my={6}
+          >
+            <Box mx={3} fontSize='xl' transform={isCollapsed ? '' : 'rotate(180deg)'}>
+              <BiLogOut />
+            </Box>
+            {!isCollapsed ? <Text>Cerrar sesión</Text> : null}
           </Button>
         </Box>
       </Flex>
