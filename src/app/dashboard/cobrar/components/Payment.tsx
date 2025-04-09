@@ -176,7 +176,7 @@ const PaymentComponent = () => {
       checkTransactionStatus()
       const interval = setInterval(() => {
         checkTransactionStatus()
-      }, 2000)
+      }, 30000)
       checkIntervalRef.current = interval
 
       const expirationDelay = 600000 // 10 minutos

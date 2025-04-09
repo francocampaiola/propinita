@@ -61,6 +61,11 @@ export async function POST(request: Request) {
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     }
 
+    console.log('🔧 CONFIGURACIÓN DE PREFERENCIA DE PAGO:', JSON.stringify(paymentPreference))
+    console.log('🔗 URL DE NOTIFICACIÓN:', paymentPreference.notification_url)
+    console.log('🔑 TOKEN DE ACCESO:', mpCredentials.access_token ? 'Presente' : 'Ausente')
+    console.log('🏪 MARKETPLACE ID:', process.env.MP_MARKETPLACE_ID)
+
     const response = await fetch(`${process.env.MP_API_URL}/checkout/preferences`, {
       method: 'POST',
       headers: {
