@@ -1,10 +1,10 @@
 'use client'
-import { Flex, Text } from '@chakra-ui/react'
+import { Center, Text } from '@chakra-ui/react'
 
 export default function Home() {
   return (
-    <Flex justifyContent={'center'}>
+    <Center>
       <Text>Pantalla de bienvenida de Propinita 👋🏼</Text>
-    </Flex>
+    </Center>
   )
 }

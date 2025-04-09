@@ -33,14 +33,13 @@ const ThemeProvider = ({
   })
 
   return (
-    <>
-      <ChakraProvider
-        colorModeManager={cookieStorageManager}
-        theme={customTheme}
-      >
-        {children}
-      </ChakraProvider>
-    </>
+    <ChakraProvider
+      colorModeManager={cookieStorageManager}
+      theme={customTheme}
+      resetCSS
+    >
+      {children}
+    </ChakraProvider>
   )
 }
 

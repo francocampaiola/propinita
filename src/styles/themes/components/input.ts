@@ -9,6 +9,7 @@ const Input = {
       color: mode('black', 'white')(props),
       backgroundColor: mode('gray.100 !important', '#292929 !important')(props),
       borderWidth: '0px !important',
+      borderRadius: '25px',
       transition: '150ms ease-in-out',
       ':focus-visible': {
         outlineWidth: '2px !important',
