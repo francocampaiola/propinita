@@ -19,8 +19,8 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
       'user-type': 0,
       'personal-data': 1,
       'bank-data': 2,
-      'summary': 3,
-      'completed': 4
+      summary: 3,
+      completed: 4
     }
     return stepMap[step] || 0
   }
@@ -32,7 +32,7 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
       await logout()
       router.push('/login')
     } catch (error) {
-      console.log(error)
+      throw error
     }
   }
 

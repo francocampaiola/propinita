@@ -13,15 +13,6 @@ const Navbar = () => {
 
   const router = useRouter()
 
-  const handleLogout = async () => {
-    try {
-      await logout()
-      router.push('/login')
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   return (
     <Box
       display={{ base: 'none', md: 'flex' }}

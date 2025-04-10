@@ -60,7 +60,7 @@ const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
       await logout()
       router.push('/login')
     } catch (error) {
-      console.log(error)
+      throw error
     }
   }
 
