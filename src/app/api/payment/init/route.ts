@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       },
       auto_return: 'approved',
       external_reference: transaction.id.toString(),
-      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/webhook`,
+      notification_url: 'https://www.propinita.app/api/payment/webhook',
       marketplace: process.env.MP_MARKETPLACE_ID,
       marketplace_fee: Math.round(numericAmount * 0.1),
       binary_mode: true,
