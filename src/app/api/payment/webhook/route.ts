@@ -48,20 +48,29 @@ function verifySignature(signature: string, body: string): boolean {
 
 export async function POST(request: Request) {
   try {
+    console.log('🔔 WEBHOOK RECIBIDO')
     const body = await request.text()
+    console.log('📦 BODY:', body)
+
     const data = JSON.parse(body)
+    console.log('📋 DATA PARSEADA:', data)
+
     let paymentId: string | undefined
 
     if (data.action === 'payment.created' || data.action === 'payment.updated') {
       paymentId = data.data.id
+      console.log('💰 PAYMENT ID (ACTION):', paymentId)
     } else if (data.topic === 'payment' && data.resource) {
       paymentId = data.resource.replace(/\D/g, '')
+      console.log('💰 PAYMENT ID (RESOURCE):', paymentId)
     }
 
     if (!paymentId) {
+      console.log('❌ NO SE ENCONTRÓ PAYMENT ID')
       return NextResponse.json({ message: 'Tipo de notificación no reconocido' })
     }
 
+    console.log('🔍 OBTENIENDO DETALLES DEL PAGO:', paymentId)
     const response = await fetch(`${process.env.MP_API_URL}/v1/payments/${paymentId}`, {
       headers: {
         Authorization: `Bearer ${process.env.MP_ACCESS_TOKEN}`
@@ -69,20 +78,26 @@ export async function POST(request: Request) {
     })
 
     if (!response.ok) {
+      const errorText = await response.text()
+      console.error('❌ ERROR API MP:', response.status, errorText)
       throw new Error(`Error al obtener detalles del pago: ${response.status}`)
     }
 
     const payment = await response.json()
+    console.log('✅ DETALLES DEL PAGO:', payment)
 
     if (payment.status !== 'approved') {
+      console.log('❌ PAGO NO APROBADO:', payment.status)
       return NextResponse.json({ message: 'El pago no fue aprobado' })
     }
 
     const transactionId = parseInt(payment.external_reference)
     if (isNaN(transactionId)) {
+      console.error('❌ EXTERNAL REFERENCE INVÁLIDO:', payment.external_reference)
       return NextResponse.json({ error: 'External reference inválido' }, { status: 400 })
     }
 
+    console.log('🔍 BUSCANDO TRANSACCIÓN:', transactionId)
     const { data: transaction, error: fetchError } = await supabase
       .from('transactions')
       .select('status')
@@ -90,13 +105,16 @@ export async function POST(request: Request) {
       .single()
 
     if (fetchError || !transaction) {
+      console.error('❌ ERROR BUSCANDO TRANSACCIÓN:', fetchError)
       return NextResponse.json({ error: 'Transacción no encontrada' }, { status: 404 })
     }
 
     if (transaction.status === 'completed') {
+      console.log('✅ TRANSACCIÓN YA COMPLETADA')
       return NextResponse.json({ message: 'Transacción ya completada' })
     }
 
+    console.log('📝 ACTUALIZANDO TRANSACCIÓN:', transactionId)
     const { error: updateError } = await supabase
       .from('transactions')
       .update({
@@ -107,11 +125,14 @@ export async function POST(request: Request) {
       .eq('id', transactionId)
 
     if (updateError) {
+      console.error('❌ ERROR ACTUALIZANDO TRANSACCIÓN:', updateError)
       throw updateError
     }
 
+    console.log('✅ TRANSACCIÓN ACTUALIZADA')
     return NextResponse.json({ message: 'El pago se ha procesado correctamente' })
   } catch (error) {
+    console.error('❌ ERROR GENERAL:', error)
     return NextResponse.json({ error: 'El pago no se ha podido procesar' }, { status: 500 })
   }
 }
