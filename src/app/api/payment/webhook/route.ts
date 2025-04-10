@@ -9,8 +9,16 @@ const supabase = createClient(
 
 function verifySignature(signature: string, body: string): boolean {
   try {
+    console.log('🔐 VERIFICANDO FIRMA:')
+    console.log('🔑 FIRMA RECIBIDA:', signature)
+    console.log('📦 BODY RECIBIDO:', body)
+    console.log('🔑 SECRETO DE WEBHOOK:', process.env.MP_WEBHOOK_SECRET ? 'Presente' : 'Ausente')
+
     // El formato de la firma es: ts=timestamp,v1=hash
     const [tsPart, v1Part] = signature.split(',')
+    console.log('🔍 PARTE TS:', tsPart)
+    console.log('🔍 PARTE V1:', v1Part)
+
     const tsMatch = tsPart.match(/ts=(\d+)/)
     const v1Match = v1Part.match(/v1=([a-f0-9]+)/)
 
@@ -22,17 +30,20 @@ function verifySignature(signature: string, body: string): boolean {
     const timestamp = tsMatch[1]
     const receivedHash = v1Match[1]
 
-    // Crear el hash esperado
-    const data = `${timestamp}.${body}`
-    const expectedHash = crypto
-      .createHmac('sha256', process.env.MP_WEBHOOK_SECRET!)
-      .update(data)
-      .digest('hex')
-
-    console.log('🔐 VERIFICANDO FIRMA:')
     console.log('📅 TIMESTAMP:', timestamp)
     console.log('🔑 HASH RECIBIDO:', receivedHash)
+
+    // Crear el string para el hash según la documentación de MP
+    const stringToHash = `${timestamp}.${body}`
+    console.log('🔍 STRING PARA HASH:', stringToHash)
+
+    const expectedHash = crypto
+      .createHmac('sha256', process.env.MP_WEBHOOK_SECRET!)
+      .update(stringToHash)
+      .digest('hex')
+
     console.log('🔑 HASH ESPERADO:', expectedHash)
+    console.log('🔍 ¿COINCIDEN?:', expectedHash === receivedHash)
 
     return expectedHash === receivedHash
   } catch (error) {
@@ -54,28 +65,43 @@ export async function POST(request: Request) {
     const mpSignature = request.headers.get('x-signature')
     console.log('🔐 FIRMA DE MERCADOPAGO:', mpSignature || 'No presente')
 
+    // Obtener el cuerpo del webhook como texto
     const body = await request.text()
-    console.log('📦 BODY RECIBIDO:', body)
+    console.log('📦 BODY RECIBIDO (TEXTO):', body)
 
     // Verificar la firma del webhook
-    if (!mpSignature || !verifySignature(mpSignature, body)) {
+    if (!mpSignature) {
+      console.error('❌ NO SE RECIBIÓ FIRMA DEL WEBHOOK')
+      return NextResponse.json({ error: 'No se recibió firma' }, { status: 401 })
+    }
+
+    if (!process.env.MP_WEBHOOK_SECRET) {
+      console.error('❌ NO SE CONFIGURÓ EL SECRETO DE WEBHOOK')
+      return NextResponse.json({ error: 'Configuración incompleta' }, { status: 500 })
+    }
+
+    const isValid = verifySignature(mpSignature, body)
+    if (!isValid) {
       console.error('❌ FIRMA DEL WEBHOOK INVÁLIDA')
       return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
     }
 
+    // Parsear el cuerpo del webhook
     const data = JSON.parse(body)
+    console.log('📦 BODY RECIBIDO (JSON):', JSON.stringify(data))
+
+    // Verificar el tipo de notificación
+    if (data.topic === 'merchant_order') {
+      console.log('✅ NOTIFICACIÓN DE MERCHANT ORDER RECIBIDA')
+      // Aquí puedes procesar la notificación de merchant_order si es necesario
+      return NextResponse.json({ message: 'Merchant order recibido' })
+    }
 
     // Verificar si es una notificación de MercadoPago
     if (data.action === 'payment.created' || data.action === 'payment.updated') {
-      console.log('✅ NOTIFICACIÓN DE MERCADOPAGO RECIBIDA:', data.action)
-
-      // Obtener el ID del pago
-      const paymentId = data.data.id
-      console.log('💰 ID DEL PAGO:', paymentId)
-
-      // Obtener detalles del pago desde la API de MercadoPago
-      console.log('🔍 VERIFICANDO PAGO CON MERCADOPAGO, ID:', paymentId)
-      console.log('🔍 URL DE VERIFICACIÓN:', `${process.env.MP_API_URL}/v1/payments/${paymentId}`)
+      console.log('✅ NOTIFICACIÓN DE PAGO RECIBIDA:', data.action)
+      console.log('💰 ID DEL PAGO:', data.data.id)
+      console.log('👤 ID DEL USUARIO:', data.user_id)
 
       // Obtener el token del proveedor
       const { data: mpCredentials, error: mpError } = await supabase
@@ -89,7 +115,8 @@ export async function POST(request: Request) {
         throw new Error('No se encontraron las credenciales del proveedor')
       }
 
-      const response = await fetch(`${process.env.MP_API_URL}/v1/payments/${paymentId}`, {
+      // Obtener detalles del pago desde la API de MercadoPago
+      const response = await fetch(`${process.env.MP_API_URL}/v1/payments/${data.data.id}`, {
         headers: {
           Authorization: `Bearer ${mpCredentials.access_token}`
         }
@@ -105,7 +132,7 @@ export async function POST(request: Request) {
       }
 
       const payment = await response.json()
-      console.log('✅ DETALLES DEL PAGO ACTUALIZADOS:', JSON.stringify(payment))
+      console.log('✅ DETALLES DEL PAGO:', JSON.stringify(payment))
 
       if (payment.status !== 'approved') {
         console.log('❌ EL PAGO NO FUE APROBADO, ESTADO:', payment.status)
