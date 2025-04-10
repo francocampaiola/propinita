@@ -51,7 +51,7 @@ export async function POST(request: Request) {
         pending: `${process.env.NEXT_PUBLIC_APP_URL}/pago/pending`
       },
       auto_return: 'approved',
-      external_reference: transaction.id.toString(),
+      external_reference: `tip_${Date.now()}_${providerId}`,
       notification_url: 'https://www.propinita.app/api/payment/webhook',
       marketplace: process.env.MP_MARKETPLACE_ID,
       marketplace_fee: Math.round(numericAmount * 0.1),
