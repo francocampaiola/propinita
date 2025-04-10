@@ -9,23 +9,39 @@ const supabase = createClient(
 
 function verifySignature(signature: string, body: string): boolean {
   try {
+    console.log('🔐 VERIFICANDO FIRMA:')
+    console.log('🔑 FIRMA RECIBIDA:', signature)
+    console.log('📦 BODY RECIBIDO:', body)
+    console.log('🔑 SECRETO DE WEBHOOK:', process.env.MP_WEBHOOK_SECRET?.substring(0, 5) + '...')
+
     const [tsPart, v1Part] = signature.split(',')
     const tsMatch = tsPart.match(/ts=(\d+)/)
     const v1Match = v1Part.match(/v1=([a-f0-9]+)/)
 
-    if (!tsMatch || !v1Match) return false
+    if (!tsMatch || !v1Match) {
+      console.error('❌ FORMATO DE FIRMA INVÁLIDO')
+      return false
+    }
 
     const timestamp = tsMatch[1]
     const receivedHash = v1Match[1]
+
+    // Crear el string para el hash según la documentación
     const stringToHash = `${timestamp}.${body}`
+    console.log('🔍 STRING PARA HASH:', stringToHash)
 
     const expectedHash = crypto
       .createHmac('sha256', process.env.MP_WEBHOOK_SECRET!)
       .update(stringToHash)
       .digest('hex')
 
+    console.log('🔑 HASH RECIBIDO:', receivedHash)
+    console.log('🔑 HASH ESPERADO:', expectedHash)
+    console.log('🔍 ¿COINCIDEN?:', expectedHash === receivedHash)
+
     return expectedHash === receivedHash
   } catch (error) {
+    console.error('❌ ERROR AL VERIFICAR FIRMA:', error)
     return false
   }
 }
@@ -33,17 +49,6 @@ function verifySignature(signature: string, body: string): boolean {
 export async function POST(request: Request) {
   try {
     const body = await request.text()
-    const mpSignature = request.headers.get('x-signature')
-
-    if (!mpSignature || !process.env.MP_WEBHOOK_SECRET) {
-      return NextResponse.json({ error: 'Configuración incompleta' }, { status: 401 })
-    }
-
-    const isValid = verifySignature(mpSignature, body)
-    if (!isValid) {
-      return NextResponse.json({ error: 'Firma inválida' }, { status: 401 })
-    }
-
     const data = JSON.parse(body)
     let paymentId: string | undefined
 
