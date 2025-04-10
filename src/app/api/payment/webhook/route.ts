@@ -119,8 +119,7 @@ export async function POST(request: Request) {
       .from('transactions')
       .update({
         status: 'completed',
-        mp_payment_id: payment.id.toString(),
-        updated_at: new Date().toISOString()
+        mp_payment_id: payment.id.toString()
       })
       .eq('id', transactionId)
 
