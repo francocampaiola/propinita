@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import QRCode from 'qrcode'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,7 +21,6 @@ export async function POST(request: Request) {
       throw new Error('No se encontraron las credenciales de MercadoPago del proveedor')
     }
 
-    // Crear la transacción en la base de datos
     const { data: transaction, error: transactionError } = await supabase
       .from('transactions')
       .insert({
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
       },
       auto_return: 'approved',
       external_reference: transaction.id.toString(),
-      notification_url: 'https://www.propinita.app/api/payment/webhook',
+      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/webhook`,
       marketplace: process.env.MP_MARKETPLACE_ID,
       marketplace_fee: Math.round(numericAmount * 0.1),
       binary_mode: true,
@@ -75,9 +73,7 @@ export async function POST(request: Request) {
     if (!response.ok) {
       throw new Error(data.message || 'Error al generar la preferencia de pago')
     }
-
-    // Ya no generamos el QR en el servidor
-    // Devolvemos solo la URL de pago para que el cliente genere el QR
+    
     return NextResponse.json({
       initPoint: data.init_point,
       transactionId: transaction.id
