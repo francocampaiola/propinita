@@ -21,7 +21,6 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Error al obtener la transacción:', error)
       return NextResponse.json({ error: 'Error al obtener la transacción' }, { status: 500 })
     }
 

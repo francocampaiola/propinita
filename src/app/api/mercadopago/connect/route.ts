@@ -20,7 +20,6 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      console.error('Error de autenticación:', authError)
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
     }
 
@@ -31,7 +30,6 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (userError || !userData) {
-      console.error('Error al obtener el usuario:', userError)
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
     }
 
@@ -72,13 +70,11 @@ export async function GET(request: NextRequest) {
     }
 
     if (result.error) {
-      console.error('Error al guardar credenciales:', result.error)
       return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
     }
 
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
   } catch (error) {
-    console.error('Error en la conexión con MercadoPago:', error)
     return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
   }
 }

@@ -55,14 +55,6 @@ export const SidebarItems = ({ isCollapsed }: SidebarProps) => {
 const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
   const bg = useColorModeValue('sidebar.light.bg', 'sidebar.dark.bg')
   const router = useRouter()
-  const handleLogout = async () => {
-    try {
-      await logout()
-      router.push('/login')
-    } catch (error) {
-      console.log(error)
-    }
-  }
 
   return (
     <Box
@@ -100,24 +92,7 @@ const Sidebar = ({ isCollapsed, handleCollapse }: SidebarProps) => {
             <Box mx={3} fontSize='xl' transform={isCollapsed ? '' : 'rotate(180deg)'}>
               <TbLayoutSidebarRightCollapse />
             </Box>
-            {!isCollapsed ? <Text>Cerrar</Text> : null}
-          </Button>
-          {/* Cerrar sesión */}
-          <Button
-            justifyContent={isCollapsed ? 'center' : 'flex-start'}
-            width='100%'
-            px={0}
-            mb={1}
-            variant='aside'
-            fontWeight={'normal'}
-            background={'transparent'}
-            onClick={() => handleLogout()}
-            my={6}
-          >
-            <Box mx={3} fontSize='xl' transform={isCollapsed ? '' : 'rotate(180deg)'}>
-              <BiLogOut />
-            </Box>
-            {!isCollapsed ? <Text>Cerrar sesión</Text> : null}
+            {!isCollapsed ? <Text>Colapsar</Text> : null}
           </Button>
         </Box>
       </Flex>

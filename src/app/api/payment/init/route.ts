@@ -1,6 +1,5 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import QRCode from 'qrcode'
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,7 +21,6 @@ export async function POST(request: Request) {
       throw new Error('No se encontraron las credenciales de MercadoPago del proveedor')
     }
 
-    // Crear la transacción en la base de datos
     const { data: transaction, error: transactionError } = await supabase
       .from('transactions')
       .insert({
@@ -52,7 +50,7 @@ export async function POST(request: Request) {
       },
       auto_return: 'approved',
       external_reference: transaction.id.toString(),
-      notification_url: 'https://www.propinita.app/api/payment/webhook',
+      notification_url: `${process.env.NEXT_PUBLIC_APP_URL}/api/payment/webhook`,
       marketplace: process.env.MP_MARKETPLACE_ID,
       marketplace_fee: Math.round(numericAmount * 0.1),
       binary_mode: true,
@@ -60,11 +58,6 @@ export async function POST(request: Request) {
       expiration_date_from: new Date().toISOString(),
       expiration_date_to: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
     }
-
-    console.log('🔧 CONFIGURACIÓN DE PREFERENCIA DE PAGO:', JSON.stringify(paymentPreference))
-    console.log('🔗 URL DE NOTIFICACIÓN:', paymentPreference.notification_url)
-    console.log('🔑 TOKEN DE ACCESO:', mpCredentials.access_token ? 'Presente' : 'Ausente')
-    console.log('🏪 MARKETPLACE ID:', process.env.MP_MARKETPLACE_ID)
 
     const response = await fetch(`${process.env.MP_API_URL}/checkout/preferences`, {
       method: 'POST',
@@ -80,9 +73,7 @@ export async function POST(request: Request) {
     if (!response.ok) {
       throw new Error(data.message || 'Error al generar la preferencia de pago')
     }
-
-    // Ya no generamos el QR en el servidor
-    // Devolvemos solo la URL de pago para que el cliente genere el QR
+    
     return NextResponse.json({
       initPoint: data.init_point,
       transactionId: transaction.id

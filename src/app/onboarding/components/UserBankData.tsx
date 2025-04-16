@@ -116,7 +116,6 @@ const UserBankData = ({
         }
 
         const data = await response.json()
-        console.log('MercadoPago connection data:', data)
 
         if (data.connected) {
           setMpUserId(data.mp_user_id)

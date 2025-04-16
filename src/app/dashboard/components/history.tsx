@@ -67,7 +67,7 @@ const HistoryComponent = ({ full = false }: Props) => {
             </Tr>
           </Thead>
           <Tbody>
-            {transactions?.length > 1 ? (
+            {transactions?.length > 0 ? (
               full ? (
                 transactions?.map((transaction) => (
                   <Tr key={transaction.id}>

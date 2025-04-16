@@ -8,8 +8,11 @@ export const getUserRawData = async (): Promise<UserData> => {
   const supabase = await createClient()
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+      error
+    } = await supabase.auth.getUser()
+
     if (error) {
       throw new Error(error.message)
     }
@@ -23,7 +26,6 @@ export const getUserRawData = async (): Promise<UserData> => {
       .single()
 
     if (userError) {
-      console.log('No user data found:', userError.message)
       return {} as UserData
     }
 
@@ -36,7 +38,6 @@ export const getUserRawData = async (): Promise<UserData> => {
       phone: userData.phone,
       current_step: userData.user_signup_status
     }
-
   } catch (error) {
     console.error('Error fetching user data:', error)
     return {} as UserData
@@ -47,8 +48,11 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
   const supabase = await createClient()
 
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser()
+
     if (authError) {
       throw new Error(authError.message)
     }
@@ -104,7 +108,6 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
       phone: result.phone,
       current_step: result.user_signup_status
     }
-
   } catch (error) {
     console.error('Error in editUser:', error)
     throw error

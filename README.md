@@ -30,17 +30,21 @@ yarn install
 
 ```env
 # Supabase
-NEXT_PUBLIC_SUPABASE_URL="tu-url-de-supabase"
-NEXT_PUBLIC_SUPABASE_ANON_KEY="tu-anon-key"
-
-# NextAuth
-NEXTAUTH_SECRET="tu-secreto-aqui"
-NEXTAUTH_URL="http://localhost:3000"
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 
 # MercadoPago
-MP_CLIENT_ID="tu-client-id"
-MP_CLIENT_SECRET="tu-client-secret"
-MP_REDIRECT_URI="http://localhost:3000/api/mercadopago/callback"
+MP_API_URL=
+MP_ACCESS_TOKEN=
+MP_CLIENT_SECRET=
+MP_MARKETPLACE_ID=
+NEXT_PUBLIC_MP_PUBLIC_KEY=
+NEXT_PUBLIC_MP_CLIENT_ID=
+MP_WEBHOOK_SECRET=
+
+# App
+NEXT_PUBLIC_APP_URL=
 ```
 
 ## Para correr entorno de desarrollo
@@ -61,19 +65,6 @@ yarn build
 yarn start
 ```
 
-## Estructura del Proyecto
-
-```
-src/
-├── app/                 # Rutas y páginas de Next.js
-├── components/         # Componentes reutilizables
-├── context/           # Contextos de React
-├── hooks/             # Hooks personalizados
-├── utils/             # Utilidades y helpers
-├── assets/            # Recursos estáticos
-└── styles/            # Estilos globales
-```
-
 ## Flujo de la Aplicación
 
 1. **Registro y Onboarding**:
@@ -81,15 +72,13 @@ src/
    - Se verifica la identidad del usuario
    - Se vincula la cuenta de MercadoPago
 
-2. **Empleados**:
+2. **Proveedores**:
    - Crean su perfil profesional
-   - Reciben propinas digitales
-   - Gestionan su información bancaria
+   - Pueden generar links de pago para cobrar propinas
+   - Pueden ver el historial de cobros y propinas
 
 3. **Clientes**:
-   - Buscan empleados
    - Dejan propinas digitales
-   - Ver historial de propinas
 
 ## Scripts Disponibles
 
