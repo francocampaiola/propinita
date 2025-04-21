@@ -89,6 +89,7 @@ const Navbar = () => {
                   backgroundColor={'primary'}
                   variant='subtle'
                   size='sm'
+                  color={'white'}
                 />
               </MenuButton>
               <MenuList minWidth='200px' py={1}>
@@ -98,6 +99,7 @@ const Navbar = () => {
                     backgroundColor={'primary'}
                     variant='subtle'
                     size='md'
+                    color={'white'}
                   />
                   <Text fontWeight='bold' fontSize='sm'>
                     {user?.first_name} {user?.last_name}
