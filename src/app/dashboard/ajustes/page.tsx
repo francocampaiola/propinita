@@ -1,7 +1,7 @@
 'use client'
 import { Button, Divider, Flex, Switch, Text } from '@chakra-ui/react'
 import Link from 'next/link'
-import { BiDollar, BiLock, BiLogOut, BiMoon } from 'react-icons/bi'
+import { BiDollar, BiLock, BiMoon } from 'react-icons/bi'
 import { BiSun } from 'react-icons/bi'
 import { FaQuestionCircle } from 'react-icons/fa'
 
@@ -46,7 +46,7 @@ const AjustesPage = () => {
             />
             Configurar métodos de pago
           </Button>
-          <Button variant={'outline'}>
+          <Button as={Link} href='/dashboard/ajustes/cambiar-clave' variant={'outline'}>
             <BiLock
               size={15}
               style={{
