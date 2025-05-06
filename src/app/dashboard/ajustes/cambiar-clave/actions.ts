@@ -4,8 +4,7 @@ import { createClient } from '@/src/utils/supabase/server'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
-export async function changePassword(password: string) {
-  const cookieStore = cookies()
+export async function changePassword(currentPassword: string, newPassword: string) {
   const supabase = await createClient()
 
   // Verificar la autenticación del usuario
@@ -21,8 +20,22 @@ export async function changePassword(password: string) {
     }
   }
 
+  // Verificar la contraseña actual
+  const { error: signInError } = await supabase.auth.signInWithPassword({
+    email: user.email!,
+    password: currentPassword
+  })
+
+  if (signInError) {
+    return {
+      success: false,
+      error: 'La contraseña actual es incorrecta.'
+    }
+  }
+
+  // Cambiar la contraseña
   const { error } = await supabase.auth.updateUser({
-    password
+    password: newPassword
   })
 
   if (error) {
