@@ -48,7 +48,7 @@ const HistoryComponent = ({ full = false }: Props) => {
           </Link>
         )}
       </Flex>
-      <Divider borderColor='components.balance.divider' />
+      <Divider borderColor='components.divider' />
       <TableContainer>
         <Table variant='striped'>
           {transactions?.length > 1 && full ? (

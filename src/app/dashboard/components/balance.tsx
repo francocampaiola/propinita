@@ -57,7 +57,7 @@ const BalanceComponent = () => {
           <IoEye cursor={'pointer'} size='1.5rem' onClick={() => setShowBalance(!showBalance)} />
         )}
       </Flex>
-      <Divider borderColor='components.balance.divider' />
+      <Divider borderColor='components.divider' />
       <Flex flex={1} alignItems={'flex-start'} ml={5} direction={'column'}>
         <Flex alignItems={'center'} gap={3.5}>
           <Text fontSize='6xl' fontWeight={700}>

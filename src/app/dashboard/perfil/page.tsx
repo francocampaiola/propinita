@@ -180,7 +180,7 @@ const Perfil = () => {
       <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
         <Text fontWeight={700}>Mi perfil</Text>
       </Flex>
-      <Divider borderColor='components.qr.divider' />
+      <Divider borderColor='components.divider' />
       <Flex flex={1} mx={4} mt={4} mb={4} direction='column' gap={4}>
         <Flex gap={8} w={'75%'}>
           <Flex direction='column' gap={4} mb={12} flex={1}>

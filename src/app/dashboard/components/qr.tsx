@@ -70,7 +70,7 @@ const QrComponent = () => {
           onClick={() => !isLoading && generateQR()}
         />
       </Flex>
-      <Divider borderColor='components.qr.divider' />
+      <Divider borderColor='components.divider' />
       <Flex flex={1} alignItems='center' justifyContent='center'>
         {isLoading ? (
           <VStack spacing={4}>

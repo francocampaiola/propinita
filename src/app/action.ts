@@ -48,6 +48,24 @@ export const getTransactions = async (
   return data
 }
 
+export const getMercadoPago = async (
+  userId: number
+): Promise<Database['public']['Tables']['oauth_mercadopago']['Row']> => {
+  const supabase = createClient()
+  const { data, error } = await supabase
+    .from('oauth_mercadopago')
+    .select('*')
+    .eq('fk_user', userId)
+    .single()
+
+  if (error) {
+    console.error('Error fetching mercadopago:', error)
+    return null
+  }
+
+  return data
+}
+
 export const logout = async () => {
   const supabase = createClient()
 
