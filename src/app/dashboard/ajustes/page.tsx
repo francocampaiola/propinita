@@ -55,7 +55,7 @@ const AjustesPage = () => {
             />
             Cambiar contraseña
           </Button>
-          <Button variant={'outline'}>
+          <Button as={Link} href='/dashboard/faqs' variant={'outline'}>
             <FaQuestionCircle
               size={12}
               style={{

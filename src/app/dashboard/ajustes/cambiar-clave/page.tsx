@@ -13,12 +13,14 @@ import {
   ModalOverlay,
   ModalContent,
   ModalBody,
-  useDisclosure
+  useDisclosure,
+  Icon
 } from '@chakra-ui/react'
 import { handleToast } from '@/src/utils/toast'
 import PasswordConfirmPassword from '@/src/components/form/PasswordConfirmPassword'
 import Input from '@/src/components/form/Input'
 import { changePassword } from './actions'
+import { FaArrowLeft } from 'react-icons/fa'
 
 const ChangePasswordPage = () => {
   const [isLoading, startTransition] = useTransition()
@@ -101,7 +103,15 @@ const ChangePasswordPage = () => {
         w='50%'
       >
         <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
-          <Text fontWeight={700}>Cambiar contraseña</Text>
+          <Flex alignItems={'center'} gap={2}>
+            <FaArrowLeft
+              size={16}
+              style={{ marginRight: '5px' }}
+              onClick={() => window.history.back()}
+              cursor={'pointer'}
+            />
+            <Text fontWeight={700}>Cambiar contraseña</Text>
+          </Flex>
         </Flex>
         <Divider borderColor='components.divider' />
         <Flex flex={1} mx={4} mt={4} mb={4} direction='column' gap={4}>
