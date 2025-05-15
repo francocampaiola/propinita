@@ -18,7 +18,7 @@ const AjustesPage = () => {
       </Flex>
       <Divider borderColor='components.divider' />
       <Flex flex={1} mx={4} mt={4} mb={4} direction='column'>
-        <Flex justifyContent={'space-between'}>
+        {/* <Flex justifyContent={'space-between'}>
           <Flex direction={'column'}>
             <Text fontWeight={700}>Modo oscuro</Text>
             <Text color={'gray.300'}>Cambia entre tema claro y oscuro</Text>
@@ -35,7 +35,7 @@ const AjustesPage = () => {
             />
             <BiMoon size={24} color={'white'} />
           </Flex>
-        </Flex>
+        </Flex> */}
         <Flex direction={'column'} gap={2} mt={4}>
           <Button as={Link} href='/dashboard/ajustes/metodos' variant={'outline'}>
             <BiDollar

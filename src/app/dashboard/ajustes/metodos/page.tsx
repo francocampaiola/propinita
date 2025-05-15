@@ -103,6 +103,7 @@ const MetodosPagoPage = () => {
       borderRadius='15px'
       direction={'column'}
       justifyContent='space-between'
+      maxW={{ base: '100%', md: '60%' }}
     >
       <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
         <Flex alignItems={'center'} gap={1}>
