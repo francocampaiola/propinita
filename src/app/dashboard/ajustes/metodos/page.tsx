@@ -3,16 +3,84 @@ import { useGetMercadoPago } from '@/src/hooks/mercadopago/useGetMercadoPago'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import { Alert, AlertIcon, Button, Circle, Divider, Flex, Spinner, Text } from '@chakra-ui/react'
 import { GrCheckmark } from 'react-icons/gr'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Input from '@/src/components/form/Input'
 import { BiArrowToLeft, BiArrowToRight, BiLinkExternal } from 'react-icons/bi'
 import { FaArrowLeft } from 'react-icons/fa'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import api from '@/src/api'
+import { useToast } from '@chakra-ui/react'
 
 const MetodosPagoPage = () => {
   const { mercadopago, isLoading, refetch } = useGetMercadoPago()
   const { user, isLoading: isLoadingUser } = useGetUser()
   const [linkNewAccount, setLinkNewAccount] = useState(false)
+  const [isLoadingAuth, setIsLoadingAuth] = useState(false)
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const toast = useToast()
+
+  useEffect(() => {
+    const success = searchParams.get('success')
+    const error = searchParams.get('error')
+
+    if (success === 'connected') {
+      toast({
+        title: 'Cuenta vinculada',
+        description: 'Tu cuenta de MercadoPago se ha vinculado correctamente.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
+      refetch()
+      setLinkNewAccount(false)
+    } else if (error) {
+      let errorMessage = 'Hubo un problema al vincular tu cuenta.'
+      switch (error) {
+        case 'permisos_invalidos':
+          errorMessage = 'No se pudieron verificar los permisos de tu cuenta de MercadoPago.'
+          break
+        case 'sin_permisos_venta':
+          errorMessage =
+            'Tu cuenta de MercadoPago no tiene permisos para recibir pagos. Por favor, habilita la opción de recibir pagos en tu cuenta.'
+          break
+        default:
+          errorMessage = `Hubo un problema al vincular tu cuenta: ${error}`
+      }
+      toast({
+        title: 'Error de conexión',
+        description: errorMessage,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+  }, [searchParams, toast, refetch])
+
+  const handleLinkAccount = async () => {
+    try {
+      setIsLoadingAuth(true)
+      const url = await api.user.authorize()
+      console.log('URL de autorización generada:', url)
+      console.log('Variables de entorno:', {
+        NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
+        NEXT_PUBLIC_MP_CLIENT_ID: process.env.NEXT_PUBLIC_MP_CLIENT_ID
+      })
+      window.location.href = url
+    } catch (error) {
+      console.error('Error al obtener URL de autorización:', error)
+      toast({
+        title: 'Error',
+        description: 'No se pudo iniciar el proceso de vinculación',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    } finally {
+      setIsLoadingAuth(false)
+    }
+  }
 
   if (isLoading || isLoadingUser) {
     return (
@@ -71,7 +139,13 @@ const MetodosPagoPage = () => {
                   <Text fontSize={'xl'} fontWeight={600} w={'60%'} textAlign={'center'}>
                     Serás redirigido a MercadoPago para completar el proceso de vinculación
                   </Text>
-                  <Button mb={3} variant={'outline'} w={'100%'}>
+                  <Button
+                    mb={3}
+                    variant={'outline'}
+                    w={'100%'}
+                    onClick={handleLinkAccount}
+                    isLoading={isLoadingAuth}
+                  >
                     <BiLinkExternal size={16} style={{ marginRight: '5px' }} />
                     Ir a MercadoPago
                   </Button>
