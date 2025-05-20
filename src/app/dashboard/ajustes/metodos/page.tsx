@@ -205,26 +205,39 @@ const MetodosPagoPage = () => {
           py={2}
           mt={4}
         >
-          <Flex alignItems={'center'} gap={1}>
-            <Circle size='17px' bg='#9AE6B4' color='white'>
-              <GrCheckmark size={10} color='#38A169' />
-            </Circle>
-            <Text color={'#38A169'} fontWeight={500}>
-              Cuenta vinculada correctamente
-            </Text>
-          </Flex>
-          <Flex direction={'column'} gap={2} my={3}>
-            <Input label='Correo electrónico' size='sm' value={user?.email} isDisabled />
-            <Input
-              label='Cuenta de MercadoPago asociada'
-              size='sm'
-              value={mercadopago?.mp_user_id}
-              isDisabled
-            />
-          </Flex>
+          {mercadopago?.mp_user_id ? (
+            <>
+              <Flex alignItems={'center'} gap={1}>
+                <Circle size='17px' bg='#9AE6B4' color='white'>
+                  <GrCheckmark size={10} color='#38A169' />
+                </Circle>
+                <Text color={'#38A169'} fontWeight={500}>
+                  Cuenta vinculada correctamente
+                </Text>
+              </Flex>
+              <Flex direction={'column'} gap={2} my={3}>
+                <Input label='Correo electrónico' size='sm' value={user?.email} isDisabled />
+                <Input
+                  label='Cuenta de MercadoPago asociada'
+                  size='sm'
+                  value={mercadopago?.mp_user_id}
+                  isDisabled
+                />
+              </Flex>
+            </>
+          ) : (
+            <Flex direction={'column'} gap={3} alignItems={'center'} py={4}>
+              <Text fontSize={'lg'} fontWeight={600}>
+                No hay cuenta vinculada
+              </Text>
+              <Text color={'gray.300'} textAlign={'center'}>
+                Necesitas vincular tu cuenta de MercadoPago para recibir propinas
+              </Text>
+            </Flex>
+          )}
           <Button mb={3} variant={'outline'} onClick={() => setLinkNewAccount(true)}>
             <BiArrowToRight size={16} style={{ marginRight: '5px' }} />
-            Vincular nueva cuenta
+            {mercadopago?.mp_user_id ? 'Vincular nueva cuenta' : 'Vincular cuenta'}
           </Button>
         </Flex>
         <Alert
