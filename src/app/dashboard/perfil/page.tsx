@@ -151,7 +151,6 @@ const Perfil = () => {
         status: 'success'
       })
     } catch (error) {
-      console.error('Error al guardar cambios:', error)
       handleToast({
         title: 'Error',
         text: 'Hubo un error al guardar los cambios. Por favor, intenta nuevamente.',

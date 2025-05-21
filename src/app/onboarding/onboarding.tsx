@@ -31,11 +31,14 @@ const UserSummary = dynamic(() => import('./components/UserSummary'), {
   loading: () => <Spinner size='xl' thickness='4px' />
 })
 
-const steps: Record<StepStatus, {
-  component: React.ComponentType<any>;
-  next: StepStatus | null;
-  prev: StepStatus | null;
-}> = {
+const steps: Record<
+  StepStatus,
+  {
+    component: React.ComponentType<any>
+    next: StepStatus | null
+    prev: StepStatus | null
+  }
+> = {
   user_type: {
     component: UserType,
     next: 'user_personal_data',
@@ -101,13 +104,12 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
         setContextStep(nextStep)
       }
     } catch (error) {
-      console.error('Error:', error)
       toast({
         title: 'Error',
         description: 'Hubo un error al actualizar tus datos. Por favor, intenta nuevamente.',
         status: 'error',
         duration: 5000,
-        isClosable: true,
+        isClosable: true
       })
     } finally {
       setIsLoading(false)
@@ -124,13 +126,12 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
         setContextStep(prevStep)
       }
     } catch (error) {
-      console.error('Error en handleBack:', error)
       toast({
         title: 'Error',
         description: 'Hubo un error al volver al paso anterior. Por favor, intenta nuevamente.',
         status: 'error',
         duration: 5000,
-        isClosable: true,
+        isClosable: true
       })
     } finally {
       setIsLoadingBack(false)
@@ -166,7 +167,7 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
             <Spinner color='primary' borderWidth={4} mt={4} />
           </Flex>
         ) : (
-          <StepComponent 
+          <StepComponent
             userData={userData}
             onNext={handleNext}
             onBack={handleBack}

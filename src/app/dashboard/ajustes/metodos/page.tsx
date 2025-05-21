@@ -13,11 +13,10 @@ import api from '@/src/api'
 import { useToast } from '@chakra-ui/react'
 
 const MetodosPagoPage = () => {
-  const { mercadopago, isLoading, refetch } = useGetMercadoPago()
+  const { mercadopago, isLoading, refetch, error: mercadopagoError } = useGetMercadoPago()
   const { user, isLoading: isLoadingUser } = useGetUser()
   const [linkNewAccount, setLinkNewAccount] = useState(false)
   const [isLoadingAuth, setIsLoadingAuth] = useState(false)
-  const router = useRouter()
   const searchParams = useSearchParams()
   const toast = useToast()
 
@@ -56,20 +55,24 @@ const MetodosPagoPage = () => {
         isClosable: true
       })
     }
-  }, [searchParams, toast, refetch])
+
+    if (mercadopagoError) {
+      toast({
+        title: 'Error',
+        description: mercadopagoError.message,
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
+    }
+  }, [searchParams, toast, refetch, mercadopagoError])
 
   const handleLinkAccount = async () => {
     try {
       setIsLoadingAuth(true)
       const url = await api.user.authorize()
-      console.log('URL de autorización generada:', url)
-      console.log('Variables de entorno:', {
-        NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-        NEXT_PUBLIC_MP_CLIENT_ID: process.env.NEXT_PUBLIC_MP_CLIENT_ID
-      })
       window.location.href = url
     } catch (error) {
-      console.error('Error al obtener URL de autorización:', error)
       toast({
         title: 'Error',
         description: 'No se pudo iniciar el proceso de vinculación',
@@ -90,6 +93,37 @@ const MetodosPagoPage = () => {
     )
   }
 
+  if (mercadopagoError) {
+    return (
+      <Flex
+        backgroundColor='gray.1000'
+        borderRadius='15px'
+        direction={'column'}
+        justifyContent='space-between'
+        maxW={{ base: '100%', md: '60%' }}
+      >
+        <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
+          <Flex alignItems={'center'} gap={1}>
+            <Link href={'/dashboard/ajustes'}>
+              <FaArrowLeft size={16} style={{ marginRight: '5px' }} cursor={'pointer'} />
+            </Link>
+            <Text fontWeight={700}>Métodos de pago</Text>
+          </Flex>
+        </Flex>
+        <Divider borderColor='components.divider' />
+        <Flex flex={1} mx={4} mt={4} mb={4} direction='column'>
+          <Alert status='error' borderRadius={'15px'}>
+            <AlertIcon />
+            <Text>{mercadopagoError.message}</Text>
+          </Alert>
+          <Button mt={4} onClick={() => refetch()}>
+            Reintentar
+          </Button>
+        </Flex>
+      </Flex>
+    )
+  }
+
   if (linkNewAccount) {
     return (
       <Flex
@@ -97,6 +131,7 @@ const MetodosPagoPage = () => {
         borderRadius='15px'
         direction={'column'}
         justifyContent='space-between'
+        maxW={{ base: '100%', md: '60%' }}
       >
         <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
           <Flex alignItems={'center'} gap={1}>
@@ -130,13 +165,13 @@ const MetodosPagoPage = () => {
                   direction={'column'}
                   mx={4}
                 >
-                  <Circle size='100px' bg='primary' color='white'>
-                    <BiLinkExternal size={50} />
+                  <Circle size='50px' bg='primary' color='white'>
+                    <BiLinkExternal size={25} />
                   </Circle>
-                  <Text fontSize={'2xl'} fontWeight={700}>
+                  <Text fontSize={'xl'} fontWeight={700}>
                     Vincular cuenta
                   </Text>
-                  <Text fontSize={'xl'} fontWeight={600} w={'60%'} textAlign={'center'}>
+                  <Text color={'gray.300'} textAlign={'center'}>
                     Serás redirigido a MercadoPago para completar el proceso de vinculación
                   </Text>
                   <Button

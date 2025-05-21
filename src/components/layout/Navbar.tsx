@@ -40,7 +40,6 @@ const Navbar = () => {
       await logout()
       router.push('/login')
     } catch (error) {
-      console.error('Error al cerrar sesión:', error)
       setIsLoggingOut(false)
     }
   }
@@ -109,10 +108,18 @@ const Navbar = () => {
                   </Text>
                 </VStack>
                 <MenuDivider my={1} />
-                <MenuItem icon={<Icon as={FiUser} boxSize={4} />} fontSize='sm'>
+                <MenuItem
+                  icon={<Icon as={FiUser} boxSize={4} />}
+                  fontSize='sm'
+                  onClick={() => router.push('/dashboard/perfil')}
+                >
                   Mi perfil
                 </MenuItem>
-                <MenuItem icon={<Icon as={FiHelpCircle} boxSize={4} />} fontSize='sm'>
+                <MenuItem
+                  icon={<Icon as={FiHelpCircle} boxSize={4} />}
+                  fontSize='sm'
+                  onClick={() => router.push('/dashboard/faqs')}
+                >
                   Ayuda
                 </MenuItem>
                 <MenuDivider my={1} />

@@ -56,7 +56,6 @@ export default function PagoPage() {
       // Redirigir al usuario a la página de pago de MercadoPago
       window.location.href = data.initPoint
     } catch (error) {
-      console.error('Error:', error)
       toast({
         title: 'Error',
         description: 'Hubo un problema al procesar el pago. Por favor, intenta nuevamente.',

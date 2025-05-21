@@ -39,7 +39,6 @@ export const getUserRawData = async (): Promise<UserData> => {
       current_step: userData.user_signup_status
     }
   } catch (error) {
-    console.error('Error fetching user data:', error)
     return {} as UserData
   }
 }
@@ -109,7 +108,6 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
       current_step: result.user_signup_status
     }
   } catch (error) {
-    console.error('Error in editUser:', error)
     throw error
   }
 }

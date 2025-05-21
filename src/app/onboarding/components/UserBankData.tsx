@@ -134,7 +134,6 @@ const UserBankData = ({
           setMpInfo({ connected: false })
         }
       } catch (error) {
-        console.error('Error checking connection:', error)
         setConnectionStatus('error')
         setMpInfo({ connected: false })
         toast({

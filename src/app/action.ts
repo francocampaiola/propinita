@@ -22,7 +22,6 @@ export const getBalance = async (
   const { data, error } = await supabase.from('wallets').select('*').eq('fk_user', userId).single()
 
   if (error) {
-    console.error('Error fetching balance:', error)
     return null
   }
 
@@ -41,7 +40,6 @@ export const getTransactions = async (
     .order('created_at', { ascending: false })
 
   if (error) {
-    console.error('Error fetching transactions:', error)
     return null
   }
 
@@ -50,20 +48,26 @@ export const getTransactions = async (
 
 export const getMercadoPago = async (
   userId: number
-): Promise<Database['public']['Tables']['oauth_mercadopago']['Row']> => {
-  const supabase = createClient()
-  const { data, error } = await supabase
-    .from('oauth_mercadopago')
-    .select('*')
-    .eq('fk_user', userId)
-    .single()
+): Promise<Database['public']['Tables']['oauth_mercadopago']['Row'] | null> => {
+  try {
+    const supabase = createClient()
+    const { data, error } = await supabase
+      .from('oauth_mercadopago')
+      .select('*')
+      .eq('fk_user', userId)
+      .single()
 
-  if (error) {
-    console.error('Error fetching mercadopago:', error)
-    return null
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return null
+      }
+      throw new Error('Error al obtener la información de MercadoPago')
+    }
+
+    return data
+  } catch (error) {
+    throw new Error('No se pudo obtener la información de MercadoPago')
   }
-
-  return data
 }
 
 export const logout = async () => {
@@ -71,6 +75,6 @@ export const logout = async () => {
 
   const { error } = await supabase.auth.signOut()
   if (error) {
-    console.error('Error al cerrar sesión:', error.message)
+    throw new Error('Error al cerrar sesión')
   }
 }
