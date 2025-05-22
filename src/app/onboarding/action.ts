@@ -72,7 +72,8 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
       civil_state: userData.civil_state,
       nationality: userData.nationality,
       phone: userData.phone,
-      user_signup_status: userData.current_step
+      user_signup_status: userData.current_step,
+      monthly_goal: userData.monthly_goal
     }
 
     let result: Database['public']['Tables']['users']['Row']
