@@ -13,6 +13,7 @@ export interface UserData {
   current_step?: StepStatus
   phone_prefix?: string
   birthdate?: string
+  monthly_goal?: number
 }
 
 export interface OnboardingStepProps {

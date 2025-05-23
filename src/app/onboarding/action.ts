@@ -39,7 +39,6 @@ export const getUserRawData = async (): Promise<UserData> => {
       current_step: userData.user_signup_status
     }
   } catch (error) {
-    console.error('Error fetching user data:', error)
     return {} as UserData
   }
 }
@@ -73,7 +72,8 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
       civil_state: userData.civil_state,
       nationality: userData.nationality,
       phone: userData.phone,
-      user_signup_status: userData.current_step
+      user_signup_status: userData.current_step,
+      monthly_goal: userData.monthly_goal
     }
 
     let result: Database['public']['Tables']['users']['Row']
@@ -109,7 +109,6 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
       current_step: result.user_signup_status
     }
   } catch (error) {
-    console.error('Error in editUser:', error)
     throw error
   }
 }

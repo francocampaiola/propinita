@@ -4,6 +4,7 @@ import QRCode from 'qrcode'
 import { Divider, Flex, Text, Spinner, VStack } from '@chakra-ui/react'
 import { IoRefreshSharp } from 'react-icons/io5'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
+import { handleToast } from '@/src/utils/toast'
 
 const QrComponent = () => {
   const [qrUrl, setQrUrl] = useState<string>('')
@@ -41,7 +42,13 @@ const QrComponent = () => {
       setQrUrl(qrDataUrl)
       setQrText(paymentUrl)
     } catch (err) {
-      console.error('Error generando QR:', err)
+      handleToast({
+        title: 'Error',
+        text: 'No se pudo generar el código QR. Por favor, intenta nuevamente.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
     } finally {
       setIsLoading(false)
     }
@@ -70,7 +77,7 @@ const QrComponent = () => {
           onClick={() => !isLoading && generateQR()}
         />
       </Flex>
-      <Divider borderColor='components.qr.divider' />
+      <Divider borderColor='components.divider' />
       <Flex flex={1} alignItems='center' justifyContent='center'>
         {isLoading ? (
           <VStack spacing={4}>

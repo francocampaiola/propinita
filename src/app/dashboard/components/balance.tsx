@@ -15,20 +15,29 @@ import { IoEye, IoEyeOff } from 'react-icons/io5'
 import { FaInfoCircle } from 'react-icons/fa'
 import { BsGraphUp } from 'react-icons/bs'
 import { GrUpdate } from 'react-icons/gr'
+import { useGetUser } from '@/src/hooks/users/useGetUser'
+import { calculateMonthlyGoalPercentage } from '@/src/utils/utils'
+import { useGetTransactions } from '@/src/hooks/transactions/useGetTransactions'
 
 const BalanceComponent = () => {
   const [showBalance, setShowBalance] = useState(false)
   const [isRefetching, setIsRefetching] = useState(false)
 
   const { balance: data, isLoading, refetch } = useGetBalance()
+  const { user, isLoading: isUserLoading, refetch: refetchUser } = useGetUser()
+  const {
+    transactions,
+    isLoading: isTransactionsLoading,
+    refetch: refetchTransactions
+  } = useGetTransactions()
 
   const handleRefetch = async () => {
     setIsRefetching(true)
-    await refetch()
+    await Promise.all([refetch(), refetchUser(), refetchTransactions()])
     setIsRefetching(false)
   }
 
-  if (isLoading) {
+  if (isLoading || isUserLoading || isTransactionsLoading) {
     return <Text>Cargando...</Text>
   }
 
@@ -57,7 +66,7 @@ const BalanceComponent = () => {
           <IoEye cursor={'pointer'} size='1.5rem' onClick={() => setShowBalance(!showBalance)} />
         )}
       </Flex>
-      <Divider borderColor='components.balance.divider' />
+      <Divider borderColor='components.divider' />
       <Flex flex={1} alignItems={'flex-start'} ml={5} direction={'column'}>
         <Flex alignItems={'center'} gap={3.5}>
           <Text fontSize='6xl' fontWeight={700}>
@@ -104,7 +113,34 @@ const BalanceComponent = () => {
         <Flex mt={6} gap={2} direction={'column'} w={'100%'} pr={4}>
           <Flex justifyContent={'space-between'} alignItems={'center'}>
             <Text>Progreso hacia la meta mensual</Text>
-            <Text fontSize={'xs'}>64%</Text>
+            {!user.monthly_goal ? (
+              <Flex alignItems='center' gap={2}>
+                <Text fontSize={'xs'} color='gray.500'>
+                  Todavía no configuraste una meta este mes
+                </Text>
+                <Button
+                  size='xs'
+                  variant='outline'
+                  colorScheme='primary'
+                  onClick={() => {
+                    /* TODO: Implementar modal o redirección */
+                  }}
+                >
+                  Configurar meta
+                </Button>
+              </Flex>
+            ) : (
+              <Flex alignItems='center' gap={2}>
+                <Text fontSize={'xs'}>
+                  {calculateMonthlyGoalPercentage(user.monthly_goal, transactions).percentage}%
+                </Text>
+                {calculateMonthlyGoalPercentage(user.monthly_goal, transactions).isCompleted && (
+                  <Tag size='sm' colorScheme='green' variant='solid'>
+                    ¡Meta cumplida!
+                  </Tag>
+                )}
+              </Flex>
+            )}
           </Flex>
           <Box
             w='100%'
@@ -114,7 +150,22 @@ const BalanceComponent = () => {
             overflow='hidden'
             position='relative'
           >
-            <Box w='64%' h='100%' bg='primary' position='absolute' left='0' top='0' />
+            {user.monthly_goal ? (
+              <Box
+                w={`${calculateMonthlyGoalPercentage(user.monthly_goal, transactions).percentage}%`}
+                h='100%'
+                bg={
+                  calculateMonthlyGoalPercentage(user.monthly_goal, transactions).isCompleted
+                    ? 'green.500'
+                    : 'primary'
+                }
+                position='absolute'
+                left='0'
+                top='0'
+              />
+            ) : (
+              <Box w='100%' h='100%' bg='gray.600' position='absolute' left='0' top='0' />
+            )}
           </Box>
         </Flex>
       </Flex>

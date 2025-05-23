@@ -5,10 +5,10 @@ import api from '@/src/api'
 export async function GET(request: NextRequest) {
   try {
     const code = request.nextUrl.searchParams.get('code')
+
     if (!code) {
-      return NextResponse.json(
-        { error: 'No se proporcionó el código de autorización' },
-        { status: 400 }
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/ajustes/metodos?error=no_code`
       )
     }
 
@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     } = await supabase.auth.getUser()
 
     if (authError || !user) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard/ajustes/metodos`)
     }
 
     const { data: userData, error: userError } = await supabase
@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
       .single()
 
     if (userError || !userData) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
+      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/dashboard/ajustes/metodos`)
     }
 
     const credentials = await api.user.connect(code)
@@ -42,7 +42,6 @@ export async function GET(request: NextRequest) {
       .single()
 
     let result
-
     if (existingCreds) {
       result = await supabase
         .from('oauth_mercadopago')
@@ -70,11 +69,17 @@ export async function GET(request: NextRequest) {
     }
 
     if (result.error) {
-      return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
+      return NextResponse.redirect(
+        `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/ajustes/metodos?error=db_error`
+      )
     }
 
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
+    return NextResponse.redirect(
+      `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/ajustes/metodos?success=connected`
+    )
   } catch (error) {
-    return NextResponse.redirect(`${process.env.NEXT_PUBLIC_APP_URL}/onboarding`)
+    return NextResponse.redirect(
+      `${process.env.NEXT_PUBLIC_APP_URL}/dashboard/ajustes/metodos?error=unknown`
+    )
   }
 }

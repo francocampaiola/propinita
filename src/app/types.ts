@@ -136,6 +136,7 @@ export type Database = {
           status: Database['public']['Enums']['user_status'] | null
           user_signup_status: Database['public']['Enums']['signup_status'] | null
           user_type: Database['public']['Enums']['user_type'] | null
+          monthly_goal: number | null
         }
         Insert: {
           birthdate?: string | null
@@ -152,6 +153,7 @@ export type Database = {
           status?: Database['public']['Enums']['user_status'] | null
           user_signup_status?: Database['public']['Enums']['signup_status'] | null
           user_type?: Database['public']['Enums']['user_type'] | null
+          monthly_goal?: number | null
         }
         Update: {
           birthdate?: string | null
@@ -168,6 +170,7 @@ export type Database = {
           status?: Database['public']['Enums']['user_status'] | null
           user_signup_status?: Database['public']['Enums']['signup_status'] | null
           user_type?: Database['public']['Enums']['user_type'] | null
+          monthly_goal?: number | null
         }
         Relationships: []
       }

@@ -22,13 +22,12 @@ const colors = {
   },
   components: {
     qr: {
-      bg: '#3C3C3C',
-      divider: '#525252'
+      bg: '#3C3C3C'
     },
     balance: {
-      bg: '#3C3C3C',
-      divider: '#525252'
-    }
+      bg: '#3C3C3C'
+    },
+    divider: '#525252'
   },
   gray: {
     50: '#F6F6F6',

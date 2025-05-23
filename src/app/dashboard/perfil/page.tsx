@@ -3,6 +3,7 @@
 import Input from '@/src/components/form/Input'
 import InputPhone from '@/src/components/form/PhoneInput'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
+import { useGetTransactions } from '@/src/hooks/transactions/useGetTransactions'
 import { Divider, Flex, Text, Spinner, Button } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { editUser } from '@/src/app/onboarding/action'
@@ -37,6 +38,7 @@ const getLabel = (value: string, options: { value: string; label: string }[]) =>
 
 const Perfil = () => {
   const { user, isLoading, refetch } = useGetUser()
+  const { refetch: refetchTransactions } = useGetTransactions()
   const [isSaving, setIsSaving] = useState(false)
 
   const schema = z.object({
@@ -86,6 +88,13 @@ const Perfil = () => {
             message: 'El número de teléfono no es válido'
           })
         }
+      }),
+    monthly_goal: z
+      .string()
+      .optional()
+      .transform((val) => {
+        if (!val) return '0'
+        return val.replace(/[^0-9]/g, '')
       })
   })
 
@@ -94,7 +103,8 @@ const Perfil = () => {
     defaultValues: {
       first_name: '',
       last_name: '',
-      phone: ''
+      phone: '',
+      monthly_goal: ''
     },
     mode: 'onChange'
   })
@@ -104,7 +114,8 @@ const Perfil = () => {
       methods.reset({
         first_name: user.first_name || '',
         last_name: user.last_name || '',
-        phone: user.phone || ''
+        phone: user.phone || '',
+        monthly_goal: user.monthly_goal?.toString() || ''
       })
     }
   }, [user, methods])
@@ -140,10 +151,11 @@ const Perfil = () => {
       await editUser({
         first_name: values.first_name,
         last_name: values.last_name,
-        phone: values.phone
+        phone: values.phone,
+        monthly_goal: values.monthly_goal ? Number(values.monthly_goal) : 0
       })
 
-      await refetch()
+      await Promise.all([refetch(), refetchTransactions()])
 
       handleToast({
         title: 'Cambios guardados',
@@ -151,7 +163,6 @@ const Perfil = () => {
         status: 'success'
       })
     } catch (error) {
-      console.error('Error al guardar cambios:', error)
       handleToast({
         title: 'Error',
         text: 'Hubo un error al guardar los cambios. Por favor, intenta nuevamente.',
@@ -180,7 +191,7 @@ const Perfil = () => {
       <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
         <Text fontWeight={700}>Mi perfil</Text>
       </Flex>
-      <Divider borderColor='components.qr.divider' />
+      <Divider borderColor='components.divider' />
       <Flex flex={1} mx={4} mt={4} mb={4} direction='column' gap={4}>
         <Flex gap={8} w={'75%'}>
           <Flex direction='column' gap={4} mb={12} flex={1}>
@@ -235,6 +246,24 @@ const Perfil = () => {
               placeholder='Ingresar estado civil'
               value={getLabel(user?.civil_state || '', civil_state)}
               isDisabled
+            />
+            <Input
+              label='Meta mensual'
+              name='monthly_goal'
+              size='lg'
+              placeholder='Ingresar meta mensual'
+              type='text'
+              value={methods.watch('monthly_goal')}
+              onChange={(e) => {
+                const value = e.target.value.replace(/[^0-9]/g, '')
+                methods.setValue('monthly_goal', value, {
+                  shouldValidate: true,
+                  shouldDirty: true,
+                  shouldTouch: true
+                })
+              }}
+              showErrors={true}
+              inputRight='ARS'
             />
           </Flex>
         </Flex>
