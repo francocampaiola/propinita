@@ -4,7 +4,7 @@ import { Flex, Box, Text, Button, useToast, Badge } from '@chakra-ui/react'
 import BoxColorMode from '@/src/components/BoxColorMode'
 import { useForm } from 'react-hook-form'
 import type { OnboardingStepProps } from '../onboarding.types'
-import MercadoPagoLogo from '@/src/assets/onboarding/user_bank_data/mercadopago.png'
+import MercadoPagoLogo from '@/src/assets/onboarding/user_bank_data/mercadopago.svg'
 import Image from 'next/image'
 import { FaArrowLeft, FaArrowRight, FaCheck } from 'react-icons/fa'
 import api from '@/src/api'
@@ -289,7 +289,7 @@ const UserBankData = ({
                 borderRadius={15}
                 textAlign={'left'}
               >
-                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} priority />
+                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={100} height={50} priority />
                 <Box ml={4}>
                   <Text fontSize='lg' fontWeight='600'>
                     MercadoPago
