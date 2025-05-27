@@ -113,7 +113,8 @@ export const MercadoPagoBlocker = () => {
               <Image src={mercadopagoImage} alt='MercadoPago' width={150} height={100} />
               <Text color='gray.300' fontSize='md'>
                 Para continuar utilizando la aplicación, necesitas vincular tu cuenta de
-                MercadoPago. Esto es necesario para poder recibir y realizar pagos de manera segura.
+                MercadoPago. <br />
+                Esto es necesario para poder recibir y realizar pagos de manera segura.
               </Text>
               <Link href='/dashboard/ajustes/metodos' passHref>
                 <Button variant={'primary'} autoFocus={false}>

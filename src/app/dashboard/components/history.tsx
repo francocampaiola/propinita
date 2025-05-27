@@ -11,7 +11,8 @@ import {
   Text,
   Th,
   Thead,
-  Tr
+  Tr,
+  Skeleton
 } from '@chakra-ui/react'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { useGetTransactions } from '@/src/hooks/transactions/useGetTransactions'
@@ -25,7 +26,7 @@ const HistoryComponent = ({ full = false }: Props) => {
   const { transactions, isLoading } = useGetTransactions()
 
   if (isLoading) {
-    return <Text>Cargando...</Text>
+    return <Skeleton height='350px' mb={4} borderRadius='md' />
   }
 
   return (
