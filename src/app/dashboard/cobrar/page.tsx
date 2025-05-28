@@ -1,6 +1,6 @@
 'use client'
 import React, { lazy, Suspense } from 'react'
-import { Container, Flex, Spinner, Center } from '@chakra-ui/react'
+import { Container, Flex, Spinner, Center, Skeleton } from '@chakra-ui/react'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { BsGraphUpArrow } from 'react-icons/bs'
 import { IoStatsChart } from 'react-icons/io5'
@@ -9,11 +9,7 @@ import { useTransactionStats } from '@/src/hooks/transactions/useTransactionStat
 
 const PaymentComponent = lazy(() => import('./components/Payment'))
 
-const LoadingState = () => (
-  <Center p={8}>
-    <Spinner size='xl' color='primary.500' />
-  </Center>
-)
+const LoadingState = () => <Skeleton height='350px' mb={4} borderRadius='md' />
 
 const CobrosPage = () => {
   const { stats, isLoading } = useTransactionStats()
