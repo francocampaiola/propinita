@@ -11,11 +11,6 @@ import { FaCheck } from 'react-icons/fa'
 import OnboardingLayout from './components/layout/OnboardingLayout'
 
 // Componentes dinámicos
-const UserType = dynamic(() => import('./components/UserType'), {
-  ssr: false,
-  loading: () => <Spinner size='xl' thickness='4px' />
-})
-
 const UserPersonalData = dynamic(() => import('./components/UserPersonalData'), {
   ssr: false,
   loading: () => <Spinner size='xl' thickness='4px' />
@@ -39,15 +34,10 @@ const steps: Record<
     prev: StepStatus | null
   }
 > = {
-  user_type: {
-    component: UserType,
-    next: 'user_personal_data',
-    prev: null
-  },
   user_personal_data: {
     component: UserPersonalData,
     next: 'user_bank_data',
-    prev: 'user_type'
+    prev: null
   },
   user_bank_data: {
     component: UserBankData,
@@ -71,10 +61,36 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
   const [isLoadingBack, setIsLoadingBack] = useState(false)
   const { user } = useGetUser()
   const { setCurrentStep: setContextStep } = useContext(OnboardingContext)
-  const [currentStep, setCurrentStep] = useState<StepStatus>(userData.current_step || 'user_type')
+  const [currentStep, setCurrentStep] = useState<StepStatus>(
+    userData.current_step || 'user_personal_data'
+  )
   const [showSuccess, setShowSuccess] = useState(false)
   const router = useRouter()
   const toast = useToast()
+
+  // Establecer el tipo de usuario como provider al inicio
+  useEffect(() => {
+    const initializeUser = async () => {
+      try {
+        if (!userData.user_type) {
+          await editUser({
+            user_type: 'provider',
+            current_step: 'user_personal_data'
+          })
+        }
+      } catch (error) {
+        console.error('Error al inicializar el usuario:', error)
+        toast({
+          title: 'Error',
+          description: 'Hubo un error al inicializar el proceso. Por favor, intenta nuevamente.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+      }
+    }
+    initializeUser()
+  }, [])
 
   // Sincronizar el estado local con el contexto y el usuario
   useEffect(() => {

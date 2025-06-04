@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/src/utils/supabase/server'
-import { UserData } from './onboarding.types'
+import { UserData, StepStatus } from './onboarding.types'
 import { Database } from '../types'
 
 export const getUserRawData = async (): Promise<UserData> => {
@@ -66,7 +66,7 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
 
     const updateData = {
       fk_user: user.id,
-      user_type: userData.user_type,
+      user_type: 'provider',
       first_name: userData.first_name,
       last_name: userData.last_name,
       civil_state: userData.civil_state,
@@ -100,13 +100,13 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
     }
 
     return {
-      user_type: result.user_type,
+      user_type: 'provider',
       first_name: result.first_name,
       last_name: result.last_name,
       civil_state: result.civil_state,
       nationality: result.nationality,
       phone: result.phone,
-      current_step: result.user_signup_status
+      current_step: result.user_signup_status as StepStatus
     }
   } catch (error) {
     throw error
