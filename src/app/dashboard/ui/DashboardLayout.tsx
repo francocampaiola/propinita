@@ -5,6 +5,8 @@ import { Box, Flex, Grid, Container } from '@chakra-ui/react'
 /* Components */
 import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
+import { MercadoPagoBlocker } from '@/src/components/MercadoPagoBlocker'
+
 interface IDashboardLayout {
   children: JSX.Element
 }
@@ -38,6 +40,7 @@ const DashboardLayout = ({ children }: IDashboardLayout) => {
           </Container>
         </Box>
       </Flex>
+      <MercadoPagoBlocker />
     </Grid>
   )
 }
