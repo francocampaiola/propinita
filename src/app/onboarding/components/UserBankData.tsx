@@ -212,7 +212,7 @@ const UserBankData = ({
   return (
     <Box w={'100%'}>
       <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
-        Paso 3
+        Paso 2
       </Text>
       <Text fontWeight='600' fontSize='2xl' mb={1}>
         Cuenta bancaria

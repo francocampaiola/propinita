@@ -8,8 +8,8 @@ import { IoCheckmark } from 'react-icons/io5'
 import { StepStatus } from '@/src/app/onboarding/onboarding.types'
 
 interface OnboardingAsideProps {
-  steps: { label: string, number: number }[];
-  showSuccess?: boolean;
+  steps: { label: string; number: number }[]
+  showSuccess?: boolean
 }
 
 const OnboardingAside = ({ steps, showSuccess }: OnboardingAsideProps) => {
@@ -20,13 +20,12 @@ const OnboardingAside = ({ steps, showSuccess }: OnboardingAsideProps) => {
 
   const getStepIndex = () => {
     const stepsMap: { [key: string]: number } = {
-      'user_type': 0,
-      'user_personal_data': 1,
-      'user_bank_data': 2,
-      'user_summary': 3,
-      'completed': 4
+      user_personal_data: 0,
+      user_bank_data: 1,
+      user_summary: 2,
+      completed: 3
     }
-    return stepsMap[currentStep || 'user_type']
+    return stepsMap[currentStep || 'user_personal_data']
   }
 
   const currentStepIndex = getStepIndex()
@@ -56,44 +55,38 @@ const OnboardingAside = ({ steps, showSuccess }: OnboardingAsideProps) => {
         <Box fontSize='sm' width='fit-content' margin='0 auto'>
           <Container maxW='sm'>
             {isLoadingSteps ? (
-              <Center h="full">
+              <Center h='full'>
                 <Spinner />
               </Center>
             ) : (
-              <Flex flexDirection="column">
+              <Flex flexDirection='column'>
                 {steps.map((step, idx) => (
-                  <Flex alignItems="center" key={step.label} mb={4}>
+                  <Flex alignItems='center' key={step.label} mb={4}>
                     <Center
                       mr={4}
-                      height="32px"
-                      width="32px"
-                      borderRadius="50%"
-                      zIndex="9"
-                      position="relative"
-                      border="1px solid gray"
+                      height='32px'
+                      width='32px'
+                      borderRadius='50%'
+                      zIndex='9'
+                      position='relative'
+                      border='1px solid gray'
                       bg={isStepCompleted(idx) ? 'green.300' : 'gray.800'}
                     >
                       {idx + 1 !== steps.length && (
-                        <Box
-                          position="absolute"
-                          height="16px"
-                          bottom="-55%"
-                          left="48%"
-                          zIndex="8"
-                        >
+                        <Box position='absolute' height='16px' bottom='-55%' left='48%' zIndex='8'>
                           <Divider
-                            border="1px solid"
+                            border='1px solid'
                             color={isStepCompleted(idx) ? 'secondary' : 'gray'}
-                            orientation="vertical"
+                            orientation='vertical'
                           />
                         </Box>
                       )}
                       {isStepCompleted(idx) ? (
-                        <IoCheckmark color="black" />
+                        <IoCheckmark color='black' />
                       ) : isCurrentStep(idx) ? (
-                        <Spinner size="xs" color="white" />
+                        <Spinner size='xs' color='white' />
                       ) : (
-                        <Text color="white" fontSize="xs">
+                        <Text color='white' fontSize='xs'>
                           {step.number}
                         </Text>
                       )}

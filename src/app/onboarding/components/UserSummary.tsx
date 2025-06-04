@@ -126,7 +126,7 @@ const UserSummary = ({
   return (
     <Box w={'100%'}>
       <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
-        Paso 4
+        Paso 3
       </Text>
       <Text fontWeight='600' fontSize='2xl' mb={1}>
         Resumen
