@@ -188,6 +188,7 @@ const UserPersonalData = ({
               size='sm'
               onClick={onBack}
               isLoading={isLoadingBack}
+              isDisabled={true}
               leftIcon={<FaArrowLeft />}
             >
               Volver
