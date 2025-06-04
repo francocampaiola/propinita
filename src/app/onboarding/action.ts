@@ -1,15 +1,18 @@
 'use server'
 
 import { createClient } from '@/src/utils/supabase/server'
-import { UserData } from './onboarding.types'
+import { UserData, StepStatus } from './onboarding.types'
 import { Database } from '../types'
 
 export const getUserRawData = async (): Promise<UserData> => {
   const supabase = await createClient()
 
   try {
-    const { data: { user }, error } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+      error
+    } = await supabase.auth.getUser()
+
     if (error) {
       throw new Error(error.message)
     }
@@ -23,7 +26,6 @@ export const getUserRawData = async (): Promise<UserData> => {
       .single()
 
     if (userError) {
-      console.log('No user data found:', userError.message)
       return {} as UserData
     }
 
@@ -36,9 +38,7 @@ export const getUserRawData = async (): Promise<UserData> => {
       phone: userData.phone,
       current_step: userData.user_signup_status
     }
-
   } catch (error) {
-    console.error('Error fetching user data:', error)
     return {} as UserData
   }
 }
@@ -47,8 +47,11 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
   const supabase = await createClient()
 
   try {
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+    const {
+      data: { user },
+      error: authError
+    } = await supabase.auth.getUser()
+
     if (authError) {
       throw new Error(authError.message)
     }
@@ -63,13 +66,14 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
 
     const updateData = {
       fk_user: user.id,
-      user_type: userData.user_type,
+      user_type: 'provider',
       first_name: userData.first_name,
       last_name: userData.last_name,
       civil_state: userData.civil_state,
       nationality: userData.nationality,
       phone: userData.phone,
-      user_signup_status: userData.current_step
+      user_signup_status: userData.current_step,
+      monthly_goal: userData.monthly_goal
     }
 
     let result: Database['public']['Tables']['users']['Row']
@@ -96,17 +100,15 @@ export const editUser = async (userData: Partial<UserData>): Promise<UserData> =
     }
 
     return {
-      user_type: result.user_type,
+      user_type: 'provider',
       first_name: result.first_name,
       last_name: result.last_name,
       civil_state: result.civil_state,
       nationality: result.nationality,
       phone: result.phone,
-      current_step: result.user_signup_status
+      current_step: result.user_signup_status as StepStatus
     }
-
   } catch (error) {
-    console.error('Error in editUser:', error)
     throw error
   }
 }

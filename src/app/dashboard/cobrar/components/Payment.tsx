@@ -156,7 +156,13 @@ const PaymentComponent = () => {
         setPaidTimestamp(Date.now())
       }
     } catch (error) {
-      console.error('Error al verificar el estado del pago:', error)
+      handleToast({
+        title: 'Error',
+        text: 'Hubo un problema al verificar el estado del pago. Por favor, intenta nuevamente.',
+        status: 'error',
+        duration: 5000,
+        isClosable: true
+      })
     } finally {
       setIsCheckingPayment(false)
     }
@@ -264,7 +270,6 @@ const PaymentComponent = () => {
       const qrDataUrl = await QRCode.toDataURL(url, options)
       setQrCode(qrDataUrl)
     } catch (error) {
-      console.error('Error al generar el código QR:', error)
       handleToast({
         title: 'Error',
         text: 'No se pudo generar el código QR. Por favor, intenta nuevamente.',
@@ -387,7 +392,7 @@ const PaymentComponent = () => {
           </Tooltip>
         </Flex>
       </Flex>
-      <Divider borderColor='components.balance.divider' />
+      <Divider borderColor='components.divider' />
       <Flex mx={'auto'} direction={'row'} p={6} gap={6} alignItems={'center'}>
         <Flex justifyContent={'center'} alignItems={'center'}>
           <Suspense fallback={<LoadingState />}>

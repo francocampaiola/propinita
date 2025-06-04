@@ -11,7 +11,13 @@ import { useForm, FormProvider, Controller } from 'react-hook-form'
 import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 
-const UserPersonalData = ({ userData, onNext, onBack, isLoading, isLoadingBack }: OnboardingStepProps) => {
+const UserPersonalData = ({
+  userData,
+  onNext,
+  onBack,
+  isLoading,
+  isLoadingBack
+}: OnboardingStepProps) => {
   const firstStepSchema = z.object({
     first_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
     last_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
@@ -106,7 +112,7 @@ const UserPersonalData = ({ userData, onNext, onBack, isLoading, isLoadingBack }
   return (
     <Box w={'100%'}>
       <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
-        Paso 2
+        Paso 1
       </Text>
       <Text fontWeight='600' fontSize='2xl' mb={1}>
         Datos personales
@@ -182,6 +188,7 @@ const UserPersonalData = ({ userData, onNext, onBack, isLoading, isLoadingBack }
               size='sm'
               onClick={onBack}
               isLoading={isLoadingBack}
+              isDisabled={true}
               leftIcon={<FaArrowLeft />}
             >
               Volver
@@ -201,7 +208,7 @@ const UserPersonalData = ({ userData, onNext, onBack, isLoading, isLoadingBack }
         </form>
       </FormProvider>
     </Box>
-  );
+  )
 }
 
 export default UserPersonalData

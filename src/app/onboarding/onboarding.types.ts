@@ -1,10 +1,10 @@
 import { Database } from '../types'
 
-export type UserType = Database['public']['Enums']['user_type']
-export type StepStatus = Database['public']['Enums']['signup_status']
+export type UserType = 'provider'
+export type StepStatus = 'user_personal_data' | 'user_bank_data' | 'user_summary' | 'completed'
 
 export interface UserData {
-  user_type?: UserType
+  user_type: UserType
   first_name?: string
   last_name?: string
   civil_state?: string
@@ -13,6 +13,7 @@ export interface UserData {
   current_step?: StepStatus
   phone_prefix?: string
   birthdate?: string
+  monthly_goal?: number
 }
 
 export interface OnboardingStepProps {

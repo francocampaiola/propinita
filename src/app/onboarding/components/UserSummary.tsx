@@ -6,6 +6,7 @@ import { useForm } from 'react-hook-form'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import type { OnboardingStepProps } from '../onboarding.types'
 import { useRouter } from 'next/navigation'
+import { handleToast } from '@/src/utils/toast'
 
 const countries = [
   { label: 'Argentina', value: 'AR' },
@@ -35,7 +36,13 @@ const getLabel = (value: string, options: { value: string; label: string }[]) =>
   return option ? option.label : value
 }
 
-const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: OnboardingStepProps) => {
+const UserSummary = ({
+  userData,
+  onNext,
+  onBack,
+  isLoading,
+  isLoadingBack
+}: OnboardingStepProps) => {
   const { user } = useGetUser()
   const router = useRouter()
   const [step, setStep] = useState(0)
@@ -60,29 +67,35 @@ const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: Onb
         const connectionResponse = await fetch('/api/mercadopago/check-connection', {
           credentials: 'include',
           headers: {
-            'Accept': 'application/json',
+            Accept: 'application/json',
             'Content-Type': 'application/json'
           }
-        });
+        })
 
         if (!connectionResponse.ok) {
-          throw new Error(`Error HTTP: ${connectionResponse.status}`);
+          throw new Error(`Error HTTP: ${connectionResponse.status}`)
         }
 
-        const connectionData = await connectionResponse.json();
-        
+        const connectionData = await connectionResponse.json()
+
         if (connectionData.connected && connectionData.mp_user_id) {
-          setMpUserId(connectionData.mp_user_id.toString());
+          setMpUserId(connectionData.mp_user_id.toString())
         }
       } catch (error) {
-        console.error('Error al obtener el ID de MercadoPago:', error);
+        handleToast({
+          title: 'Error',
+          text: 'Hubo un problema al verificar la conexión con MercadoPago. Por favor, intenta nuevamente.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
       } finally {
-        setIsLoadingMp(false);
+        setIsLoadingMp(false)
       }
-    };
-    
-    checkMercadoPagoConnection();
-  }, []);
+    }
+
+    checkMercadoPagoConnection()
+  }, [])
 
   const onSubmit = handleSubmit((data) => {
     onNext(data)
@@ -107,13 +120,13 @@ const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: Onb
       <Flex justifyContent='center' alignItems='center' h='100%'>
         <Spinner color='primary' size='xl' />
       </Flex>
-    );
+    )
   }
 
   return (
     <Box w={'100%'}>
       <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
-        Paso 4
+        Paso 3
       </Text>
       <Text fontWeight='600' fontSize='2xl' mb={1}>
         Resumen
@@ -135,9 +148,7 @@ const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: Onb
               <Text fontWeight='600' fontSize='lg'>
                 Perfil
               </Text>
-              <Text fontSize='sm'>
-                {getLabel(watch('user_type') || '', options)}
-              </Text>
+              <Text fontSize='sm'>{getLabel(watch('user_type') || '', options)}</Text>
             </Box>
             <Box w='48%'>
               <Text fontWeight='600' fontSize='lg'>
@@ -169,13 +180,13 @@ const UserSummary = ({ userData, onNext, onBack, isLoading, isLoadingBack }: Onb
               <Text fontWeight='600' fontSize='lg'>
                 ID MercadoPago
               </Text>
-              <div className="flex items-center gap-2">
+              <div className='flex items-center gap-2'>
                 {isLoadingMp ? (
                   <Spinner size='sm' />
                 ) : mpUserId ? (
-                  <span className="text-sm font-medium text-gray-900">{mpUserId}</span>
+                  <span className='text-sm font-medium text-gray-900'>{mpUserId}</span>
                 ) : (
-                  <span className="text-sm font-medium text-red-500">No disponible</span>
+                  <span className='text-sm font-medium text-red-500'>No disponible</span>
                 )}
               </div>
             </Box>
