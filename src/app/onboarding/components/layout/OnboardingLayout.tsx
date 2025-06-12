@@ -36,6 +36,31 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
   return (
     <>
       <OnboardingNavbar steps={isApprovalSteps ? steps.slice(0, steps.length - 1) : steps} />
+      {/* Guarda animada de emojis de dinero */}
+      <div className='money-banner'>
+        <div className='money-banner__inner'>
+          <span className='emoji-row'>
+            {Array.from({ length: 30 }).map((_, i) => {
+              const emojis = ['💸', '💰', '🤑', '💵', '💲', '💳']
+              return (
+                <span className='emoji' key={i}>
+                  {emojis[i % emojis.length]}
+                </span>
+              )
+            })}
+          </span>
+          <span className='emoji-row'>
+            {Array.from({ length: 30 }).map((_, i) => {
+              const emojis = ['💸', '💰', '🤑', '💵', '💲', '💳']
+              return (
+                <span className='emoji' key={i}>
+                  {emojis[i % emojis.length]}
+                </span>
+              )
+            })}
+          </span>
+        </div>
+      </div>
       <Flex minHeight='calc(100vh - 72px)' width='100%'>
         <OnboardingAside steps={steps} showSuccess={showSuccess} />
         <BoxColorMode

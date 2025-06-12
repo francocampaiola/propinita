@@ -6,3 +6,42 @@ canvas {
   width: 100% !important;
   height: 150px !important;
 }
+
+.money-banner {
+  width: 100vw;
+  overflow: hidden;
+  background: #e1c340;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  z-index: 10;
+  cursor: default;
+  user-select: none;
+}
+.money-banner__inner {
+  display: flex;
+  white-space: nowrap;
+  font-size: 1rem;
+  animation: scroll-emoji 18s linear infinite;
+}
+.money-banner:hover .money-banner__inner {
+  animation-play-state: paused;
+}
+.emoji-row {
+  display: inline-block;
+  white-space: nowrap;
+  margin-right: 0;
+}
+.emoji {
+  margin: 0 1.2rem;
+  display: inline-block;
+}
+@keyframes scroll-emoji {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
