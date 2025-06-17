@@ -61,7 +61,16 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
           </span>
         </div>
       </div>
-      <Flex minHeight='calc(100vh - 72px)' width='100%'>
+      <Flex
+        minHeight='calc(100vh - 72px)'
+        width='100%'
+        overflow='hidden'
+        position='fixed'
+        top='98px'
+        left={0}
+        right={0}
+        bottom={0}
+      >
         <OnboardingAside steps={steps} showSuccess={showSuccess} />
         <BoxColorMode
           bg={['white', 'gray.600']}
@@ -69,14 +78,34 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
           flex={1}
           justifyContent={'center'}
           px={16}
+          overflow='hidden'
+          height='100%'
+          position='relative'
         >
-          <Flex flex={1} width='100%' p={8} height={{ base: 'auto', md: '100%' }} margin={0}>
+          <Flex
+            flex={1}
+            width='100%'
+            p={8}
+            height='100%'
+            margin={0}
+            overflow='hidden'
+            position='relative'
+          >
             <Center
               alignItems={{ base: 'flex-start', md: 'center' }}
               height='100%'
               mt={{ base: '2', md: '0' }}
               width='100%'
               p={4}
+              overflow='auto'
+              position='relative'
+              style={{
+                maxHeight: 'calc(100vh - 98px)',
+                WebkitOverflowScrolling: 'touch',
+                scrollbarWidth: 'none', // Firefox
+                msOverflowStyle: 'none' // IE y Edge
+              }}
+              className='hide-scrollbar'
             >
               {children}
             </Center>
