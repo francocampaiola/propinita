@@ -12,6 +12,7 @@ import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, FormProvider } from 'react-hook-form'
 import { isValidPhoneNumber, getCountries, getCountryCallingCode } from 'react-phone-number-input'
+import { BsPencil } from 'react-icons/bs'
 
 const countries = [
   { label: 'Argentina', value: 'AR' },
@@ -203,6 +204,10 @@ const Perfil = () => {
                 value={methods.watch('first_name')}
                 onChange={(e) => methods.setValue('first_name', e.target.value)}
                 showErrors={true}
+                inputRight={<BsPencil size={12} color='gray' />}
+                inputRightProps={{
+                  border: 'none'
+                }}
               />
               <Input
                 label='Apellido'
@@ -211,6 +216,10 @@ const Perfil = () => {
                 value={methods.watch('last_name')}
                 onChange={(e) => methods.setValue('last_name', e.target.value)}
                 showErrors={true}
+                inputRight={<BsPencil size={12} color='gray' />}
+                inputRightProps={{
+                  border: 'none'
+                }}
               />
               <InputPhone
                 name='phone'

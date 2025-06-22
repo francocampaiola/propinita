@@ -131,11 +131,6 @@ const BalanceComponent = () => {
             <FaInfoCircle color='#B49B25' size='1rem' />
           </Tooltip>
         </Flex>
-        {!showBalance ? (
-          <IoEyeOff cursor={'pointer'} size='1.5rem' onClick={() => setShowBalance(!showBalance)} />
-        ) : (
-          <IoEye cursor={'pointer'} size='1.5rem' onClick={() => setShowBalance(!showBalance)} />
-        )}
       </Flex>
       <Divider borderColor='components.divider' />
       <Flex flex={1} alignItems={'flex-start'} ml={5} direction={'column'}>
@@ -148,6 +143,15 @@ const BalanceComponent = () => {
           <Text fontSize={'4xl'} fontWeight={700}>
             ARS
           </Text>
+          {!showBalance ? (
+            <IoEyeOff
+              cursor={'pointer'}
+              size='1.5rem'
+              onClick={() => setShowBalance(!showBalance)}
+            />
+          ) : (
+            <IoEye cursor={'pointer'} size='1.5rem' onClick={() => setShowBalance(!showBalance)} />
+          )}
         </Flex>
         <Flex>
           <Tag
