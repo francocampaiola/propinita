@@ -47,8 +47,16 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
         backgroundColor='#111111'
       >
         <Flex alignItems='center' gap={4}>
-          <Image src={fullLogo} width={120} alt='Logo de megapix' />
-          <Text fontSize={'xl'}>| Empecemos</Text>
+          <Image src={fullLogo} width={120} alt='Logo de propinita' />
+          <Text
+            fontSize={'xl'}
+            display={{
+              base: 'none',
+              md: 'block'
+            }}
+          >
+            | Empecemos
+          </Text>
         </Flex>
         <Box>
           <Button onClick={handleLogout} variant='icon'>
@@ -56,8 +64,8 @@ const OnboardingNavbar = ({ steps }: { steps: { label: string }[] }) => {
           </Button>
         </Box>
       </Flex>
-      {/* Navbar Mobile */}
-      <BoxColorMode p={4} display={{ base: 'block', md: 'none' }}>
+      {/* Navbar Mobile - Completamente oculto */}
+      <BoxColorMode p={4} display='none'>
         <Text mb={4}>{steps[currentStepIndex]?.label || null}</Text>
         <Flex>
           {steps.map((step, idx) => (

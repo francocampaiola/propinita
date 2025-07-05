@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useMemo } from 'react'
-import { Flex, Box, Text, Button } from '@chakra-ui/react'
+import { Flex, Box, Text, Button, Spinner } from '@chakra-ui/react'
 import type { OnboardingStepProps } from '../onboarding.types'
 import Input from '@/src/components/form/Input'
 import Select from '@/src/components/form/Select'
@@ -109,8 +109,35 @@ const UserPersonalData = ({
     }
   })
 
+  useEffect(() => {
+    window.scrollTo(0, 0)
+  }, [])
+
   return (
-    <Box w={'100%'}>
+    <Box
+      w={'100%'}
+      position='relative'
+      minHeight={{ base: '60vh', md: 'auto' }}
+      pb={{ base: 24, md: 0 }}
+      style={{ WebkitOverflowScrolling: 'touch' }}
+    >
+      {/* Overlay spinner centrado en mobile */}
+      {isLoading && (
+        <Box
+          display={{ base: 'flex', md: 'none' }}
+          position={{ base: 'fixed', md: 'absolute' }}
+          top={0}
+          left={0}
+          width='100vw'
+          height='100vh'
+          alignItems='center'
+          justifyContent='center'
+          bg='rgba(255,255,255,0.7)'
+          zIndex={2000}
+        >
+          <Spinner size='xl' thickness='4px' color='primary' speed='0.7s' />
+        </Box>
+      )}
       <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
         Paso 1
       </Text>
@@ -118,95 +145,105 @@ const UserPersonalData = ({
         Datos personales
       </Text>
       <Text fontSize='sm'>Utilizamos esta información para personalizar tu experiencia.</Text>
-      <FormProvider {...methods}>
-        <form onSubmit={methods.handleSubmit(onNext)}>
-          <Flex mb={4} mt={4} direction={'column'} gap={4}>
-            <Box width='100%'>
-              <Input
-                label='Nombre'
-                name='first_name'
-                size='lg'
-                placeholder='Ingresar como figura en el DNI'
-              />
-            </Box>
-            <Box width='100%'>
-              <Input
-                label='Apellido'
-                name='last_name'
-                size='lg'
-                placeholder='Ingresar como figura en el DNI'
-              />
-            </Box>
-            <Box width='100%'>
-              <Controller
-                name='nationality'
-                control={methods.control}
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    label='Nacionalidad'
-                    placeholder='Seleccionar país'
-                    options={countries}
-                    value={countries.find((c) => c.value === value)}
-                    handleOnChange={(val) => onChange(val.value)}
-                    noOptionsMessage={() => 'Sin opciones'}
-                  />
-                )}
-              />
-            </Box>
-            <Box width='100%'>
-              <Controller
-                name='civil_state'
-                control={methods.control}
-                render={({ field: { onChange, value } }) => (
-                  <Select
-                    label='Estado civil'
-                    placeholder='Seleccionar estado civil'
-                    options={civil_state}
-                    value={civil_state.find((c) => c.value === value)}
-                    handleOnChange={(val) => onChange(val.value)}
-                    noOptionsMessage={() => 'Sin opciones'}
-                  />
-                )}
-              />
-            </Box>
-            <Box width='100%'>
-              <InputPhone
-                name='phone'
-                label='Teléfono'
-                placeholder='11 2233 4455'
-                size='lg'
-                bigSize
-              />
-            </Box>
-          </Flex>
-          <Flex justifyContent='flex-end'>
-            <Button
-              variant='secondary'
-              type='button'
-              mt={4}
-              mr={4}
-              size='sm'
-              onClick={onBack}
-              isLoading={isLoadingBack}
-              isDisabled={true}
-              leftIcon={<FaArrowLeft />}
-            >
-              Volver
-            </Button>
-            <Button
-              variant='primary'
-              type='submit'
-              mt={4}
-              size='sm'
-              isLoading={isLoading}
-              isDisabled={!methods.formState.isValid}
-              rightIcon={<FaArrowRight />}
-            >
-              Siguiente
-            </Button>
-          </Flex>
-        </form>
-      </FormProvider>
+      {/* Oculta el formulario en mobile si isLoading */}
+      <Box display={{ base: isLoading ? 'none' : 'block', md: 'block' }}>
+        <FormProvider {...methods}>
+          <form onSubmit={methods.handleSubmit(onNext)}>
+            <Flex mb={4} mt={4} direction={'column'} gap={4}>
+              <Box width={{ base: '90%', md: '100%' }} mx='auto'>
+                <Input
+                  label='Nombre'
+                  name='first_name'
+                  size='lg'
+                  placeholder='Ingresar como figura en el DNI'
+                  fontSize={{ base: '16px', md: 'inherit' }}
+                />
+              </Box>
+              <Box width={{ base: '90%', md: '100%' }} mx='auto'>
+                <Input
+                  label='Apellido'
+                  name='last_name'
+                  size='lg'
+                  placeholder='Ingresar como figura en el DNI'
+                  fontSize={{ base: '16px', md: 'inherit' }}
+                />
+              </Box>
+              <Box width={{ base: '90%', md: '100%' }} mx='auto'>
+                <Controller
+                  name='nationality'
+                  control={methods.control}
+                  render={({ field: { onChange, value } }) => (
+                    <Box width='100%'>
+                      <Select
+                        label='Nacionalidad'
+                        placeholder='Seleccionar país'
+                        options={countries}
+                        value={countries.find((c) => c.value === value)}
+                        handleOnChange={(val) => onChange(val.value)}
+                        noOptionsMessage={() => 'Sin opciones'}
+                      />
+                    </Box>
+                  )}
+                />
+              </Box>
+              <Box width={{ base: '90%', md: '100%' }} mx='auto'>
+                <Controller
+                  name='civil_state'
+                  control={methods.control}
+                  render={({ field: { onChange, value } }) => (
+                    <Box width='100%'>
+                      <Select
+                        label='Estado civil'
+                        placeholder='Seleccionar estado civil'
+                        options={civil_state}
+                        value={civil_state.find((c) => c.value === value)}
+                        handleOnChange={(val) => onChange(val.value)}
+                        noOptionsMessage={() => 'Sin opciones'}
+                      />
+                    </Box>
+                  )}
+                />
+              </Box>
+              <Box width={{ base: '90%', md: '100%' }} mx='auto'>
+                <InputPhone
+                  name='phone'
+                  label='Teléfono'
+                  placeholder='11 2233 4455'
+                  size='lg'
+                  bigSize
+                  fontSize={{ base: '16px', md: 'inherit' }}
+                />
+              </Box>
+            </Flex>
+            <Flex justifyContent='flex-end'>
+              <Button
+                variant='secondary'
+                type='button'
+                mt={4}
+                mr={4}
+                size='sm'
+                onClick={onBack}
+                isLoading={isLoadingBack}
+                isDisabled={true}
+                leftIcon={<FaArrowLeft />}
+              >
+                Volver
+              </Button>
+              <Button
+                variant='primary'
+                type='submit'
+                mt={4}
+                size='sm'
+                isLoading={isLoading}
+                isDisabled={!methods.formState.isValid}
+                rightIcon={<FaArrowRight />}
+              >
+                Siguiente
+              </Button>
+            </Flex>
+          </form>
+        </FormProvider>
+      </Box>
     </Box>
   )
 }

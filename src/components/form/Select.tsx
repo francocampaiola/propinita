@@ -35,10 +35,14 @@ const Select = ({
   const color = useColorModeValue(colorProps[0], colorProps[1])
   const backgroundHover = useColorModeValue('gray.300', '#2C2C2C')
 
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+
   return (
     <Flex direction='column'>
       <Flex alignItems='center' mb={2}>
-        <FormLabel mb={0} fontSize='sm'>{label}</FormLabel>
+        <FormLabel mb={0} fontSize='sm'>
+          {label}
+        </FormLabel>
         {tooltip && (
           <Tooltip color='white' background='black' hasArrow borderRadius='md' padding='2'>
             <Box>{tooltip}</Box>
@@ -48,8 +52,10 @@ const Select = ({
       <ReactSelect
         onChange={(newValue: unknown) => handleOnChange?.(newValue as IHandleOnChange)}
         {...rest}
-        menuPosition="absolute"
-        menuPlacement="auto"
+        menuPosition='absolute'
+        menuPlacement='auto'
+        menuPortalTarget={typeof window !== 'undefined' ? document.body : undefined}
+        isSearchable={!isMobile}
         styles={{
           control: (baseStyles) => ({
             ...baseStyles,
@@ -59,7 +65,7 @@ const Select = ({
             height: bigSize ? '3rem' : '100%',
             fontSize: '0.875rem',
             outline: '1px solid #828282',
-            borderRadius: '15px',
+            borderRadius: '15px !important',
             ':hover': {
               borderColor: colors[background as keyof IColors] || background
             },
@@ -75,19 +81,22 @@ const Select = ({
           }),
           input: (baseStyles) => ({
             ...baseStyles,
-            color: colors[color as keyof IColors] || color
+            color: colors[color as keyof IColors] || color,
+            fontSize: '16px'
           }),
           menu: (baseStyles) => ({
             ...baseStyles,
             background: colors[background as keyof IColors] || background,
             zIndex: 3,
-            borderRadius: '15px'
+            borderRadius: '15px !important',
+            marginTop: '8px',
+            boxShadow: '0 4px 24px 0 rgba(0,0,0,0.10)'
           }),
           menuList: (baseStyles) => ({
             ...baseStyles,
             padding: 0,
             background: 'gray',
-            borderRadius: '15px'
+            borderRadius: '15px !important'
           }),
           option: (baseStyles) => ({
             ...baseStyles,

@@ -53,3 +53,12 @@ canvas {
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome, Safari y Opera */
 }
+
+@media (max-width: 768px) {
+  .css-1gmn4lj-control {
+    width: 100% !important;
+    border-radius: 1.5rem !important;
+    min-height: 48px !important;
+    box-sizing: border-box;
+  }
+}
