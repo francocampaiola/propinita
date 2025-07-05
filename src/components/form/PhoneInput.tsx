@@ -3,7 +3,7 @@ import React from 'react'
 import Select from './Select'
 import Input from './Input'
 import { Controller, useFormContext } from 'react-hook-form'
-import { Flex, Box, Text, type InputProps } from '@chakra-ui/react'
+import { Flex, Box, Text, type InputProps, useBreakpointValue } from '@chakra-ui/react'
 import { getCountries, getCountryCallingCode } from 'react-phone-number-input/input'
 
 interface IInputPhone extends InputProps {
@@ -21,9 +21,10 @@ const InputPhone = ({ label, name, bigSize, disabled, ...rest }: IInputPhone) =>
       </Flex>
     ),
     value: getCountryCallingCode(countrie)
-  }));
+  }))
 
   const formContext = useFormContext()
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const renderContent = () => {
     if (!formContext) {
@@ -40,11 +41,15 @@ const InputPhone = ({ label, name, bigSize, disabled, ...rest }: IInputPhone) =>
               />
             </Box>
             <Box ml={2} flex='1'>
-              <Input 
-                showErrors={false} 
-                name={name} 
+              <Input
+                showErrors={false}
+                name={name}
                 disabled={disabled}
-                {...rest} 
+                height={isMobile ? '3rem' : undefined}
+                py={isMobile ? 2 : undefined}
+                inputMode={isMobile ? 'numeric' : undefined}
+                autoComplete={isMobile ? 'tel' : undefined}
+                {...rest}
               />
             </Box>
           </Flex>
@@ -72,7 +77,15 @@ const InputPhone = ({ label, name, bigSize, disabled, ...rest }: IInputPhone) =>
             />
           </Box>
           <Box ml={2} flex='1'>
-            <Input showErrors={false} name={name} {...rest} />
+            <Input
+              showErrors={false}
+              name={name}
+              height={isMobile ? '3rem' : undefined}
+              py={isMobile ? 2 : undefined}
+              inputMode={isMobile ? 'numeric' : undefined}
+              autoComplete={isMobile ? 'tel' : undefined}
+              {...rest}
+            />
           </Box>
         </Flex>
         <Box mt={2}>

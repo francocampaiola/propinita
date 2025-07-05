@@ -14,7 +14,8 @@ import {
   ModalContent,
   ModalBody,
   useDisclosure,
-  Icon
+  Icon,
+  useBreakpointValue
 } from '@chakra-ui/react'
 import { handleToast } from '@/src/utils/toast'
 import PasswordConfirmPassword from '@/src/components/form/PasswordConfirmPassword'
@@ -26,6 +27,7 @@ const ChangePasswordPage = () => {
   const [isLoading, startTransition] = useTransition()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [countdown, setCountdown] = useState(5)
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const PasswordSchema = z
     .object({
@@ -100,7 +102,8 @@ const ChangePasswordPage = () => {
         direction='column'
         justifyContent='space-between'
         flex={1}
-        w='50%'
+        w={{ base: '100%', md: '50%' }}
+        p={{ base: 4, md: 0 }}
       >
         <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
           <Flex alignItems={'center'} gap={2}>
@@ -126,6 +129,7 @@ const ChangePasswordPage = () => {
                     showPassword
                     size='lg'
                     type='password'
+                    fontSize={isMobile ? '16px' : undefined}
                   />
                 </InputGroup>
                 <PasswordConfirmPassword
@@ -136,7 +140,8 @@ const ChangePasswordPage = () => {
                       label: 'Nueva contraseña',
                       placeholder: 'Nueva contraseña',
                       type: 'password',
-                      size: 'lg'
+                      size: 'lg',
+                      fontSize: isMobile ? '16px' : undefined
                     }
                   }}
                   confirmPassword={{
@@ -145,12 +150,19 @@ const ChangePasswordPage = () => {
                       placeholder: 'Repetir nueva contraseña',
                       type: 'password',
                       name: 'confirmPassword',
-                      size: 'lg'
+                      size: 'lg',
+                      fontSize: isMobile ? '16px' : undefined
                     }
                   }}
                 />
               </Flex>
-              <Flex gap={2} mt={8} justify='flex-end'>
+              <Flex
+                gap={2}
+                mt={8}
+                justify='flex-end'
+                direction={{ base: 'column', md: 'row' }}
+                align={{ base: 'stretch', md: 'center' }}
+              >
                 <Button variant='ghost' onClick={() => window.history.back()}>
                   Cancelar
                 </Button>
@@ -170,8 +182,14 @@ const ChangePasswordPage = () => {
 
       <Modal isOpen={isOpen} onClose={onClose} isCentered closeOnOverlayClick={false}>
         <ModalOverlay />
-        <ModalContent bg='gray.1000' borderRadius='15px' p={6}>
-          <ModalBody textAlign='center'>
+        <ModalContent
+          bg='gray.1000'
+          borderRadius='15px'
+          w={{ base: '95vw', md: '400px' }}
+          maxW={{ base: '95vw', md: '400px' }}
+          minW={{ base: '95vw', md: '400px' }}
+        >
+          <ModalBody textAlign='center' px={{ base: 4, md: 6 }} py={{ base: 6, md: 6 }}>
             <Text fontSize='xl' fontWeight='bold' mb={4}>
               Sesión finalizada
             </Text>
@@ -179,9 +197,20 @@ const ChangePasswordPage = () => {
               Tu contraseña ha sido actualizada exitosamente. Por seguridad, serás redirigido al
               inicio de sesión en {countdown} segundos.
             </Text>
-            <Text color='primary' fontWeight='medium'>
+            <Text color='primary' fontWeight='medium' mb={4}>
               Por favor, inicia sesión nuevamente con tu nueva contraseña.
             </Text>
+            <Flex
+              direction={{ base: 'column', md: 'row' }}
+              gap={2}
+              justify='center'
+              align='center'
+              w='100%'
+            >
+              <Button variant='ghost' onClick={onClose} w={{ base: '100%', md: 'auto' }}>
+                Cerrar
+              </Button>
+            </Flex>
           </ModalBody>
         </ModalContent>
       </Modal>

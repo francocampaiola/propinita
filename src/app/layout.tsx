@@ -7,7 +7,7 @@ import '@/src/styles/globals.css'
 const poppins = Poppins({
   subsets: ['latin'],
   weight: ['200', '400', '600', '700', '800'],
-  display: 'swap',
+  display: 'swap'
 })
 
 export default async function RootLayout({
@@ -30,12 +30,14 @@ export default async function RootLayout({
     >
       <head>
         <link rel='icon' href='/favicon.png' />
+        <meta
+          name='viewport'
+          content='width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+        />
       </head>
       <body>
         <ThemeProvider colorMode={uiColorMode}>
-          <ReactQueryProvider>
-            {children}
-          </ReactQueryProvider>
+          <ReactQueryProvider>{children}</ReactQueryProvider>
         </ThemeProvider>
       </body>
     </html>

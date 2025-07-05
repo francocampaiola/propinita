@@ -125,7 +125,9 @@ const AjustesPage = () => {
               _hover={{
                 backgroundColor: 'red.600'
               }}
-              onClick={onOpen}
+              onClick={() => {
+                /* TODO: Llamar a onOpen global del Navbar */
+              }}
             >
               Cerrar sesión
             </Button>

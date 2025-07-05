@@ -191,14 +191,14 @@ const Navbar = () => {
       {/* Mobile Sidebar Drawer */}
       <Drawer isOpen={isDrawerOpen} placement='left' onClose={onDrawerClose} size='full'>
         <DrawerOverlay />
-        <DrawerContent bg='sidebar.dark.bg'>
-          <DrawerHeader borderBottomWidth='1px' borderColor='gray.700' py={6}>
+        <DrawerContent bg='sidebar.dark.bg' height='full' sx={{ height: ['100dvh', '100vh'] }}>
+          <DrawerHeader borderBottomWidth='1px' borderColor='gray.700' py={4}>
             <Flex alignItems='center' justifyContent='space-between' width='100%'>
               <Flex alignItems='center' gap={3}>
                 <Image
                   src={logo}
                   alt='Logo de Propinita'
-                  height={32}
+                  height={28}
                   style={{ filter: 'drop-shadow(0 0 2px rgba(0, 0, 0, 0.5))' }}
                 />
               </Flex>
@@ -209,14 +209,14 @@ const Navbar = () => {
           <DrawerBody p={0}>
             <ChakraVStack spacing={0} align='stretch' height='100%' justify='space-between'>
               {/* Menú items */}
-              <ChakraVStack spacing={0} align='stretch' mt={8}>
+              <ChakraVStack spacing={0} align='stretch' mt={4}>
                 {sidebarItems.map((item) => (
                   <Link as={NextLink} href={item.path} key={item.path} onClick={onDrawerClose}>
                     <Button
                       justifyContent='flex-start'
                       width='100%'
-                      px={8}
-                      py={6}
+                      px={6}
+                      py={4}
                       variant='ghost'
                       fontWeight={pathname === item.path ? '600' : 'normal'}
                       background={pathname === item.path ? 'primary' : 'transparent'}
@@ -230,7 +230,7 @@ const Navbar = () => {
                         background: pathname === item.path ? 'primary' : 'gray.600'
                       }}
                     >
-                      <Box mr={5} fontSize='2xl' opacity={0.9}>
+                      <Box mr={4} fontSize='xl' opacity={0.9}>
                         {item.icon}
                       </Box>
                       <Text fontSize='md'>{item.title}</Text>
@@ -241,14 +241,14 @@ const Navbar = () => {
 
               {/* Perfil del usuario - contra abajo */}
               {user && (
-                <Box borderTop='1px solid' borderColor='gray.600' p={6}>
+                <Box borderTop='1px solid' borderColor='gray.600' p={4}>
                   <Button
                     width='100%'
                     variant='ghost'
                     color='white'
                     _hover={{ background: 'gray.700' }}
                     borderRadius='lg'
-                    p={4}
+                    p={3}
                     height='auto'
                     _active={{ background: 'gray.600' }}
                     onClick={() => {
@@ -261,23 +261,23 @@ const Navbar = () => {
                       }
                     }}
                   >
-                    <HStack spacing={4} width='100%' justify='flex-start'>
+                    <HStack spacing={3} width='100%' justify='flex-start'>
                       <Avatar
                         name={user?.first_name + ' ' + user?.last_name}
                         backgroundColor={'primary'}
                         variant='subtle'
-                        size='md'
+                        size='sm'
                         color={'white'}
                       />
                       <VStack align='flex-start' spacing={1}>
-                        <Text color='white' fontWeight='bold' fontSize='md'>
+                        <Text color='white' fontWeight='bold' fontSize='sm'>
                           {user?.first_name} {user?.last_name}
                         </Text>
-                        <Text color='gray.400' fontSize='sm'>
+                        <Text color='gray.400' fontSize='xs'>
                           {user?.email}
                         </Text>
                         <HStack spacing={2} mt={1}>
-                          <Icon as={FiLogOut} color='red.300' fontSize='sm' />
+                          <Icon as={FiLogOut} color='red.300' fontSize='xs' />
                           <Text color='red.300' fontSize='xs' fontWeight='medium'>
                             Cerrar sesión
                           </Text>
@@ -293,31 +293,49 @@ const Navbar = () => {
       </Drawer>
 
       {/* Modal de confirmación de logout (compartido) */}
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Text fontWeight='bold'>Cerrar sesión</Text>
-          </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>¿Estás seguro que deseas cerrar sesión?</Text>
-          </ModalBody>
-          <ModalFooter>
-            <Button variant='ghost' mr={3} onClick={onClose} isDisabled={isLoggingOut}>
-              Cancelar
-            </Button>
-            <Button
-              colorScheme='red'
-              onClick={handleLogout}
-              isLoading={isLoggingOut}
-              loadingText='Cerrando sesión...'
-            >
-              Cerrar sesión
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <Box display={{ base: 'none', md: 'block' }}>
+        <Modal isOpen={isOpen} onClose={onClose} isCentered>
+          <ModalOverlay />
+          <ModalContent
+            sx={{
+              width: '400px !important',
+              minWidth: '400px !important',
+              maxWidth: '400px !important',
+              p: '0 !important'
+            }}
+          >
+            <ModalHeader textAlign='left'>
+              <Text fontWeight='bold'>Cerrar sesión</Text>
+            </ModalHeader>
+            <ModalCloseButton />
+            <ModalBody textAlign='left'>
+              <Text>¿Estás seguro que deseas cerrar sesión?</Text>
+            </ModalBody>
+            <ModalFooter>
+              <Box
+                display='flex'
+                flexDirection='row'
+                gap={2}
+                width='100%'
+                justifyContent='center'
+                alignItems='center'
+              >
+                <Button variant='ghost' onClick={onClose} isDisabled={isLoggingOut}>
+                  Cancelar
+                </Button>
+                <Button
+                  colorScheme='red'
+                  onClick={handleLogout}
+                  isLoading={isLoggingOut}
+                  loadingText='Cerrando sesión...'
+                >
+                  Cerrar sesión
+                </Button>
+              </Box>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
+      </Box>
     </>
   )
 }
