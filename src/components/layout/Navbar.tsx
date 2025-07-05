@@ -207,127 +207,86 @@ const Navbar = () => {
           </DrawerHeader>
 
           <DrawerBody p={0}>
-            <ChakraVStack spacing={0} align='stretch' mt={8}>
+            <ChakraVStack spacing={0} align='stretch' height='100%' justify='space-between'>
               {/* Menú items */}
-              {sidebarItems.map((item) => (
-                <Link as={NextLink} href={item.path} key={item.path} onClick={onDrawerClose}>
+              <ChakraVStack spacing={0} align='stretch' mt={8}>
+                {sidebarItems.map((item) => (
+                  <Link as={NextLink} href={item.path} key={item.path} onClick={onDrawerClose}>
+                    <Button
+                      justifyContent='flex-start'
+                      width='100%'
+                      px={8}
+                      py={6}
+                      variant='ghost'
+                      fontWeight={pathname === item.path ? '600' : 'normal'}
+                      background={pathname === item.path ? 'primary' : 'transparent'}
+                      color='white'
+                      _hover={{
+                        background: pathname === item.path ? 'primary' : 'gray.700'
+                      }}
+                      borderRadius={0}
+                      fontSize='md'
+                      _active={{
+                        background: pathname === item.path ? 'primary' : 'gray.600'
+                      }}
+                    >
+                      <Box mr={5} fontSize='2xl' opacity={0.9}>
+                        {item.icon}
+                      </Box>
+                      <Text fontSize='md'>{item.title}</Text>
+                    </Button>
+                  </Link>
+                ))}
+              </ChakraVStack>
+
+              {/* Perfil del usuario - contra abajo */}
+              {user && (
+                <Box borderTop='1px solid' borderColor='gray.600' p={6}>
                   <Button
-                    justifyContent='flex-start'
                     width='100%'
-                    px={8}
-                    py={6}
                     variant='ghost'
-                    fontWeight={pathname === item.path ? '600' : 'normal'}
-                    background={pathname === item.path ? 'primary' : 'transparent'}
                     color='white'
-                    _hover={{
-                      background: pathname === item.path ? 'primary' : 'gray.700'
-                    }}
-                    borderRadius={0}
-                    fontSize='md'
-                    _active={{
-                      background: pathname === item.path ? 'primary' : 'gray.600'
+                    _hover={{ background: 'gray.700' }}
+                    borderRadius='lg'
+                    p={4}
+                    height='auto'
+                    _active={{ background: 'gray.600' }}
+                    onClick={() => {
+                      onDrawerClose()
+                      // En mobile cierra sesión directamente, en desktop abre confirmación
+                      if (window.innerWidth < 768) {
+                        handleLogout()
+                      } else {
+                        onOpen()
+                      }
                     }}
                   >
-                    <Box mr={5} fontSize='2xl' opacity={0.9}>
-                      {item.icon}
-                    </Box>
-                    <Text fontSize='md'>{item.title}</Text>
+                    <HStack spacing={4} width='100%' justify='flex-start'>
+                      <Avatar
+                        name={user?.first_name + ' ' + user?.last_name}
+                        backgroundColor={'primary'}
+                        variant='subtle'
+                        size='md'
+                        color={'white'}
+                      />
+                      <VStack align='flex-start' spacing={1}>
+                        <Text color='white' fontWeight='bold' fontSize='md'>
+                          {user?.first_name} {user?.last_name}
+                        </Text>
+                        <Text color='gray.400' fontSize='sm'>
+                          {user?.email}
+                        </Text>
+                        <HStack spacing={2} mt={1}>
+                          <Icon as={FiLogOut} color='red.300' fontSize='sm' />
+                          <Text color='red.300' fontSize='xs' fontWeight='medium'>
+                            Cerrar sesión
+                          </Text>
+                        </HStack>
+                      </VStack>
+                    </HStack>
                   </Button>
-                </Link>
-              ))}
-
-              {/* Separador */}
-              <Box borderTop='1px solid' borderColor='gray.600' my={6} mx={8} />
-
-              {/* Perfil del usuario */}
-              {user && (
-                <Box px={8} py={4}>
-                  <HStack spacing={3}>
-                    <Avatar
-                      name={user?.first_name + ' ' + user?.last_name}
-                      backgroundColor={'primary'}
-                      variant='subtle'
-                      size='md'
-                      color={'white'}
-                    />
-                    <VStack align='flex-start' spacing={0}>
-                      <Text color='white' fontWeight='bold' fontSize='sm'>
-                        {user?.first_name} {user?.last_name}
-                      </Text>
-                      <Text color='gray.400' fontSize='xs'>
-                        {user?.email}
-                      </Text>
-                    </VStack>
-                  </HStack>
                 </Box>
               )}
-
-              {/* Botones adicionales */}
-              <ChakraVStack spacing={2} align='stretch' mt={4} px={8}>
-                <Button
-                  justifyContent='flex-start'
-                  width='100%'
-                  px={4}
-                  py={3}
-                  variant='ghost'
-                  color='white'
-                  _hover={{ background: 'gray.700' }}
-                  borderRadius='md'
-                  fontSize='sm'
-                  onClick={() => {
-                    router.push('/dashboard/perfil')
-                    onDrawerClose()
-                  }}
-                >
-                  <Box mr={3} fontSize='lg'>
-                    <FiUser />
-                  </Box>
-                  <Text fontSize='sm'>Mi perfil</Text>
-                </Button>
-
-                <Button
-                  justifyContent='flex-start'
-                  width='100%'
-                  px={4}
-                  py={3}
-                  variant='ghost'
-                  color='white'
-                  _hover={{ background: 'gray.700' }}
-                  borderRadius='md'
-                  fontSize='sm'
-                  onClick={() => {
-                    router.push('/dashboard/faqs')
-                    onDrawerClose()
-                  }}
-                >
-                  <Box mr={3} fontSize='lg'>
-                    <FiHelpCircle />
-                  </Box>
-                  <Text fontSize='sm'>Ayuda</Text>
-                </Button>
-
-                <Button
-                  justifyContent='flex-start'
-                  width='100%'
-                  px={4}
-                  py={3}
-                  variant='ghost'
-                  color='red.300'
-                  _hover={{ background: 'red.900' }}
-                  borderRadius='md'
-                  fontSize='sm'
-                  onClick={() => {
-                    onDrawerClose()
-                    onOpen()
-                  }}
-                >
-                  <Box mr={3} fontSize='lg'>
-                    <FiLogOut />
-                  </Box>
-                  <Text fontSize='sm'>Cerrar sesión</Text>
-                </Button>
-              </ChakraVStack>
             </ChakraVStack>
           </DrawerBody>
         </DrawerContent>
