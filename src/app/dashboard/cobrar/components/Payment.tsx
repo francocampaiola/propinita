@@ -14,7 +14,9 @@ import {
   Text,
   Tooltip,
   Icon,
-  Spinner
+  Spinner,
+  VStack,
+  HStack
 } from '@chakra-ui/react'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import qrImage from '@/src/assets/templates/qr.svg'
@@ -31,7 +33,7 @@ const LoadingState = () => (
 
 const QRDisplay = React.memo(
   ({ qrCode, paymentStatus }: { qrCode: string | null; paymentStatus: string }) => (
-    <Box position={'relative'} width={200} height={200}>
+    <Box position={'relative'} width={{ base: 150, lg: 200 }} height={{ base: 150, lg: 200 }}>
       {qrCode ? (
         <Image src={qrCode} alt='QR Code' fill style={{ objectFit: 'contain' }} priority />
       ) : (
@@ -49,7 +51,7 @@ const QRDisplay = React.memo(
             justifyContent={'center'}
             alignItems={'center'}
           >
-            <BiErrorCircle size={40} color='#2C2C2C' />
+            <BiErrorCircle size={30} color='#2C2C2C' />
           </Flex>
         </>
       )}
@@ -68,7 +70,7 @@ const QRDisplay = React.memo(
         >
           <Icon
             as={paymentStatus === 'paid' ? FaCheckCircle : BiErrorCircle}
-            boxSize={10}
+            boxSize={{ base: 8, lg: 10 }}
             color={paymentStatus === 'paid' ? 'green.500' : 'red.500'}
           />
         </Flex>
@@ -380,20 +382,31 @@ const PaymentComponent = () => {
 
   return (
     <Flex backgroundColor='components.balance.bg' borderRadius='md' direction='column'>
-      <Flex p={3} justifyContent='space-between' alignItems='center'>
-        <Flex alignItems={'center'} gap={1}>
-          <Text fontWeight={700}>Generar QR o link de pago</Text>
+      <Flex p={{ base: 4, lg: 3 }} justifyContent='space-between' alignItems='center'>
+        <Flex alignItems={'center'} gap={{ base: 2, lg: 1 }}>
+          <Text fontWeight={700} fontSize={{ base: 'lg', lg: 'md' }}>
+            Generar QR o link de pago
+          </Text>
           <Tooltip
             placement='bottom'
             label='Genera un QR o link de pago indicando el monto a pagar para que tus clientes puedan pagarte en concepto de propinas'
-            w={'350px'}
+            w={{ base: '300px', lg: '350px' }}
           >
             <FaInfoCircle color='#B49B25' size='1rem' />
           </Tooltip>
         </Flex>
       </Flex>
       <Divider borderColor='components.divider' />
-      <Flex mx={'auto'} direction={'row'} p={6} gap={6} alignItems={'center'}>
+
+      {/* Desktop Layout */}
+      <Flex
+        mx={'auto'}
+        direction={'row'}
+        p={6}
+        gap={6}
+        alignItems={'center'}
+        display={{ base: 'none', lg: 'flex' }}
+      >
         <Flex justifyContent={'center'} alignItems={'center'}>
           <Suspense fallback={<LoadingState />}>
             <QRDisplay qrCode={qrCode} paymentStatus={paymentStatus} />
@@ -511,6 +524,137 @@ const PaymentComponent = () => {
           </Flex>
         </Flex>
       </Flex>
+
+      {/* Mobile Layout */}
+      <VStack spacing={6} p={4} display={{ base: 'flex', lg: 'none' }}>
+        {/* QR Code centrado */}
+        <Flex justifyContent={'center'} alignItems={'center'}>
+          <Suspense fallback={<LoadingState />}>
+            <QRDisplay qrCode={qrCode} paymentStatus={paymentStatus} />
+          </Suspense>
+        </Flex>
+
+        {/* Input y botón */}
+        <VStack spacing={4} w='full'>
+          <InputGroup size='md'>
+            <InputLeftElement>
+              <MdOutlineAttachMoney />
+            </InputLeftElement>
+            <Input
+              placeholder='0.00'
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              type='number'
+              min='0'
+              step='0.01'
+              isDisabled={paymentStatus === 'active' || paymentStatus === 'paid'}
+            />
+          </InputGroup>
+
+          {paymentStatus !== 'active' ? (
+            <Button
+              w='full'
+              variant={'primary'}
+              onClick={handleGeneratePayment}
+              isLoading={isLoading}
+              isDisabled={amount === ''}
+              size='lg'
+            >
+              Generar cobro
+            </Button>
+          ) : (
+            <Button
+              w='full'
+              backgroundColor='gray.100'
+              color='gray.700'
+              _hover={{ backgroundColor: 'gray.200' }}
+              onClick={handleNewPayment}
+              isLoading={isLoading}
+              size='lg'
+            >
+              Nuevo cobro
+            </Button>
+          )}
+        </VStack>
+
+        {/* Estado del cobro - Diseño simplificado */}
+        <Box w='full' p={4} bg='gray.50' borderRadius='lg'>
+          <VStack spacing={3} align='stretch'>
+            <HStack justify='space-between' align='center'>
+              <Text color={'gray.600'} fontSize={'sm'} fontWeight='medium'>
+                Estado del cobro
+              </Text>
+              <Tag
+                size={'sm'}
+                variant='subtle'
+                backgroundColor={statusColors.bg}
+                color={statusColors.color}
+                fontWeight={700}
+              >
+                {paymentStatusText}
+              </Tag>
+            </HStack>
+
+            <Box>
+              <Text color={'gray.600'} fontSize={'sm'} fontWeight='medium' mb={2}>
+                Enlace del cobro
+              </Text>
+              {paymentLink ? (
+                <Text
+                  color={'gray.800'}
+                  fontSize={'xs'}
+                  wordBreak='break-all'
+                  bg='white'
+                  p={2}
+                  borderRadius='md'
+                  border='1px solid'
+                  borderColor='gray.200'
+                >
+                  {paymentLink}
+                </Text>
+              ) : paymentStatus === 'paid' ? (
+                <Flex alignItems={'center'} gap={2} bg='white' p={2} borderRadius='md'>
+                  <Spinner size='xs' color='#2C2C2C' />
+                  <Text color={'gray.700'} fontSize={'xs'}>
+                    En unos segundos podrás generar un nuevo cobro
+                  </Text>
+                </Flex>
+              ) : (
+                <Flex alignItems={'center'} gap={2} bg='white' p={2} borderRadius='md'>
+                  <BiErrorCircle color='#2C2C2C' />
+                  <Text color={'gray.700'} fontSize={'xs'}>
+                    Genera un cobro para activar el enlace y el código QR
+                  </Text>
+                </Flex>
+              )}
+            </Box>
+          </VStack>
+        </Box>
+
+        {/* Botones de acción */}
+        <VStack spacing={3} w='full'>
+          <Button
+            w='full'
+            isDisabled={!paymentLink || paymentStatus === 'paid' || paymentStatus === 'expired'}
+            leftIcon={<BiCopy />}
+            onClick={handleCopyLink}
+            size='md'
+            variant='outline'
+          >
+            Copiar enlace
+          </Button>
+          <Button
+            w='full'
+            isDisabled={!paymentLink || paymentStatus === 'paid' || paymentStatus === 'expired'}
+            leftIcon={<FaWhatsapp />}
+            onClick={handleShareLink}
+            size='md'
+            colorScheme='green'
+          >
+            Enviar enlace
+          </Button>
+        </VStack>
+      </VStack>
     </Flex>
   )
 }

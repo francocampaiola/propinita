@@ -1,6 +1,6 @@
 'use client'
 import React, { lazy, Suspense } from 'react'
-import { Container, Flex, Spinner, Center, Skeleton } from '@chakra-ui/react'
+import { Container, Flex, Spinner, Center, Skeleton, Box, VStack } from '@chakra-ui/react'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { BsGraphUpArrow } from 'react-icons/bs'
 import { IoStatsChart } from 'react-icons/io5'
@@ -48,11 +48,24 @@ const CobrosPage = () => {
 
   return (
     <Container maxW='container.xl' py={8}>
-      <Flex gap={4} mb={8}>
-        {CARD_DATA.map((card) => (
-          <Card key={card.id} {...card} />
-        ))}
+      {/* Cards - Responsive design */}
+      <Flex gap={4} mb={8} direction={{ base: 'column', lg: 'row' }}>
+        {/* Mobile: Cards apiladas verticalmente */}
+        <VStack spacing={3} display={{ base: 'flex', lg: 'none' }} w='full'>
+          {CARD_DATA.map((card) => (
+            <Card key={card.id} {...card} />
+          ))}
+        </VStack>
+
+        {/* Desktop: Cards en fila normal */}
+        <Flex gap={4} display={{ base: 'none', lg: 'flex' }} flex={1}>
+          {CARD_DATA.map((card) => (
+            <Card key={card.id} {...card} />
+          ))}
+        </Flex>
       </Flex>
+
+      {/* Componente de pago */}
       <Suspense fallback={<LoadingState />}>
         <PaymentComponent />
       </Suspense>
