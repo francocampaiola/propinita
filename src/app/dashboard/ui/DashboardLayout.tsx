@@ -26,20 +26,26 @@ const DashboardLayout = ({ children }: IDashboardLayout) => {
       }}
       display={{ base: 'block', md: 'grid' }}
       minHeight='100vh'
-      pb={{ base: '20', md: '0' }}
       backgroundColor={'background.dark.bg'}
     >
+      {/* Desktop Sidebar */}
       <Box display={{ base: 'none', md: 'block' }}>
         <Sidebar isCollapsed={isCollapsed === true} handleCollapse={handleCollapse} />
       </Box>
+
+      {/* Main Content Area */}
       <Flex flexDirection='column' height='100%'>
+        {/* Navbar (Desktop y Mobile) */}
         <Navbar />
-        <Box>
+
+        {/* Content */}
+        <Box flex={1} pt={{ base: 0, md: 2 }} pb={{ base: 4, md: 0 }}>
           <Container maxW='8xl' py={2} px='4'>
             {children}
           </Container>
         </Box>
       </Flex>
+
       <MercadoPagoBlocker />
     </Grid>
   )
