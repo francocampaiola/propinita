@@ -202,32 +202,26 @@ const RegisterForm = () => {
                 }
               }}
             />
-            <Flex>
-              <Box mb={4} position={{ base: 'static', md: 'relative' }}>
-                <Flex fontSize={{ base: 'xs', md: 'xs' }} alignItems='center' display={'flex'}>
-                  <Box mr={2}>
-                    <Checkbox name='terms_conditions' />
-                  </Box>
-                  <Text>
-                    Acepto{' '}
-                    <span onClick={onOpen} style={{ cursor: 'pointer' }}>
-                      <Text as='span' color='primary' mx={'0.25'}>
-                        términos y condiciones
-                      </Text>{' '}
-                    </span>
-                    de Propinita.
-                  </Text>
-                </Flex>
-                <Box
-                  fontSize='xs'
-                  color='red.400'
-                  position={{ base: 'static', md: 'absolute' }}
-                  left={0}
-                  bottom={{ base: 0, md: -5 }}
-                >
+            <Flex direction='column'>
+              <Flex fontSize={{ base: 'xs', md: 'xs' }} alignItems='center' display={'flex'}>
+                <Box mr={2}>
+                  <Checkbox name='terms_conditions' />
+                </Box>
+                <Text>
+                  Acepto{' '}
+                  <span onClick={onOpen} style={{ cursor: 'pointer' }}>
+                    <Text as='span' color='primary' mx={'0.25'}>
+                      términos y condiciones
+                    </Text>{' '}
+                  </span>
+                  de Propinita.
+                </Text>
+              </Flex>
+              {formErrors?.terms_conditions?.message && (
+                <Box fontSize='xs' color='red.400' mt={1} ml={6}>
                   <Text>{formErrors?.terms_conditions?.message as unknown as string}</Text>
                 </Box>
-              </Box>
+              )}
             </Flex>
             <Button
               w='100%'

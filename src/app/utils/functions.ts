@@ -2,6 +2,7 @@
 
 import { handleToast } from '@/src/utils/toast'
 import { IResponse } from '../types'
+import { translateSupabaseError } from './translate/translateError'
 
 export const handleRequest = async <T>(
   request: () => Promise<IResponse<T>>
@@ -12,15 +13,16 @@ export const handleRequest = async <T>(
       handleToast({
         status: 'error',
         title: 'Hubo un error',
-        text: error
+        text: translateSupabaseError(error)
       })
     )
     return { success: false }
   } else if (typeof requestData?.errorMessage === 'string') {
+    const translatedError = translateSupabaseError(requestData?.errorMessage)
     handleToast({
       status: 'error',
       title: 'Hubo un error',
-      text: requestData?.errorMessage
+      text: translatedError
     })
     return { success: false }
   }

@@ -24,6 +24,7 @@ import { FaInfoCircle, FaCheckCircle, FaWhatsapp } from 'react-icons/fa'
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { BiCopy, BiErrorCircle } from 'react-icons/bi'
 import { handleToast } from '@/src/utils/toast'
+import { copyToClipboard } from '@/src/utils/utils'
 
 const LoadingState = () => (
   <Flex justifyContent='center' alignItems='center' p={8}>
@@ -328,16 +329,26 @@ const PaymentComponent = () => {
     setAmount('')
   }, [])
 
-  const handleCopyLink = useCallback(() => {
+  const handleCopyLink = useCallback(async () => {
     if (paymentLink) {
-      navigator.clipboard.writeText(paymentLink)
-      handleToast({
-        title: 'Enlace copiado',
-        text: 'El enlace ha sido copiado al portapapeles',
-        status: 'success',
-        duration: 5000,
-        isClosable: true
-      })
+      const success = await copyToClipboard(paymentLink)
+      if (success) {
+        handleToast({
+          title: 'Enlace copiado',
+          text: 'El enlace ha sido copiado al portapapeles',
+          status: 'success',
+          duration: 5000,
+          isClosable: true
+        })
+      } else {
+        handleToast({
+          title: 'Error al copiar',
+          text: 'No se pudo copiar el enlace al portapapeles. Intenta seleccionar y copiar manualmente.',
+          status: 'error',
+          duration: 5000,
+          isClosable: true
+        })
+      }
     }
   }, [paymentLink])
 

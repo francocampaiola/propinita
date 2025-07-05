@@ -74,85 +74,58 @@ const Navbar = () => {
       >
         <Flex mr={4} alignItems={'center'}>
           {user ? (
-            <>
-              <Modal isOpen={isOpen} onClose={onClose}>
-                <ModalOverlay />
-                <ModalContent>
-                  <ModalHeader>
-                    <Text fontWeight='bold'>Cerrar sesión</Text>
-                  </ModalHeader>
-                  <ModalCloseButton />
-                  <ModalBody>
-                    <Text>¿Estás seguro que deseas cerrar sesión?</Text>
-                  </ModalBody>
-                  <ModalFooter>
-                    <Button variant='ghost' mr={3} onClick={onClose} isDisabled={isLoggingOut}>
-                      Cancelar
-                    </Button>
-                    <Button
-                      colorScheme='red'
-                      onClick={handleLogout}
-                      isLoading={isLoggingOut}
-                      loadingText='Cerrando sesión...'
-                    >
-                      Cerrar sesión
-                    </Button>
-                  </ModalFooter>
-                </ModalContent>
-              </Modal>
-              <Menu size={'xs'} placement='bottom-end' autoSelect={false}>
-                <MenuButton className='cursor-pointer'>
+            <Menu size={'xs'} placement='bottom-end' autoSelect={false}>
+              <MenuButton className='cursor-pointer'>
+                <Avatar
+                  name={user?.first_name + ' ' + user?.last_name}
+                  backgroundColor={'primary'}
+                  variant='subtle'
+                  size='sm'
+                  color={'white'}
+                />
+              </MenuButton>
+              <MenuList minWidth='200px' py={1}>
+                <VStack spacing={1} px={3} py={1}>
                   <Avatar
                     name={user?.first_name + ' ' + user?.last_name}
                     backgroundColor={'primary'}
                     variant='subtle'
-                    size='sm'
+                    size='md'
                     color={'white'}
                   />
-                </MenuButton>
-                <MenuList minWidth='200px' py={1}>
-                  <VStack spacing={1} px={3} py={1}>
-                    <Avatar
-                      name={user?.first_name + ' ' + user?.last_name}
-                      backgroundColor={'primary'}
-                      variant='subtle'
-                      size='md'
-                      color={'white'}
-                    />
-                    <Text fontWeight='bold' fontSize='sm'>
-                      {user?.first_name} {user?.last_name}
-                    </Text>
-                    <Text fontSize='xs' color='gray.500'>
-                      {user?.email}
-                    </Text>
-                  </VStack>
-                  <MenuDivider my={1} />
-                  <MenuItem
-                    icon={<Icon as={FiUser} boxSize={4} />}
-                    fontSize='sm'
-                    onClick={() => router.push('/dashboard/perfil')}
-                  >
-                    Mi perfil
-                  </MenuItem>
-                  <MenuItem
-                    icon={<Icon as={FiHelpCircle} boxSize={4} />}
-                    fontSize='sm'
-                    onClick={() => router.push('/dashboard/faqs')}
-                  >
-                    Ayuda
-                  </MenuItem>
-                  <MenuDivider my={1} />
-                  <MenuItem
-                    icon={<Icon as={FiLogOut} boxSize={4} />}
-                    color='red.500'
-                    onClick={onOpen}
-                    fontSize='sm'
-                  >
-                    Cerrar sesión
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-            </>
+                  <Text fontWeight='bold' fontSize='sm'>
+                    {user?.first_name} {user?.last_name}
+                  </Text>
+                  <Text fontSize='xs' color='gray.500'>
+                    {user?.email}
+                  </Text>
+                </VStack>
+                <MenuDivider my={1} />
+                <MenuItem
+                  icon={<Icon as={FiUser} boxSize={4} />}
+                  fontSize='sm'
+                  onClick={() => router.push('/dashboard/perfil')}
+                >
+                  Mi perfil
+                </MenuItem>
+                <MenuItem
+                  icon={<Icon as={FiHelpCircle} boxSize={4} />}
+                  fontSize='sm'
+                  onClick={() => router.push('/dashboard/faqs')}
+                >
+                  Ayuda
+                </MenuItem>
+                <MenuDivider my={1} />
+                <MenuItem
+                  icon={<Icon as={FiLogOut} boxSize={4} />}
+                  color='red.500'
+                  onClick={onOpen}
+                  fontSize='sm'
+                >
+                  Cerrar sesión
+                </MenuItem>
+              </MenuList>
+            </Menu>
           ) : (
             <SkeletonCircle size={'8'} />
           )}
@@ -253,12 +226,7 @@ const Navbar = () => {
                     _active={{ background: 'gray.600' }}
                     onClick={() => {
                       onDrawerClose()
-                      // En mobile cierra sesión directamente, en desktop abre confirmación
-                      if (window.innerWidth < 768) {
-                        handleLogout()
-                      } else {
-                        onOpen()
-                      }
+                      onOpen()
                     }}
                   >
                     <HStack spacing={3} width='100%' justify='flex-start'>
@@ -292,50 +260,50 @@ const Navbar = () => {
         </DrawerContent>
       </Drawer>
 
-      {/* Modal de confirmación de logout (compartido) */}
-      <Box display={{ base: 'none', md: 'block' }}>
-        <Modal isOpen={isOpen} onClose={onClose} isCentered>
-          <ModalOverlay />
-          <ModalContent
-            sx={{
-              width: '400px !important',
-              minWidth: '400px !important',
-              maxWidth: '400px !important',
-              p: '0 !important'
-            }}
-          >
-            <ModalHeader textAlign='left'>
-              <Text fontWeight='bold'>Cerrar sesión</Text>
-            </ModalHeader>
-            <ModalCloseButton />
-            <ModalBody textAlign='left'>
-              <Text>¿Estás seguro que deseas cerrar sesión?</Text>
-            </ModalBody>
-            <ModalFooter>
-              <Box
-                display='flex'
-                flexDirection='row'
-                gap={2}
-                width='100%'
-                justifyContent='center'
-                alignItems='center'
-              >
-                <Button variant='ghost' onClick={onClose} isDisabled={isLoggingOut}>
-                  Cancelar
-                </Button>
-                <Button
-                  colorScheme='red'
-                  onClick={handleLogout}
-                  isLoading={isLoggingOut}
-                  loadingText='Cerrando sesión...'
-                >
-                  Cerrar sesión
-                </Button>
-              </Box>
-            </ModalFooter>
-          </ModalContent>
-        </Modal>
-      </Box>
+      {/* Modal de confirmación de logout */}
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        closeOnOverlayClick={!isLoggingOut}
+        closeOnEsc={!isLoggingOut}
+        motionPreset='slideInBottom'
+        size={{ base: 'sm', md: 'md' }}
+      >
+        <ModalOverlay bg='blackAlpha.300' backdropFilter='blur(10px)' />
+        <ModalContent mx={4} borderRadius='lg' boxShadow='xl'>
+          <ModalHeader pb={2}>
+            <Text fontWeight='bold' fontSize={{ base: 'lg', md: 'xl' }}>
+              Cerrar sesión
+            </Text>
+          </ModalHeader>
+          <ModalCloseButton size='lg' isDisabled={isLoggingOut} />
+          <ModalBody pb={4}>
+            <Text fontSize={{ base: 'md', md: 'lg' }}>¿Estás seguro que deseas cerrar sesión?</Text>
+          </ModalBody>
+          <ModalFooter gap={3} flexDirection={{ base: 'column', md: 'row' }}>
+            <Button
+              variant='ghost'
+              onClick={onClose}
+              isDisabled={isLoggingOut}
+              w={{ base: 'full', md: 'auto' }}
+              size={{ base: 'lg', md: 'md' }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              colorScheme='red'
+              onClick={handleLogout}
+              isLoading={isLoggingOut}
+              loadingText='Cerrando sesión...'
+              w={{ base: 'full', md: 'auto' }}
+              size={{ base: 'lg', md: 'md' }}
+            >
+              Cerrar sesión
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </>
   )
 }
