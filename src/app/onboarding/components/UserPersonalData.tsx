@@ -132,7 +132,6 @@ const UserPersonalData = ({
           height='100vh'
           alignItems='center'
           justifyContent='center'
-          bg='rgba(255,255,255,0.7)'
           zIndex={2000}
         >
           <Spinner size='xl' thickness='4px' color='primary' speed='0.7s' />

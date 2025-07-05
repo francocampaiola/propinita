@@ -13,17 +13,50 @@ import OnboardingLayout from './components/layout/OnboardingLayout'
 // Componentes dinámicos
 const UserPersonalData = dynamic(() => import('./components/UserPersonalData'), {
   ssr: false,
-  loading: () => <Spinner size='xl' thickness='4px' />
+  loading: () => (
+    <Box
+      bg='#757575'
+      minH='100vh'
+      w='100vw'
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+    >
+      <Spinner size='xl' thickness='4px' />
+    </Box>
+  )
 })
 
 const UserBankData = dynamic(() => import('./components/UserBankData'), {
   ssr: false,
-  loading: () => <Spinner size='xl' thickness='4px' />
+  loading: () => (
+    <Box
+      bg='#757575'
+      minH='100vh'
+      w='100vw'
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+    >
+      <Spinner size='xl' thickness='4px' />
+    </Box>
+  )
 })
 
 const UserSummary = dynamic(() => import('./components/UserSummary'), {
   ssr: false,
-  loading: () => <Spinner size='xl' thickness='4px' />
+  loading: () => (
+    <Box
+      bg='#757575'
+      minH='100vh'
+      w='100vw'
+      display='flex'
+      alignItems='center'
+      justifyContent='center'
+    >
+      <Spinner size='xl' thickness='4px' />
+    </Box>
+  )
 })
 
 const steps: Record<
