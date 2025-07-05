@@ -351,7 +351,7 @@ const UserBankData = ({
             isDisabled={!mpInfo.connected}
             rightIcon={<FaArrowRight />}
           >
-            Continuar
+            Siguiente
           </Button>
         </Flex>
       </form>

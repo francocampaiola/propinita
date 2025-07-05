@@ -13,50 +13,17 @@ import OnboardingLayout from './components/layout/OnboardingLayout'
 // Componentes dinámicos
 const UserPersonalData = dynamic(() => import('./components/UserPersonalData'), {
   ssr: false,
-  loading: () => (
-    <Box
-      bg='#757575'
-      minH='100vh'
-      w='100vw'
-      display='flex'
-      alignItems='center'
-      justifyContent='center'
-    >
-      <Spinner size='xl' thickness='4px' />
-    </Box>
-  )
+  loading: () => <Spinner size='xl' thickness='4px' />
 })
 
 const UserBankData = dynamic(() => import('./components/UserBankData'), {
   ssr: false,
-  loading: () => (
-    <Box
-      bg='#757575'
-      minH='100vh'
-      w='100vw'
-      display='flex'
-      alignItems='center'
-      justifyContent='center'
-    >
-      <Spinner size='xl' thickness='4px' />
-    </Box>
-  )
+  loading: () => <Spinner size='xl' thickness='4px' />
 })
 
 const UserSummary = dynamic(() => import('./components/UserSummary'), {
   ssr: false,
-  loading: () => (
-    <Box
-      bg='#757575'
-      minH='100vh'
-      w='100vw'
-      display='flex'
-      alignItems='center'
-      justifyContent='center'
-    >
-      <Spinner size='xl' thickness='4px' />
-    </Box>
-  )
+  loading: () => <Spinner size='xl' thickness='4px' />
 })
 
 const steps: Record<
@@ -206,14 +173,26 @@ const Onboarding = ({ userData }: { userData: UserData }) => {
       <Box width='100%' p={4}>
         {showSuccess ? (
           <Flex justifyContent='center' alignItems='center' mx='auto' direction='column'>
-            <Circle size='60px' bg='green.500' color='white' mb={4}>
-              <FaCheck size={32} color='white' />
+            <Circle
+              size={{ base: '40px', md: '60px' }}
+              bg='green.500'
+              color='white'
+              mb={{ base: 5, md: 4 }}
+            >
+              <FaCheck size={24} color='white' style={{ width: '100%', height: '100%' }} />
             </Circle>
-            <Text fontSize={'2xl'} fontWeight={'600'} mb={2}>
+            <Text
+              fontSize={{ base: 'lg', md: '2xl' }}
+              fontWeight='600'
+              mb={{ base: 1, md: 2 }}
+              textAlign='center'
+            >
               Registro completado con éxito
             </Text>
-            <Text>Redirigiendo al dashboard</Text>
-            <Spinner color='primary' borderWidth={4} mt={4} />
+            <Text fontSize={{ base: 'sm', md: 'md' }} textAlign='center'>
+              Redirigiendo al dashboard
+            </Text>
+            <Spinner color='primary' borderWidth={4} mt={{ base: 3, md: 4 }} />
           </Flex>
         ) : (
           <StepComponent
