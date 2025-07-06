@@ -143,20 +143,21 @@ const UserSummary = ({
             p={4}
             border={'1px solid white'}
             borderRadius={15}
+            direction={{ base: 'column', md: 'row' }}
           >
-            <Box w='48%'>
+            <Box w={{ base: '100%', md: '48%' }} mb={{ base: 2, md: 0 }}>
               <Text fontWeight='600' fontSize='lg'>
                 Perfil
               </Text>
               <Text fontSize='sm'>{getLabel(watch('user_type') || '', options)}</Text>
             </Box>
-            <Box w='48%'>
+            <Box w={{ base: '100%', md: '48%' }} mb={{ base: 2, md: 0 }}>
               <Text fontWeight='600' fontSize='lg'>
                 Nacionalidad
               </Text>
               <Text fontSize='sm'>{getLabel(watch('nationality') || '', countries)}</Text>
             </Box>
-            <Box w='48%'>
+            <Box w={{ base: '100%', md: '48%' }} mb={{ base: 2, md: 0 }}>
               <Text fontWeight='600' fontSize='lg'>
                 Nombre y apellido
               </Text>
@@ -164,19 +165,19 @@ const UserSummary = ({
                 {watch('first_name')} {watch('last_name')}
               </Text>
             </Box>
-            <Box w='48%'>
+            <Box w={{ base: '100%', md: '48%' }} mb={{ base: 2, md: 0 }}>
               <Text fontWeight='600' fontSize='lg'>
                 Estado civil
               </Text>
               <Text fontSize='sm'>{getLabel(watch('civil_state') || '', civil_state)}</Text>
             </Box>
-            <Box w='48%'>
+            <Box w={{ base: '100%', md: '48%' }} mb={{ base: 2, md: 0 }}>
               <Text fontWeight='600' fontSize='lg'>
                 Teléfono
               </Text>
               <Text fontSize='sm'>{watch('phone')}</Text>
             </Box>
-            <Box w='48%'>
+            <Box w={{ base: '100%', md: '48%' }} mb={{ base: 2, md: 0 }}>
               <Text fontWeight='600' fontSize='lg'>
                 ID MercadoPago
               </Text>

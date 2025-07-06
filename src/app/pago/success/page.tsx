@@ -40,9 +40,9 @@ export default function SuccessPage() {
               <FaCheck size={50} color='#48BB78' />
             </Box>
             <Heading size='lg' textAlign='center'>
-              ¡Pago Exitoso!
+              ¡Pago exitoso!
             </Heading>
-            <Text textAlign='center' color='gray.600'>
+            <Text textAlign='center' color='white'>
               Tu propina ha sido enviada correctamente.
             </Text>
           </VStack>

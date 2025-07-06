@@ -62,3 +62,36 @@ export const calculateMonthlyGoalPercentage = (
     isCompleted: currentMonthTotal >= monthlyGoal
   }
 }
+
+/**
+ * Función para copiar texto al portapapeles con compatibilidad para navegadores móviles
+ * @param text - El texto a copiar
+ * @returns Promise<boolean> - true si se copió exitosamente, false en caso contrario
+ */
+export const copyToClipboard = async (text: string): Promise<boolean> => {
+  try {
+    // Intentar usar la API moderna del portapapeles
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(text)
+      return true
+    }
+
+    // Fallback para navegadores que no soportan la API moderna
+    const textArea = document.createElement('textarea')
+    textArea.value = text
+    textArea.style.position = 'fixed'
+    textArea.style.left = '-999999px'
+    textArea.style.top = '-999999px'
+    document.body.appendChild(textArea)
+    textArea.focus()
+    textArea.select()
+
+    const successful = document.execCommand('copy')
+    document.body.removeChild(textArea)
+
+    return successful
+  } catch (error) {
+    console.error('Error al copiar al portapapeles:', error)
+    return false
+  }
+}
