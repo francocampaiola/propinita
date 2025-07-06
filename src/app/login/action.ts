@@ -1,6 +1,7 @@
 'use server'
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient as createServerClient } from '@/src/utils/supabase/server'
+import { createClient as createAdminClient } from '@supabase/supabase-js'
 import { IResponse } from '../types'
 import { ILoginResponse, IRegisterResponse } from './types'
 
@@ -11,20 +12,26 @@ export const login = async ({
   email: string
   password: string
 }): Promise<IResponse<ILoginResponse>> => {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const { error, data: session } = await supabase.auth.signInWithPassword({
+  const supabase = await createServerClient()
+  const { error, data: sessionData } = await supabase.auth.signInWithPassword({
     email,
     password
   })
   if (error) {
     return { errorMessage: error.message }
   }
-  const { data: user, error: userError } = await supabase.auth.getUser()
-  if (userError) {
-    return { errorMessage: userError.message }
+  if (!sessionData || !sessionData.session || !sessionData.user) {
+    return { errorMessage: 'No se pudo obtener la sesión de usuario.' }
+  }
+  return {
+    data: {
+      access_token: sessionData.session.access_token,
+      token_type: sessionData.session.token_type,
+      expires_in: sessionData.session.expires_in,
+      expires_at: sessionData.session.expires_at,
+      refresh_token: sessionData.session.refresh_token,
+      user: sessionData.user as any // Ajuste para evitar error de tipos
+    }
   }
 }
 
@@ -36,7 +43,7 @@ export const register = async ({
   password: string
 }): Promise<IResponse<IRegisterResponse>> => {
   // Usamos el service role para poder crear usuarios y acceder a la tabla users
-  const supabase = createClient(
+  const supabase = createAdminClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   )
