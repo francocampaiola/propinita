@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import {
   Box,
   Button,
@@ -18,8 +19,13 @@ import {
   Card,
   CardBody,
   CardHeader,
-  Divider
+  Divider,
+  Alert,
+  AlertIcon,
+  useBreakpointValue
 } from '@chakra-ui/react'
+import { getUserData } from './action'
+import logo from '@/src/assets/logo.svg'
 
 export default function PagoPage() {
   const searchParams = useSearchParams()
@@ -27,8 +33,45 @@ export default function PagoPage() {
   const toast = useToast()
   const [monto, setMonto] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [userData, setUserData] = useState<{
+    first_name: string | null
+    last_name: string | null
+  } | null>(null)
+  const [isLoadingUser, setIsLoadingUser] = useState(true)
+  const [userError, setUserError] = useState<string | null>(null)
+
   const providerId = searchParams.get('providerId')
   const providerName = searchParams.get('providerName')
+
+  // Responsive values
+  const containerPadding = useBreakpointValue({ base: 4, md: 8 })
+  const cardPadding = useBreakpointValue({ base: 4, md: 6 })
+  const headingSize = useBreakpointValue({ base: 'md', md: 'lg' })
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!providerId) {
+        setUserError('ID de proveedor no proporcionado')
+        setIsLoadingUser(false)
+        return
+      }
+
+      try {
+        const result = await getUserData(providerId)
+        if (result.error) {
+          setUserError(result.error)
+        } else {
+          setUserData(result.data)
+        }
+      } catch (error) {
+        setUserError('Error al cargar los datos del usuario')
+      } finally {
+        setIsLoadingUser(false)
+      }
+    }
+
+    fetchUserData()
+  }, [providerId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -43,7 +86,7 @@ export default function PagoPage() {
         body: JSON.stringify({
           amount: monto,
           providerId,
-          providerName
+          providerName: userData ? `${userData.first_name} ${userData.last_name}` : providerName
         })
       })
 
@@ -69,25 +112,66 @@ export default function PagoPage() {
     }
   }
 
+  if (isLoadingUser) {
+    return (
+      <Container maxW='container.sm' py={containerPadding} px={4}>
+        <Card>
+          <CardBody p={cardPadding}>
+            <VStack spacing={4}>
+              <Spinner size='lg' />
+              <Text>Cargando información del proveedor...</Text>
+            </VStack>
+          </CardBody>
+        </Card>
+      </Container>
+    )
+  }
+
+  if (userError) {
+    return (
+      <Container maxW='container.sm' py={containerPadding} px={4}>
+        <Alert status='error'>
+          <AlertIcon />
+          {userError}
+        </Alert>
+      </Container>
+    )
+  }
+
+  const displayName = userData
+    ? `${userData.first_name || ''} ${userData.last_name || ''}`.trim()
+    : providerName || 'Proveedor'
+
   return (
-    <Container maxW='container.sm' py={8}>
+    <Container maxW='container.sm' py={containerPadding} px={4}>
       <Card>
-        <CardHeader>
+        <CardHeader p={cardPadding}>
           <VStack spacing={4} align='stretch'>
-            <Heading size='lg' textAlign='center'>
+            {/* Logo de Propinita */}
+            <Box display='flex' justifyContent='center' mb={2}>
+              <Image
+                src={logo}
+                alt='Propinita'
+                width={120}
+                height={40}
+                style={{ objectFit: 'contain' }}
+              />
+            </Box>
+
+            <Heading size={headingSize} textAlign='center'>
               Realizar Pago
             </Heading>
-            <Text textAlign='center' color='gray.600'>
-              Propina para {providerName}
+            <Text textAlign='center' color='gray.600' fontSize={{ base: 'sm', md: 'md' }}>
+              Propina para {displayName}
             </Text>
           </VStack>
         </CardHeader>
         <Divider />
-        <CardBody>
+        <CardBody p={cardPadding}>
           <form onSubmit={handleSubmit}>
             <Stack spacing={6}>
               <FormControl isRequired>
-                <FormLabel>Monto de la propina</FormLabel>
+                <FormLabel fontSize={{ base: 'sm', md: 'md' }}>Monto de la propina</FormLabel>
                 <Input
                   type='number'
                   min='1'
@@ -95,17 +179,18 @@ export default function PagoPage() {
                   onChange={(e) => setMonto(e.target.value)}
                   placeholder='Ingrese el monto'
                   disabled={isLoading}
-                  size='lg'
+                  size={{ base: 'md', md: 'lg' }}
                 />
               </FormControl>
 
               <Button
                 type='submit'
                 colorScheme='yellow'
-                size='lg'
+                size={{ base: 'md', md: 'lg' }}
                 isLoading={isLoading}
                 loadingText='Procesando...'
                 disabled={isLoading || !monto}
+                fontSize={{ base: 'sm', md: 'md' }}
               >
                 Pagar con MercadoPago
               </Button>

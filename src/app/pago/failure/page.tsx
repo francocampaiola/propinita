@@ -40,9 +40,9 @@ export default function FailurePage() {
               <FaTimes size={50} color='#E53E3E' />
             </Box>
             <Heading size='lg' textAlign='center'>
-              Error en el Pago
+              Error en el pago
             </Heading>
-            <Text textAlign='center' color='gray.600'>
+            <Text textAlign='center' color='white'>
               Hubo un problema al procesar tu propina. Por favor, intenta nuevamente.
             </Text>
           </VStack>
