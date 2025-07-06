@@ -11,7 +11,9 @@ import {
   ModalHeader,
   ModalCloseButton,
   ModalBody,
-  ModalFooter
+  ModalFooter,
+  Alert,
+  AlertIcon
 } from '@chakra-ui/react'
 import Input from '@/src/components/form/Input'
 import { z } from 'zod'
@@ -26,6 +28,7 @@ import { handleToast } from '@/src/utils/toast'
 
 const RegisterForm = () => {
   const [isLoading, startTransition] = useTransition()
+  const [error, setError] = React.useState<string | null>(null)
   const router = useRouter()
 
   const { isOpen, onOpen, onClose } = useDisclosure()
@@ -64,6 +67,8 @@ const RegisterForm = () => {
 
   const action = methods.handleSubmit(async (data) => {
     const { email, password } = data
+    setError(null) // Limpiar errores previos
+
     startTransition(async () => {
       const request = await handleRequest(() =>
         register({
@@ -71,6 +76,7 @@ const RegisterForm = () => {
           password
         })
       )
+
       if (request.success) {
         handleToast({
           title: 'Cuenta creada con éxito',
@@ -82,6 +88,10 @@ const RegisterForm = () => {
         setTimeout(() => {
           location.reload()
         }, 3000)
+      } else {
+        // handleRequest ya maneja los toasts de error automáticamente
+        // Solo necesitamos mostrar un mensaje genérico en el formulario
+        setError('Error al crear la cuenta. Por favor, verifica los datos e intenta nuevamente.')
       }
     })
   })
@@ -173,6 +183,14 @@ const RegisterForm = () => {
       <FormProvider {...methods}>
         <form onSubmit={action}>
           <Flex direction={'column'} gap={4}>
+            {/* Mostrar error general si existe */}
+            {error && (
+              <Alert status='error' borderRadius='md'>
+                <AlertIcon />
+                {error}
+              </Alert>
+            )}
+
             <Flex>
               <Input
                 placeholder='Correo electrónico'
@@ -225,8 +243,8 @@ const RegisterForm = () => {
             </Flex>
             <Button
               w='100%'
-              //   type='submit'
-              isDisabled={true}
+              type='submit'
+              isDisabled={!methods.formState.isValid}
               isLoading={isLoading}
               variant='primary'
             >
