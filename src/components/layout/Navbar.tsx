@@ -283,7 +283,6 @@ const Navbar = () => {
           </ModalBody>
           <ModalFooter gap={3} flexDirection={{ base: 'column', md: 'row' }}>
             <Button
-              variant='ghost'
               onClick={onClose}
               isDisabled={isLoggingOut}
               w={{ base: 'full', md: 'auto' }}
@@ -292,7 +291,11 @@ const Navbar = () => {
               Cancelar
             </Button>
             <Button
-              colorScheme='red'
+              backgroundColor='red.600'
+              _hover={{
+                backgroundColor: 'red.500'
+              }}
+              color='white'
               onClick={handleLogout}
               isLoading={isLoggingOut}
               loadingText='Cerrando sesión...'

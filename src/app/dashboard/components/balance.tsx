@@ -35,9 +35,10 @@ import { calculateMonthlyGoalPercentage } from '@/src/utils/utils'
 import { useGetTransactions } from '@/src/hooks/transactions/useGetTransactions'
 import { useTransactionStats } from '@/src/hooks/transactions/useTransactionStats'
 import { createClient } from '@/src/utils/supabase/client'
+import { useBalanceVisibility } from '@/src/context/BalanceVisibilityProvider'
 
 const BalanceComponent = () => {
-  const [showBalance, setShowBalance] = useState(false)
+  const { showBalance, toggleBalanceVisibility } = useBalanceVisibility()
   const [isRefetching, setIsRefetching] = useState(false)
   const [monthlyGoal, setMonthlyGoal] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -142,24 +143,16 @@ const BalanceComponent = () => {
             <Flex alignItems={'center'} gap={3.5}>
               <Text fontSize='6xl' fontWeight={700}>
                 {showBalance
-                  ? '$******'
-                  : data?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}
+                  ? data?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+                  : '$******'}
               </Text>
               <Text fontSize={'4xl'} fontWeight={700}>
                 ARS
               </Text>
-              {!showBalance ? (
-                <IoEyeOff
-                  cursor={'pointer'}
-                  size='1.5rem'
-                  onClick={() => setShowBalance(!showBalance)}
-                />
+              {showBalance ? (
+                <IoEyeOff cursor={'pointer'} size='1.5rem' onClick={toggleBalanceVisibility} />
               ) : (
-                <IoEye
-                  cursor={'pointer'}
-                  size='1.5rem'
-                  onClick={() => setShowBalance(!showBalance)}
-                />
+                <IoEye cursor={'pointer'} size='1.5rem' onClick={toggleBalanceVisibility} />
               )}
             </Flex>
             <Flex>
@@ -176,8 +169,8 @@ const BalanceComponent = () => {
                 <TagLeftIcon boxSize='12px' as={Icon} color={color} />
                 <TagLabel color={color}>
                   {showBalance
-                    ? '******'
-                    : `${isPositive ? '+' : ''}${weekPercentageChange.toFixed(1)}% esta semana`}
+                    ? `${isPositive ? '+' : ''}${weekPercentageChange.toFixed(1)}% esta semana`
+                    : '******'}
                 </TagLabel>
               </Tag>
             </Flex>
@@ -299,25 +292,17 @@ const BalanceComponent = () => {
               <HStack spacing={2}>
                 <Text fontSize='3xl' fontWeight={700}>
                   {showBalance
-                    ? '$******'
-                    : data?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })}
+                    ? data?.balance.toLocaleString('es-AR', { style: 'currency', currency: 'ARS' })
+                    : '$******'}
                 </Text>
                 <Text fontSize='lg' fontWeight={600}>
                   ARS
                 </Text>
               </HStack>
-              {!showBalance ? (
-                <IoEyeOff
-                  cursor={'pointer'}
-                  size='1.25rem'
-                  onClick={() => setShowBalance(!showBalance)}
-                />
+              {showBalance ? (
+                <IoEyeOff cursor={'pointer'} size='1.25rem' onClick={toggleBalanceVisibility} />
               ) : (
-                <IoEye
-                  cursor={'pointer'}
-                  size='1.25rem'
-                  onClick={() => setShowBalance(!showBalance)}
-                />
+                <IoEye cursor={'pointer'} size='1.25rem' onClick={toggleBalanceVisibility} />
               )}
             </HStack>
 

@@ -20,6 +20,7 @@ import {
 import { MdOutlineAttachMoney } from 'react-icons/md'
 import { useGetTransactions } from '@/src/hooks/transactions/useGetTransactions'
 import { formatDate } from '../../utils/functions'
+import { useBalanceVisibility } from '@/src/context/BalanceVisibilityProvider'
 
 interface Props {
   full?: boolean
@@ -27,6 +28,7 @@ interface Props {
 
 const HistoryComponent = ({ full = false }: Props) => {
   const { transactions, isLoading } = useGetTransactions()
+  const { showBalance } = useBalanceVisibility()
 
   if (isLoading) {
     return <Skeleton height='350px' mb={4} borderRadius='md' />
@@ -92,10 +94,12 @@ const HistoryComponent = ({ full = false }: Props) => {
                           </Flex>
                         </Td>
                         <Td isNumeric>
-                          {transaction.amount.toLocaleString('es-AR', {
-                            style: 'currency',
-                            currency: 'ARS'
-                          })}
+                          {showBalance
+                            ? transaction.amount.toLocaleString('es-AR', {
+                                style: 'currency',
+                                currency: 'ARS'
+                              })
+                            : '******'}
                         </Td>
                       </Tr>
                     ))
@@ -112,10 +116,12 @@ const HistoryComponent = ({ full = false }: Props) => {
                           </Flex>
                         </Td>
                         <Td isNumeric>
-                          {transaction.amount.toLocaleString('es-AR', {
-                            style: 'currency',
-                            currency: 'ARS'
-                          })}
+                          {showBalance
+                            ? transaction.amount.toLocaleString('es-AR', {
+                                style: 'currency',
+                                currency: 'ARS'
+                              })
+                            : '******'}
                         </Td>
                       </Tr>
                     ))
@@ -192,10 +198,12 @@ const HistoryComponent = ({ full = false }: Props) => {
                       </VStack>
                     </HStack>
                     <Text fontSize='sm' fontWeight='bold' color='primary'>
-                      {transaction.amount.toLocaleString('es-AR', {
-                        style: 'currency',
-                        currency: 'ARS'
-                      })}
+                      {showBalance
+                        ? transaction.amount.toLocaleString('es-AR', {
+                            style: 'currency',
+                            currency: 'ARS'
+                          })
+                        : '******'}
                     </Text>
                   </HStack>
                 </Box>
