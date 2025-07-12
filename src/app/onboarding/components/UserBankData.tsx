@@ -210,69 +210,88 @@ const UserBankData = ({
   }
 
   return (
-    <Box w={'100%'}>
-      <Text fontWeight='600' fontSize='xl' mb={6} textTransform={'uppercase'}>
+    <Box w={{ base: '100%', md: '100%' }} px={{ base: 2, md: 0 }}>
+      <Text fontWeight='600' fontSize={{ base: 'lg', md: 'xl' }} mb={4} textTransform={'uppercase'}>
         Paso 2
       </Text>
-      <Text fontWeight='600' fontSize='2xl' mb={1}>
+      <Text fontWeight='600' fontSize={{ base: 'xl', md: '2xl' }} mb={1}>
         Cuenta bancaria
       </Text>
-      <Text fontSize='sm'>
+      <Text fontSize={{ base: 'sm', md: 'md' }}>
         Vinculá tu cuenta con MercadoPago para recibir o realizar tus pagos.
       </Text>
       <form onSubmit={onSubmit}>
-        <Flex direction='column' gap={4} my={4}>
+        <Flex direction='column' gap={4} my={{ base: 2, md: 4 }}>
           <BoxColorMode bg={['primary', 'transparent']} borderRadius='md'>
             {checkingConnection ? (
               <Flex
                 justifyContent='center'
                 alignItems='center'
-                p={6}
+                p={{ base: 3, md: 6 }}
                 border={'1px solid white'}
                 borderRadius={15}
               >
-                <Text>Verificando estado de conexión...</Text>
+                <Text fontSize={{ base: 'sm', md: 'md' }}>Verificando estado de conexión...</Text>
               </Flex>
             ) : mpInfo.connected ? (
               <Box
-                display='flex'
-                alignItems='center'
-                py={4}
-                px={6}
+                flexDirection={{ base: 'column', md: 'row' }}
+                alignItems={{ base: 'flex-start', md: 'center' }}
+                py={{ base: 2, md: 4 }}
+                px={{ base: 3, md: 6 }}
                 width='100%'
                 border={'1px solid white'}
                 borderRadius={15}
                 textAlign={'left'}
               >
-                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={50} height={50} priority />
-                <Box ml={4} flex='1'>
-                  <Flex alignItems='center' justifyContent='space-between'>
-                    <Text fontSize='lg' fontWeight='600'>
+                <Flex
+                  direction='row'
+                  alignItems='flex-start'
+                  mb={2}
+                  width={{ base: '100%', md: 'auto' }}
+                >
+                  <Image
+                    src={MercadoPagoLogo}
+                    alt={'MercadoPago'}
+                    width={50}
+                    height={50}
+                    priority
+                    style={{ marginRight: 12 }}
+                  />
+                  <Box>
+                    <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight='600'>
                       MercadoPago
                     </Text>
-                    <Badge colorScheme='green' display='flex' alignItems='center'>
+                    <Badge
+                      colorScheme='green'
+                      display='flex'
+                      alignItems='center'
+                      fontSize={{ base: 'xs', md: 'sm' }}
+                      mt={1}
+                    >
                       <FaCheck size={10} style={{ marginRight: '5px' }} /> Conectada
                     </Badge>
-                  </Flex>
-                  <Text color='#D2D2D2' fontSize='xs'>
+                  </Box>
+                </Flex>
+                <Box width='100%' mt={2}>
+                  <Text color='#D2D2D2' fontSize='xs' mb={1}>
                     Tu cuenta de MercadoPago ha sido vinculada correctamente.
-                    {mpInfo.userInfo?.user_id && (
-                      <Text as='span' color='green.300'>
-                        {' '}
-                        ID: {mpInfo.userInfo.user_id}
-                      </Text>
-                    )}
-                    {mpInfo.marketplaceLinked ? (
-                      <Text as='span' color='green.300' display='block'>
-                        ✓ Vinculada al marketplace
-                      </Text>
-                    ) : (
-                      <Text as='span' color='red.300' display='block'>
-                        ✗ No vinculada al marketplace. Por favor, asegúrate de que tu cuenta de
-                        MercadoPago tenga permisos para recibir pagos.
-                      </Text>
-                    )}
                   </Text>
+                  {mpInfo.userInfo?.user_id && (
+                    <Text as='span' color='green.300' fontSize='xs' mb={1}>
+                      ID: {mpInfo.userInfo.user_id}
+                    </Text>
+                  )}
+                  {mpInfo.marketplaceLinked ? (
+                    <Text as='span' color='green.300' fontSize='xs' display='block'>
+                      ✓ Vinculada al marketplace
+                    </Text>
+                  ) : (
+                    <Text as='span' color='red.300' fontSize='xs' display='block'>
+                      ✗ No vinculada al marketplace. Por favor, asegúrate de que tu cuenta de
+                      MercadoPago tenga permisos para recibir pagos.
+                    </Text>
+                  )}
                 </Box>
               </Box>
             ) : (
@@ -280,18 +299,26 @@ const UserBankData = ({
                 as='a'
                 href={authorizationUrl || '#'}
                 display='flex'
-                alignItems='center'
-                py={4}
-                px={6}
+                flexDirection={{ base: 'column', md: 'row' }}
+                alignItems={{ base: 'flex-start', md: 'center' }}
+                py={{ base: 2, md: 4 }}
+                px={{ base: 3, md: 6 }}
                 width='100%'
                 cursor='pointer'
                 border={'1px solid white'}
                 borderRadius={15}
                 textAlign={'left'}
               >
-                <Image src={MercadoPagoLogo} alt={'MercadoPago'} width={100} height={50} priority />
-                <Box ml={4}>
-                  <Text fontSize='lg' fontWeight='600'>
+                <Image
+                  src={MercadoPagoLogo}
+                  alt={'MercadoPago'}
+                  width={100}
+                  height={50}
+                  priority
+                  style={{ marginBottom: 12 }}
+                />
+                <Box ml={{ base: 0, md: 4 }}>
+                  <Text fontSize={{ base: 'md', md: 'lg' }} fontWeight='600'>
                     MercadoPago
                   </Text>
                   <Text color='#D2D2D2' fontSize='xs'>
@@ -303,12 +330,11 @@ const UserBankData = ({
             )}
           </BoxColorMode>
         </Flex>
-        <Flex justifyContent='flex-end'>
+        <Flex justifyContent='flex-end' gap={2}>
           <Button
             variant='secondary'
             type='button'
             mt={4}
-            mr={4}
             size='sm'
             onClick={onBack}
             isLoading={isLoadingBack}
@@ -325,7 +351,7 @@ const UserBankData = ({
             isDisabled={!mpInfo.connected}
             rightIcon={<FaArrowRight />}
           >
-            Continuar
+            Siguiente
           </Button>
         </Flex>
       </form>

@@ -41,9 +41,9 @@ export default function PendingPage() {
               <FaClock size={50} color='#4299E1' />
             </Box>
             <Heading size='lg' textAlign='center'>
-              Pago en Proceso
+              Pago en proceso
             </Heading>
-            <Text textAlign='center' color='gray.600'>
+            <Text textAlign='center' color='white'>
               Tu propina está siendo procesada. Te notificaremos cuando esté lista.
             </Text>
             <Box display='flex' justifyContent='center'>

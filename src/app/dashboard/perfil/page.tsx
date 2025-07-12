@@ -4,7 +4,7 @@ import Input from '@/src/components/form/Input'
 import InputPhone from '@/src/components/form/PhoneInput'
 import { useGetUser } from '@/src/hooks/users/useGetUser'
 import { useGetTransactions } from '@/src/hooks/transactions/useGetTransactions'
-import { Divider, Flex, Text, Spinner, Button } from '@chakra-ui/react'
+import { Divider, Flex, Text, Spinner, Button, useBreakpointValue } from '@chakra-ui/react'
 import { useState, useEffect } from 'react'
 import { editUser } from '@/src/app/onboarding/action'
 import { handleToast } from '@/src/utils/toast'
@@ -41,6 +41,7 @@ const Perfil = () => {
   const { user, isLoading, refetch } = useGetUser()
   const { refetch: refetchTransactions } = useGetTransactions()
   const [isSaving, setIsSaving] = useState(false)
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   const schema = z.object({
     first_name: z.string().trim().min(1, 'Este campo no puede quedar vacío'),
@@ -194,8 +195,12 @@ const Perfil = () => {
       </Flex>
       <Divider borderColor='components.divider' />
       <Flex flex={1} mx={4} mt={4} mb={4} direction='column' gap={4}>
-        <Flex gap={8} w={'75%'}>
-          <Flex direction='column' gap={4} mb={12} flex={1}>
+        <Flex
+          gap={{ base: 4, md: 8 }}
+          w={{ base: '100%', md: '75%' }}
+          direction={{ base: 'column', md: 'row' }}
+        >
+          <Flex direction='column' gap={4} mb={{ base: 4, md: 12 }} flex={1}>
             <FormProvider {...methods}>
               <Input
                 label='Nombre'
@@ -208,6 +213,8 @@ const Perfil = () => {
                 inputRightProps={{
                   border: 'none'
                 }}
+                inputMode={isMobile ? 'text' : undefined}
+                autoComplete={isMobile ? 'given-name' : undefined}
               />
               <Input
                 label='Apellido'
@@ -220,6 +227,8 @@ const Perfil = () => {
                 inputRightProps={{
                   border: 'none'
                 }}
+                inputMode={isMobile ? 'text' : undefined}
+                autoComplete={isMobile ? 'family-name' : undefined}
               />
               <InputPhone
                 name='phone'
@@ -236,6 +245,8 @@ const Perfil = () => {
                 type='email'
                 value={user?.email || ''}
                 isDisabled
+                inputMode={isMobile ? 'email' : undefined}
+                autoComplete={isMobile ? 'email' : undefined}
               />
             </FormProvider>
           </Flex>
@@ -273,6 +284,8 @@ const Perfil = () => {
               }}
               showErrors={true}
               inputRight='ARS'
+              inputMode={isMobile ? 'numeric' : undefined}
+              autoComplete={isMobile ? 'off' : undefined}
             />
           </Flex>
         </Flex>
@@ -283,6 +296,7 @@ const Perfil = () => {
             onClick={handleSave}
             isDisabled={!methods.formState.isValid || !methods.formState.isDirty || isSaving}
             isLoading={isSaving}
+            w={{ base: '100%', md: 'auto' }}
           >
             Guardar cambios
           </Button>

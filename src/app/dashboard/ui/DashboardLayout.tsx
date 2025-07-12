@@ -6,6 +6,7 @@ import { Box, Flex, Grid, Container } from '@chakra-ui/react'
 import Navbar from '@/src/components/layout/Navbar'
 import Sidebar from '@/src/components/layout/Sidebar'
 import { MercadoPagoBlocker } from '@/src/components/MercadoPagoBlocker'
+import { BalanceVisibilityProvider } from '@/src/context/BalanceVisibilityProvider'
 
 interface IDashboardLayout {
   children: JSX.Element
@@ -19,29 +20,37 @@ const DashboardLayout = ({ children }: IDashboardLayout) => {
   }
 
   return (
-    <Grid
-      gridTemplateColumns={{
-        base: '1fr',
-        md: isCollapsed ? '80px 1fr' : '258px 1fr'
-      }}
-      display={{ base: 'block', md: 'grid' }}
-      minHeight='100vh'
-      pb={{ base: '20', md: '0' }}
-      backgroundColor={'background.dark.bg'}
-    >
-      <Box display={{ base: 'none', md: 'block' }}>
-        <Sidebar isCollapsed={isCollapsed === true} handleCollapse={handleCollapse} />
-      </Box>
-      <Flex flexDirection='column' height='100%'>
-        <Navbar />
-        <Box>
-          <Container maxW='8xl' py={2} px='4'>
-            {children}
-          </Container>
+    <BalanceVisibilityProvider>
+      <Grid
+        gridTemplateColumns={{
+          base: '1fr',
+          md: isCollapsed ? '80px 1fr' : '258px 1fr'
+        }}
+        display={{ base: 'block', md: 'grid' }}
+        minHeight='100vh'
+        backgroundColor={'background.dark.bg'}
+      >
+        {/* Desktop Sidebar */}
+        <Box display={{ base: 'none', md: 'block' }}>
+          <Sidebar isCollapsed={isCollapsed === true} handleCollapse={handleCollapse} />
         </Box>
-      </Flex>
-      <MercadoPagoBlocker />
-    </Grid>
+
+        {/* Main Content Area */}
+        <Flex flexDirection='column' height='100%'>
+          {/* Navbar (Desktop y Mobile) */}
+          <Navbar />
+
+          {/* Content */}
+          <Box flex={1} pt={{ base: 0, md: 2 }} pb={{ base: 4, md: 0 }}>
+            <Container maxW='8xl' py={2} px='4'>
+              {children}
+            </Container>
+          </Box>
+        </Flex>
+
+        <MercadoPagoBlocker />
+      </Grid>
+    </BalanceVisibilityProvider>
   )
 }
 export default DashboardLayout

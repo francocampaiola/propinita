@@ -15,10 +15,6 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
   const context = useContext(OnboardingContext)
   const isApprovalSteps = context?.isApprovalSteps ?? false
   const steps: { label: string; number: number }[] = [
-    // {
-    //     label: 'Tipo de usuario',
-    //     number: 1
-    // },
     {
       label: 'Datos personales',
       number: 1
@@ -37,36 +33,39 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
     <>
       <OnboardingNavbar steps={isApprovalSteps ? steps.slice(0, steps.length - 1) : steps} />
       {/* Guarda animada de emojis de dinero */}
-      <div className='money-banner'>
-        <div className='money-banner__inner'>
-          <span className='emoji-row'>
-            {Array.from({ length: 30 }).map((_, i) => {
-              const emojis = ['💸', '💰', '🤑', '💵', '💲', '💳']
-              return (
-                <span className='emoji' key={i}>
-                  {emojis[i % emojis.length]}
-                </span>
-              )
-            })}
-          </span>
-          <span className='emoji-row'>
-            {Array.from({ length: 30 }).map((_, i) => {
-              const emojis = ['💸', '💰', '🤑', '💵', '💲', '💳']
-              return (
-                <span className='emoji' key={i}>
-                  {emojis[i % emojis.length]}
-                </span>
-              )
-            })}
-          </span>
+      <Box width='100%'>
+        <div className='money-banner'>
+          <div className='money-banner__inner'>
+            <span className='emoji-row'>
+              {Array.from({ length: 30 }).map((_, i) => {
+                const emojis = ['💸', '💰', '🤑', '💵', '💲', '💳']
+                return (
+                  <span className='emoji' key={i}>
+                    {emojis[i % emojis.length]}
+                  </span>
+                )
+              })}
+            </span>
+            <span className='emoji-row'>
+              {Array.from({ length: 30 }).map((_, i) => {
+                const emojis = ['💸', '💰', '🤑', '💵', '💲', '💳']
+                return (
+                  <span className='emoji' key={i}>
+                    {emojis[i % emojis.length]}
+                  </span>
+                )
+              })}
+            </span>
+          </div>
         </div>
-      </div>
+      </Box>
       <Flex
-        minHeight='calc(100vh - 72px)'
+        minHeight={{ base: 'calc(100vh - 124px)', md: 'calc(100vh - 72px)' }}
+        height={{ base: '100vh', md: 'auto' }}
         width='100%'
-        overflow='hidden'
-        position='fixed'
-        top='98px'
+        overflow={{ base: 'hidden', md: 'hidden' }}
+        position={{ base: 'relative', md: 'fixed' }}
+        top={{ base: 0, md: '98px' }}
         left={0}
         right={0}
         bottom={0}
@@ -77,7 +76,7 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
           color={['black', 'white']}
           flex={1}
           justifyContent={'center'}
-          px={16}
+          px={{ base: 4, sm: 8, md: 16 }}
           overflow='hidden'
           height='100%'
           position='relative'
@@ -85,7 +84,7 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
           <Flex
             flex={1}
             width='100%'
-            p={8}
+            p={{ base: 4, sm: 6, md: 8 }}
             height='100%'
             margin={0}
             overflow='hidden'
@@ -96,11 +95,11 @@ const OnboardingLayout = ({ children, showSuccess }: OnboardingLayoutProps) => {
               height='100%'
               mt={{ base: '2', md: '0' }}
               width='100%'
-              p={4}
+              p={{ base: 2, sm: 3, md: 4 }}
               overflow='auto'
               position='relative'
+              maxHeight={{ base: 'calc(100vh - 124px)', md: 'calc(100vh - 98px)' }}
               style={{
-                maxHeight: 'calc(100vh - 98px)',
                 WebkitOverflowScrolling: 'touch',
                 scrollbarWidth: 'none', // Firefox
                 msOverflowStyle: 'none' // IE y Edge

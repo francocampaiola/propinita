@@ -37,18 +37,34 @@ const AjustesPage = () => {
 
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
-        <ModalOverlay />
-        <ModalContent>
-          <ModalHeader>
-            <Text fontWeight='bold'>Cerrar sesión</Text>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        isCentered
+        closeOnOverlayClick={!isLoggingOut}
+        closeOnEsc={!isLoggingOut}
+        motionPreset='slideInBottom'
+        size={{ base: 'sm', md: 'md' }}
+      >
+        <ModalOverlay bg='blackAlpha.300' backdropFilter='blur(10px)' />
+        <ModalContent mx={4} borderRadius='lg' boxShadow='xl'>
+          <ModalHeader pb={2}>
+            <Text fontWeight='bold' fontSize={{ base: 'lg', md: 'xl' }}>
+              Cerrar sesión
+            </Text>
           </ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Text>¿Estás seguro que deseas cerrar sesión?</Text>
+          <ModalCloseButton size='lg' isDisabled={isLoggingOut} />
+          <ModalBody pb={4}>
+            <Text fontSize={{ base: 'md', md: 'lg' }}>¿Estás seguro que deseas cerrar sesión?</Text>
           </ModalBody>
-          <ModalFooter>
-            <Button variant='ghost' mr={3} onClick={onClose} isDisabled={isLoggingOut}>
+          <ModalFooter gap={3} flexDirection={{ base: 'column', md: 'row' }}>
+            <Button
+              variant='ghost'
+              onClick={onClose}
+              isDisabled={isLoggingOut}
+              w={{ base: 'full', md: 'auto' }}
+              size={{ base: 'lg', md: 'md' }}
+            >
               Cancelar
             </Button>
             <Button
@@ -56,6 +72,8 @@ const AjustesPage = () => {
               onClick={handleLogout}
               isLoading={isLoggingOut}
               loadingText='Cerrando sesión...'
+              w={{ base: 'full', md: 'auto' }}
+              size={{ base: 'lg', md: 'md' }}
             >
               Cerrar sesión
             </Button>

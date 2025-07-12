@@ -21,6 +21,8 @@ const FaqsPage = () => {
       borderRadius='15px'
       direction={'column'}
       justifyContent='space-between'
+      w={{ base: '100%', md: 'auto' }}
+      p={{ base: 2, md: 0 }}
     >
       <Flex justifyContent='space-between' alignItems={'center'} height={'58px'} mx={4}>
         <Flex alignItems={'center'} gap={2}>
@@ -34,9 +36,13 @@ const FaqsPage = () => {
         </Flex>
       </Flex>
       <Divider borderColor='components.divider' />
-      <Flex flex={1} mx={4} mt={4} mb={4} direction='column' gap={4}>
+      <Flex flex={1} mx={{ base: 1, md: 4 }} mt={4} mb={4} direction='column' gap={4}>
         <Accordion allowToggle>
-          <Flex direction={'row'} gap={8} alignItems={'flex-start'}>
+          <Flex
+            direction={{ base: 'column', md: 'row' }}
+            gap={{ base: 4, md: 8 }}
+            alignItems={'flex-start'}
+          >
             <Flex direction={'column'} gap={4} flex={1}>
               <AccordionItem border='0' bg='gray.800' borderRadius='md' p={2}>
                 <h2>
