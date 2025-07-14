@@ -161,7 +161,7 @@ export default function PagoPage() {
             <Heading size={headingSize} textAlign='center'>
               Realizar Pago
             </Heading>
-            <Text textAlign='center' color='gray.600' fontSize={{ base: 'sm', md: 'md' }}>
+            <Text textAlign='center' color='white' fontSize={{ base: 'sm', md: 'md' }}>
               Propina para {displayName}
             </Text>
           </VStack>
