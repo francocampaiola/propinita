@@ -23,7 +23,7 @@ canvas {
   display: flex;
   white-space: nowrap;
   font-size: 1rem;
-  animation: scroll-emoji 18s linear infinite;
+  animation: scroll-emoji 60s linear infinite;
 }
 .money-banner:hover .money-banner__inner {
   animation-play-state: paused;

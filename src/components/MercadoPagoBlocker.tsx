@@ -106,11 +106,11 @@ export const MercadoPagoBlocker = () => {
         <ModalOverlay />
         <ModalContent bg='gray.800' color='white' mx={4}>
           <ModalBody py={6}>
-            <Flex direction='column' align='center' textAlign='center' gap={4}>
+            <Flex direction='column' align='center' textAlign='left' gap={4}>
               <Text fontSize='xl' fontWeight='bold'>
                 Cuenta de MercadoPago requerida
               </Text>
-              <Image src={mercadopagoImage} alt='MercadoPago' width={150} height={100} />
+              <Image src={mercadopagoImage} alt='MercadoPago' width={120} height={80} />
               <Text color='gray.300' fontSize='md'>
                 Para continuar utilizando la aplicación, necesitas vincular tu cuenta de
                 MercadoPago. <br />
